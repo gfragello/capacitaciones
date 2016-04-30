@@ -506,10 +506,12 @@ namespace Cursos.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ActualizarRegistrosRF(FormCollection formCollection)
         {
+            HttpContext.Server.ScriptTimeout = 600; //se establece un timeout de 10 minutos
+
             bool actualizarDB;
             Boolean.TryParse(Request["actualizarDB"], out actualizarDB);
 
-            var registrosRF = db.RegistroCapacitacion.Where(r => (r.Jornada.CursoId == 1 || r.Jornada.CursoId == 3) && r.Nota == 0);
+            var registrosRF = db.RegistroCapacitacion.Where(r => (r.Jornada.CursoId == 1 || r.Jornada.CursoId == 3) && r.Nota == 0).ToList();
 
             List<Jornada> jornadasCreadas = new List<Jornada>();
             var cursoRF = db.Cursos.Find(2);
@@ -529,7 +531,7 @@ namespace Cursos.Controllers
                     db.Jornada.Add(j);
                 }
 
-                db.SaveChanges();
+                //db.SaveChanges();
             }
             else
             {
