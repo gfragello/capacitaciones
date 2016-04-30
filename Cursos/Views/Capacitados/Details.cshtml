@@ -1,0 +1,121 @@
+﻿@model Cursos.Models.Capacitado
+@using Cursos.Helpers;
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div>
+    <h4>Capacitado</h4>
+    <p>
+        <a href="@Url.Action("Index") "><img src="@Url.Content("~/images/back.png")" title="Volver a la lista" /></a>
+        @if (User.Identity.IsAuthenticated)
+        {
+        @:&nbsp; &nbsp;
+        <a href="@Url.Action("Edit", new { id = Model.CapacitadoID }) "><img src="@Url.Content("~/images/editar.png")" title="Editar" /></a>
+        @:&nbsp;&nbsp;
+        <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion.png")" title="Agregar Registro" /></a>
+        }
+    </p>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Apellido)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Apellido)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Documento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DocumentoCompleto)
+        </dd>
+
+        <dt>
+            Empresa
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Empresa.NombreFantasia)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha)
+        </dd>
+
+    </dl>
+</div>
+
+<hr />
+
+<h4>Registros de capacitación</h4>
+
+<table class="table">
+    <tr>
+        <th></th>
+        <th>
+            @Html.DisplayName("Jornada")
+        </th>
+        <th>
+            @Html.DisplayName("Nota Previa")
+        </th>
+        <th>
+            @Html.DisplayName("Nota")
+        </th>
+        <th>
+            @Html.DisplayName("Aprobado")
+        </th>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <th></th> <!--Columna con acciones sobre el registro -->
+        }
+    </tr>
+
+    @foreach (var item in Model.RegistrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha))
+    {
+        string bgcolor = item.Jornada.Curso.ColorDeFondo != null ? item.Jornada.Curso.ColorDeFondo : "whitesmoke";
+        string srcImagen = string.Empty;
+        string titleTexto = string.Empty;
+
+        ImagenEstadoRegistroHelper.GetInstance().ObtenerImagenYTitulo(item, ref srcImagen, ref titleTexto);
+        srcImagen = Url.Content(srcImagen);
+
+        <tr style="background-color: @bgcolor;">
+            <td><img src="@srcImagen" )" title="@titleTexto" /></td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Jornada.JornadaIdentificacionCompleta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NotaPrevia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nota)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aprobado)
+            </td>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <td>
+                    <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                </td>
+            }
+        </tr>
+    }
+</table>

@@ -1,0 +1,50 @@
+﻿@model Cursos.Models.RegistroCapacitacion
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>RegistroCapacitacion</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Capacitado.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Capacitado.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Jornada.JornadaID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Jornada.JornadaID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Aprobado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Aprobado)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Nota)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nota)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.RegistroCapacitacionID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

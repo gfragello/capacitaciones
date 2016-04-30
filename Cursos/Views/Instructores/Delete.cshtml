@@ -1,0 +1,86 @@
+﻿@model Cursos.Models.Instructor
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+@if (Model.Jornadas.Count == 0)
+{
+    <h3>¿Confirma la eliminación de este instructor?</h3>
+}
+else
+{
+    <h3>No es posible eliminar este instructor porque tiene Jornadas asociadas</h3>
+}
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Apellido)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Apellido)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Documento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Documento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaNacimiento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FechaNacimiento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Domicilio)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Domicilio)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Telefono)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Telefono)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Activo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Activo)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        string enabled = Model.Jornadas.Count > 0 ? "disabled='disabled'" : String.Empty;
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" @enabled /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

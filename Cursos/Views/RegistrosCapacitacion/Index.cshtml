@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Cursos.Models.RegistroCapacitacion>
+
+@{
+    ViewBag.Title = "Registros de Capacitación";
+}
+
+<h2>Registros de Capacitación</h2>
+
+<p>
+    @Html.ActionLink("Crear Nuevo", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Jornada.JornadaID)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Aprobado)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nota)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Capacitado.Nombre)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Jornada.JornadaID)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Aprobado)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Nota)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.RegistroCapacitacionID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.RegistroCapacitacionID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.RegistroCapacitacionID })
+        </td>
+    </tr>
+}
+
+</table>

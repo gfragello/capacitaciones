@@ -1,0 +1,61 @@
+﻿@model Cursos.Models.Jornada
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h3 style="color: red">¡Atención! Al borrar la jornada, se estarán borrando los registros de capacitación asociados.</h3>
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Curso.Descripcion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Curso.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Instructor.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Instructor.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Lugar.NombreLugar)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Lugar.NombreLugar)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Hora)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Hora)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

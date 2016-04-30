@@ -1,0 +1,88 @@
+﻿@model Cursos.Models.Empresa
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div>
+    <h4>Empresa - Detalles</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NombreFantasia)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NombreFantasia)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Domicilio)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Domicilio)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RazonSocial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RazonSocial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RUT)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RUT)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DepartamentoID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Departamento.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Localidad)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Localidad)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CodigoPostal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CodigoPostal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+    </dl>
+</div>
+
+<hr />
+
+<h4>Capacitados</h4>
+
+@Html.Partial("_ListCapacitadosPartial", (PagedList.IPagedList<Cursos.Models.Capacitado>)ViewBag.Capacitados)
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.EmpresaID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

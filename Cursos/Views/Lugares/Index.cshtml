@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Cursos.Models.Lugar>
+
+@{
+    ViewBag.Title = "Lugares";
+}
+
+<h2>Lugares</h2>
+
+<p>
+    @Html.ActionLink("Crear Nuevo", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.NombreLugar)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AbrevLugar)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.NombreLugar)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.AbrevLugar)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.LugarID }) |
+            @Html.ActionLink("Details", "Details", new { id=item.LugarID }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.LugarID })
+        </td>
+    </tr>
+}
+
+</table>

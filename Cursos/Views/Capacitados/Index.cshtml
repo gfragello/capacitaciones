@@ -1,0 +1,112 @@
+﻿@model PagedList.IPagedList<Cursos.Models.Capacitado>
+@using PagedList.Mvc;
+@using Cursos.Helpers;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Capacitados";
+}
+
+@*
+<table>
+    <tr>
+        <td><h3>Capacitados</h3> </td>
+        <td><a href="@Url.Action("Create") "><img src="@Url.Content("~/images/capacitados.png")" /></a></td>
+        <td>@Html.ActionLink("Create New", "Create")</td>
+    </tr>
+</table>
+*@
+
+<h4>Capacitados</h4>
+
+<p>
+    @if (User.Identity.IsAuthenticated)
+    {
+        @*<a href="@Url.Action("Create") "><img src="@Url.Content("~/images/capacitados.png")" title="Nuevo Capacitado" /></a>*@
+        @Html.ActionLink("Crear nuevo", "Create")
+        @:&nbsp;&nbsp;
+    }
+    @Html.ActionLink("Exportar a Excel", "Index", new { currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID, exportarExcel = true })
+</p>
+
+<hr />
+
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td>
+
+                <div class="form-inline" style="margin:5px 3px;">
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Documento"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Nombre")
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("nombre", ViewBag.CurrentNombre as string , new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Apellido"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("apellido", ViewBag.CurrentApellido as string, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Empresa:")
+                        </div>
+                        <div class="col-md-10">
+                            @Html.DropDownList("EmpresaID", null, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Curso:")
+                        </div>
+                        <div class="col-md-10">
+                            @Html.DropDownList("CursoID", null, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td width="1%">
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <input type="submit" value="Buscar" />
+                    </div>
+                    <!--
+                    <div class="col-md-2">
+                        @Html.ActionLink("Limpiar filtros", "Index")
+                    </div>
+                    -->
+                </div>
+            </td>
+
+        </tr>
+    </table>
+}
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
+
+@Html.Partial("_ListCapacitadosPartial", Model)
+
+<br />
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))

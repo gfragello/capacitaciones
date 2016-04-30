@@ -1,0 +1,62 @@
+﻿@model Cursos.Models.Curso
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+@if (Model.Jornadas.Count == 0)
+{
+    <h3>¿Confirma la eliminación de este curso?</h3>
+}
+else
+{
+    <h3>No es posible eliminar este Curso porque tiene Jornadas asociadas</h3>
+}
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Costo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Costo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Horas)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Horas)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Modulo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Modulo)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        string enabled = Model.Jornadas.Count > 0 ? "disabled='disabled'" : String.Empty;
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" @enabled /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

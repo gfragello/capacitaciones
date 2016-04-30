@@ -1,0 +1,85 @@
+﻿@model PagedList.IPagedList<Cursos.Models.Capacitado>
+@using PagedList.Mvc;
+@using Cursos.Helpers;
+@using Cursos.Models;
+
+<table class="table table-striped">
+    <tr>
+        <th>
+            Apellido
+        </th>
+        <th>
+            Nombre
+        </th>
+        <th>
+            Documento
+        </th>
+        <th>
+            Empresa
+        </th>
+        <th></th> <!--Columna con acciones sobre el elemento -->
+
+        @foreach (Curso c in ViewBag.Cursos)
+        {
+        <th>
+            @Html.Label(c.Descripcion.Substring(0, 2))
+        </th>
+        }
+
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apellido)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DocumentoCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Empresa.NombreFantasia)
+            </td>
+            <td>
+                @*Html.ActionLink("Edit", "Edit", new { id = item.CapacitadoID })*@
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a href="@Url.Action("Edit", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
+                }
+                <a href="@Url.Action("Details", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @:&nbsp;|
+                    <a href="@Url.Action("Delete", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>@:&nbsp;|
+                    <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = item.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion_16x16.png")" title="Agregar Registro" /></a>
+                }
+            </td>
+                @foreach (Curso c in ViewBag.Cursos)
+                {
+                    string bgcolor = c.ColorDeFondo != null ? c.ColorDeFondo : "whitesmoke";
+
+                    if (item.UltimoRegistroCapacitacionPorCurso(c.CursoID).Count > 0)
+                    {
+                        var r = item.UltimoRegistroCapacitacionPorCurso(c.CursoID)[0];
+
+                        string srcImagen = string.Empty;
+                        string titleTexto = string.Empty;
+
+                        ImagenEstadoRegistroHelper.GetInstance().ObtenerImagenYTitulo(r, ref srcImagen, ref titleTexto);
+                        srcImagen = Url.Content(srcImagen);
+
+                        <td style="background-color: @bgcolor; text-align:center;"><img src="@srcImagen" )" title="@titleTexto" /></td>
+                    }
+                    else
+                    {
+                        <td style="background-color: @bgcolor; text-align:center;">--</td>
+                    }
+                }
+        </tr>
+    }
+
+</table>
+

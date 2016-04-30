@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Iniciar Fecha de Vencimiento de Registros";
+}
+
+<h2>Importar datos desde archivo Excel</h2>
+<hr />
+
+@using(Html.BeginForm("IniciarFechaVencimientoRegistros", "CustomTools", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <table>
+        <tr>
+            <td><input type="submit" name="Submit" value="Iniciar fechas de vencimiento" /></td>
+        </tr>
+    </table>
+}
+

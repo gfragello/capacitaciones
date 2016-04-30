@@ -1,0 +1,56 @@
+﻿@model Cursos.Models.RegistroCapacitacion
+
+@{
+    ViewBag.Title = "Eliminar";
+}
+
+<h3 style="color: red">¡Atención! Luego de confirmada esta acción no podrá deshacerse.</h3>
+<hr />
+
+<div>
+    <h4>Registro de Capacitacion - Eliminar</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Capacitado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Capacitado.IdentificacionCompleta)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.JornadaID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Jornada.JornadaIdentificacionCompleta)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Nota)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nota)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NotaPrevia)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NotaPrevia)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Eliminar" class="btn btn-default" /> |
+            @Html.ActionLink("Cancelar", "Details", "Capacitados", new { id = Model.CapacitadoID }, null )
+        </div>
+    }
+</div>

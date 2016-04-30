@@ -1,0 +1,46 @@
+﻿@model Cursos.Models.TipoDocumento
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+@if (Model.Capacitados.Count == 0)
+{
+    <h3>¿Confirma la eliminación de este Tipo de Documento?</h3>
+}
+else
+{
+    <h3>No es posible eliminar este Tipo de Documento porque tiene Capacitados asociados</h3>
+}
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Abreviacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Abreviacion)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        string enabled = Model.Capacitados.Count > 0 ? "disabled='disabled'" : String.Empty;
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" @enabled /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

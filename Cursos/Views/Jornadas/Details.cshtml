@@ -1,0 +1,108 @@
+﻿@model Cursos.Models.Jornada
+
+@{
+    ViewBag.Title = "Jornada - Detalles";
+}
+
+<div>
+    <h4>Jornada - Detalles</h4>
+    <p>
+        <a href="@Url.Action("Index") "><img src="@Url.Content("~/images/back.png")" title="Volver a la lista" /></a>
+        &nbsp;&nbsp;
+        @Html.ActionLink("Exportar a Excel", "Details", new { id = Model.JornadaID, exportarExcel = true })
+    </p>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.Label("Curso")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Curso.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.Label("Instructor")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Instructor.NombreCompleto)
+        </dd>
+
+        <dt>
+            @Html.Label("Lugar")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Lugar.NombreLugar)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Hora)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Hora)
+        </dd>
+
+    </dl>
+</div>
+
+<hr />
+
+<h4>Registros de capacitación</h4>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayName("Capacitado")
+        </th>
+        <td></td>
+        <th>
+            @Html.DisplayName("Empresa")
+        </th>
+        <th>
+            @Html.DisplayName("Nota Previa")
+        </th>
+        <th>
+            @Html.DisplayName("Nota")
+        </th>
+        <th>
+            @Html.DisplayName("Aprobado")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.RegistrosCapacitacion)
+    {
+        string bgcolor = item.Aprobado ? "darkseagreen" : "darksalmon";
+        <tr style="background-color: @bgcolor;">
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NotaPrevia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nota)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aprobado)
+            </td>
+        </tr>
+    }
+</table>

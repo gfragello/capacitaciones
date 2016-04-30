@@ -1,0 +1,125 @@
+﻿@model Cursos.Models.RegistroCapacitacion
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h3>Registro de capacitación</h3>
+
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+        
+
+    <div class="form-inline">
+
+        <div class="form-group">
+            <div class="col-md-5">
+                @Html.Label("Nombre: ")
+            </div>
+            <div class="col-md-10">
+                @ViewBag.Capacitado.Nombre @ViewBag.Capacitado.Apellido
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-5">
+                @Html.Label("Documento:")
+            </div>
+            <div class="col-md-10">
+                @ViewBag.Capacitado.DocumentoCompleto
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.JornadaID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("JornadaID", null, "Seleccionar la jornada..." , htmlAttributes: new { @class = "form-control", @onchange = "cargarFechaVencimiento();" })
+                @Html.ValidationMessageFor(model => model.JornadaID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*
+        <div class="form-group">
+            @Html.LabelFor(model => model.CapacitadoID, "CapacitadoID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("CapacitadoID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.CapacitadoID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        *@
+
+        @Html.Hidden("CapacitadoID")
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Nota, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Nota, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Nota, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NotaPrevia, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NotaPrevia, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NotaPrevia, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.FechaVencimiento, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.FechaVencimiento, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.FechaVencimiento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Aprobado, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Aprobado)
+                    @Html.ValidationMessageFor(model => model.Aprobado, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Aceptar" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    function cargarFechaVencimiento()
+    {
+        var jornadaId = $('#JornadaID').val();
+        $.ajax({
+            url: '/RegistrosCapacitacion/ObtenerFechaVencimiento',
+            type: "GET",
+            dataType: "JSON",
+            data: { JornadaId: jornadaId},
+            success: function (FechaVencimientoString)
+                     {
+                        $('#FechaVencimiento').val(FechaVencimientoString);
+                     }
+        });
+    }
+</script>
+}

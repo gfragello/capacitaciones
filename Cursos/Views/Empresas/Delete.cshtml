@@ -1,0 +1,62 @@
+﻿@model Cursos.Models.Empresa
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+@if (Model.Capacitados.Count == 0)
+{
+    <h3>¿Confirma la eliminación de esta Empresa?</h3>
+}
+else
+{
+    <h3>No es posible eliminar esta Empresa porque tiene Capacitados asociados</h3>
+}
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NombreFantasia)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NombreFantasia)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Domicilio)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Domicilio)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RazonSocial)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RazonSocial)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RUT)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RUT)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        string enabled = Model.Capacitados.Count > 0 ? "disabled='disabled'" : String.Empty;
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" @enabled /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
