@@ -6,46 +6,138 @@
 
 <h2>Registros de Capacitación</h2>
 
+<!--
 <p>
     @Html.ActionLink("Crear Nuevo", "Create")
 </p>
+-->
+
+<hr />
+
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td>
+
+                <div class="form-inline" style="margin:5px 3px;">
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Curso"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.DropDownList("CursoID", null, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Desde")
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("fechaInicio", ViewBag.FechaInicio as string, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Hasta"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("fechaFin", ViewBag.FechaFin as string, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Nota desde"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("notaDesde", ViewBag.NotaDesde as string, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Nota hasta"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("notaHasta", ViewBag.NotaHasta as string, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                </div>
+
+            </td>
+            <td width="1%">
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <input type="submit" value="Buscar" />
+                    </div>
+                    <!--
+                    <div class="col-md-2">
+                        @Html.ActionLink("Limpiar filtros", "Index")
+                    </div>
+                    -->
+                </div>
+            </td>
+
+        </tr>
+    </table>
+}
+
+<br />
+
+@Html.Label(String.Format("Total de registros: {0}", Model.Count()))
+
 <table class="table">
     <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Documento)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.Capacitado.Nombre)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Jornada.JornadaID)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Aprobado)
+            @Html.DisplayNameFor(model => model.JornadaID)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Nota)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NotaPrevia)
+        </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Capacitado.Nombre)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Jornada.JornadaID)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Aprobado)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Nota)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.RegistroCapacitacionID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.RegistroCapacitacionID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.RegistroCapacitacionID })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+
+        string bgcolor = item.Jornada.Curso.ColorDeFondo != null ? item.Jornada.Curso.ColorDeFondo : "whitesmoke";
+
+        <tr style="background-color: @bgcolor">
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Jornada.JornadaIdentificacionCompleta)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nota)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NotaPrevia)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.RegistroCapacitacionID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.RegistroCapacitacionID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.RegistroCapacitacionID })
+            </td>
+        </tr>
+    }
 
 </table>

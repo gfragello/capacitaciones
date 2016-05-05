@@ -16,10 +16,45 @@ namespace Cursos.Controllers
         private CursosDbContext db = new CursosDbContext();
 
         // GET: RegistrosCapacitacion
-        public ActionResult Index()
+        public ActionResult Index(int? cursoID, DateTime? fechaInicio, DateTime? fechaFin, int? notaDesde, int? notaHasta)
         {
-            var registroCapacitacion = db.RegistroCapacitacion.Include(r => r.Capacitado).Include(r => r.Jornada);
-            return View(registroCapacitacion.ToList());
+            var registrosCapacitacion = db.RegistroCapacitacion.Include(r => r.Capacitado).Include(r => r.Jornada);
+
+            if (cursoID != null && cursoID != -1)
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.Jornada.Curso.CursoID == cursoID);
+
+            if (fechaInicio != null)
+            {
+                ViewBag.FechaInicio = fechaInicio;
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.Jornada.Fecha >= fechaInicio.Value);
+            }
+
+            if (fechaFin != null)
+            {
+                fechaFin = new DateTime(fechaFin.Value.Year, fechaFin.Value.Month, fechaFin.Value.Day, 23, 59, 59);
+                ViewBag.FechaFin = fechaFin;
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.Jornada.Fecha <= fechaFin.Value);
+            }
+
+            if (notaDesde != null)
+            {
+                ViewBag.NotaDesde = notaDesde;
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.Nota >= notaDesde);
+            }
+
+            if (notaHasta != null)
+            {
+                ViewBag.NotaHasta = notaHasta;
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.Nota <= notaHasta);
+            }
+
+            List<Curso> cursosDD = db.Cursos.OrderBy(c => c.Descripcion).ToList();
+            cursosDD.Insert(0, new Curso { CursoID = -1, Descripcion = "Todos" });
+            ViewBag.CursoID = new SelectList(cursosDD, "CursoID", "Descripcion", cursoID);
+
+            registrosCapacitacion = registrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha);
+
+            return View(registrosCapacitacion.ToList());
         }
 
         // GET: RegistrosCapacitacion/Details/5
