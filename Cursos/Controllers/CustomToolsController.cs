@@ -511,17 +511,38 @@ namespace Cursos.Controllers
             bool actualizarDB;
             Boolean.TryParse(Request["actualizarDB"], out actualizarDB);
 
-            var registrosRF = db.RegistroCapacitacion.Where(r => (r.Jornada.CursoId == 1 || r.Jornada.CursoId == 3) && r.Nota == 0).ToList();
+            bool convertirRFaTV;
+            Boolean.TryParse(Request["convertirRFaTV"], out convertirRFaTV);
+
+            List<RegistroCapacitacion> registrosAConvertir;
 
             List<Jornada> jornadasCreadas = new List<Jornada>();
-            var cursoRF = db.Cursos.Find(2);
+
+            Curso cursoParaAsignar;
+
+            string fileName;
+
+            if (convertirRFaTV) //se convertirán un total de 133 regitros RF que en realidad son TV
+            {
+                registrosAConvertir = db.RegistroCapacitacion.Where(r => r.Jornada.CursoId == 2 && r.Nota > 0).ToList();
+                cursoParaAsignar = db.Cursos.Find(1); //Curso TV
+
+                fileName = "actualizacionTV.xlsx";
+            }
+            else //se convertiran registros de TA y TV sin nota a RF
+            {
+                registrosAConvertir = db.RegistroCapacitacion.Where(r => (r.Jornada.CursoId == 1 || r.Jornada.CursoId == 3) && r.Nota == 0).ToList();
+                cursoParaAsignar = db.Cursos.Find(2); //Curso RF
+
+                fileName = "actualizacionRF.xlsx";
+            }
 
             if (actualizarDB)
             {
-                foreach (var r in registrosRF)
+                foreach (var r in registrosAConvertir)
                 {
                     bool jornadaCreada;
-                    var nuevaJornada = obtenerNuevaJornada(r, cursoRF, out jornadaCreada, ref jornadasCreadas);
+                    var nuevaJornada = obtenerNuevaJornada(r, cursoParaAsignar, out jornadaCreada, ref jornadasCreadas);
 
                     r.Jornada = nuevaJornada;
                 }
@@ -548,10 +569,10 @@ namespace Cursos.Controllers
                     ws.Cells[rowInicial, 4].Value = "Curso";
                     ws.Cells[rowInicial, 5].Value = "Se asociará a la jornada";
 
-                    foreach (var r in registrosRF)
+                    foreach (var r in registrosAConvertir)
                     {
                         bool jornadaCreada;
-                        var nuevaJornada = obtenerNuevaJornada(r, cursoRF, out jornadaCreada, ref jornadasCreadas);
+                        var nuevaJornada = obtenerNuevaJornada(r, cursoParaAsignar, out jornadaCreada, ref jornadasCreadas);
 
                         Color jornadaBGColor;
 
@@ -577,7 +598,6 @@ namespace Cursos.Controllers
                     var stream = new MemoryStream();
                     package.SaveAs(stream);
 
-                    string fileName = "actualizacionRF.xlsx";
                     string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
                     stream.Position = 0;
