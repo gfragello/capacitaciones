@@ -142,7 +142,9 @@ namespace Cursos.Controllers
             {
                 db.Capacitados.Add(capacitado);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
+                //return View("Details", capacitado);
+                return RedirectToAction("Details", "Capacitados", new { id = capacitado.CapacitadoID });
             }
 
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);

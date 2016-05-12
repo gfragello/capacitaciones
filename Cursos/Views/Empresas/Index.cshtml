@@ -9,6 +9,41 @@
 <p>
     @Html.ActionLink("Crear Nueva", "Create")
 </p>
+
+<hr />
+
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td>
+                <div class="form-inline" style="margin:5px 3px;">
+
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            @Html.Label("Nombre de fantasía")
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("nombreFantasia", null, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                </div>
+            </td>
+            <td width="1%">
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <input type="submit" value="Buscar" />
+                    </div>
+                </div>
+            </td>
+
+        </tr>
+    </table>
+}
+
+<br />
+
 <table class="table">
     <tr>
         <th>
@@ -26,26 +61,27 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.NombreFantasia)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Domicilio)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RazonSocial)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RUT)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.EmpresaID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.EmpresaID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.EmpresaID })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreFantasia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Domicilio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RazonSocial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RUT)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.EmpresaID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.EmpresaID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.EmpresaID })
+            </td>
+        </tr>
+    }
 
 </table>

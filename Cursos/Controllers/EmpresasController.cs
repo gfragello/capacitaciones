@@ -17,9 +17,14 @@ namespace Cursos.Controllers
         private CursosDbContext db = new CursosDbContext();
 
         // GET: Empresas
-        public ActionResult Index()
+        public ActionResult Index(string nombreFantasia)
         {
-            return View(db.Empresas.ToList().OrderBy(o => o.NombreFantasia));
+            var empresas = db.Empresas.AsQueryable();
+
+            if (!String.IsNullOrEmpty(nombreFantasia))
+                empresas = empresas.Where(e => e.NombreFantasia.Contains(nombreFantasia));
+
+            return View(empresas.ToList().OrderBy(o => o.NombreFantasia));
         }
 
         // GET: Empresas/Details/5
