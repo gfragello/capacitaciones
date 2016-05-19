@@ -430,6 +430,7 @@
     <Content Include="Views\CustomTools\IniciarFechaVencimientoRegistros.cshtml" />
     <Content Include="Views\Shared\_ListCapacitadosPartial.cshtml" />
     <Content Include="Views\CustomTools\ActualizarRegistrosRF.cshtml" />
+    <Content Include="Views\CustomTools\UnificarCedulasRepetidas.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

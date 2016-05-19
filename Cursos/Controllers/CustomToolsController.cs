@@ -628,6 +628,189 @@ namespace Cursos.Controllers
             return View();
         }
 
+        public ActionResult UnificarCedulasRepetidas()
+        {
+            return View("UnificarCedulasRepetidas");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UnificarCedulasRepetidas(FormCollection formCollection)
+        {
+            HttpContext.Server.ScriptTimeout = 600; //se establece un timeout de 10 minutos
+
+            bool actualizarDB;
+            Boolean.TryParse(Request["actualizarDB"], out actualizarDB);
+
+            List<List<int>> gruposCapacitadosIdsParaUnificar = new List<List<int>>();
+
+            if (Request != null)
+            {
+                HttpPostedFileBase file = Request.Files["UploadedFile"];
+
+                if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
+                {
+
+                    string fileName = file.FileName;
+                    string fileContentType = file.ContentType;
+
+                    byte[] fileBytes = new byte[file.ContentLength];
+
+                    var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
+
+                    var capacitados = new List<Capacitado>();
+
+                    using (var package = new ExcelPackage(file.InputStream))
+                    {
+                        gruposCapacitadosIdsParaUnificar = GruposCapacitadosIdsParaUnificar(package);
+                    }
+                }
+
+            }
+
+            if (actualizarDB)
+            {
+                foreach (var capacitadosIdsParaUnificar in gruposCapacitadosIdsParaUnificar)
+                {
+                    List<Capacitado> capacitadosParaUnificar = new List<Capacitado>();
+
+                    foreach (var capacitadoId in capacitadosIdsParaUnificar)
+                    {
+                        var capacitado = db.Capacitados.Find(capacitadoId);
+                        capacitadosParaUnificar.Add(capacitado);
+                    }
+                }
+            }
+            else
+            {
+                using (ExcelPackage package = new ExcelPackage())
+                {
+                    var ws = package.Workbook.Worksheets.Add("Capacitados");
+
+                    const int rowInicial = 1;
+                    int i = rowInicial + 1;
+
+                    ws.Cells[rowInicial, 1].Value = "Id";
+                    ws.Cells[rowInicial, 2].Value = "Documento";
+                    ws.Cells[rowInicial, 3].Value = "Nombre";
+                    ws.Cells[rowInicial, 4].Value = "Apellido";
+                    ws.Cells[rowInicial, 5].Value = "Empresa";
+                    ws.Cells[rowInicial, 6].Value = "Seleccionado";
+
+                    foreach (var capacitadosIdsParaUnificar in gruposCapacitadosIdsParaUnificar)
+                    {
+                        List<Capacitado> capacitadosParaUnificar = new List<Capacitado>();
+
+                        foreach (var capacitadoId in capacitadosIdsParaUnificar)
+                        {
+                            var capacitado = db.Capacitados.Find(capacitadoId);
+                            capacitadosParaUnificar.Add(capacitado);
+                        }
+
+                        int? posicionCapacitadoBase = seleccionarPosicionCapacitadoBase(capacitadosParaUnificar);
+                        int j = 0;
+
+                        foreach (var c in capacitadosParaUnificar)
+                        {
+                            ws.Cells[i, 1].Value = c.CapacitadoID;
+                            ws.Cells[i, 2].Value = c.DocumentoCompleto;
+                            ws.Cells[i, 3].Value = c.Nombre;
+                            ws.Cells[i, 4].Value = c.Apellido;
+                            ws.Cells[i, 5].Value = c.Empresa.NombreFantasia;
+
+                            if (posicionCapacitadoBase != null)
+                            {
+                                if (j == posicionCapacitadoBase)
+                                    ws.Cells[i, 6].Value = "X";
+                            }
+
+                            j++;
+                            i++;
+                        }
+
+                        if (posicionCapacitadoBase == null)
+                        {
+                            ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Fill.BackgroundColor.SetColor(Color.Salmon);
+                        }
+
+                        ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                    }
+
+                    ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                    var stream = new MemoryStream();
+                    package.SaveAs(stream);
+
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    stream.Position = 0;
+                    return File(stream, contentType, "UnificarCapacitados.xlsx");
+                }
+            } 
+
+            return View();
+        }
+
+        private List<List<int>> GruposCapacitadosIdsParaUnificar(ExcelPackage ep)
+        {
+            List<List<int>> grupos = new List<List<int>>();
+
+            var ws = ep.Workbook.Worksheets[1];
+
+            var TotalColumns = ws.Dimension.End.Column;
+            var TotalRows = ws.Dimension.End.Row;
+
+            const int cCapacitadoId = 1;
+            const int cDocumento = 4;
+
+            string documentoActual = ws.Cells[1, cDocumento].Value.ToString();
+            List<int> grupo = new List<int>();
+
+            for (int i = 1; i < TotalRows; i++)
+            {
+                if (documentoActual != ws.Cells[i, cDocumento].Value.ToString())
+                {
+                    documentoActual = ws.Cells[i, cDocumento].Value.ToString();
+                    grupos.Add(grupo);
+                    grupo = new List<int>();
+                }
+
+                grupo.Add(int.Parse(ws.Cells[i, cCapacitadoId].Value.ToString()));
+            }
+
+            return grupos;
+        }
+
+        private int? seleccionarPosicionCapacitadoBase(List<Capacitado> capacitadosParaUnificar)
+        {
+            int? posicionCapacitadoBase = null;
+            int iActual = 0;
+
+            foreach (var capacitadoActual in capacitadosParaUnificar)
+            {
+                for (int i = 0; i < capacitadosParaUnificar.Count; i++)
+                {
+                    if (i == iActual)
+                        continue;
+
+                    if (quitarTildes(capacitadoActual.Apellido).Contains(quitarTildes(capacitadosParaUnificar[i].Apellido)))
+                    {
+                        posicionCapacitadoBase = iActual;
+                    }
+                }
+
+                iActual++;
+            }
+
+            return posicionCapacitadoBase;
+        }
+
+        private string quitarTildes(string textoOriginal)
+        {
+            return textoOriginal.Replace("Á", "A").Replace("É", "E").Replace("Í", "I").Replace("Ó", "O").Replace("Ú", "U");
+        }
+
         private Jornada obtenerNuevaJornada(RegistroCapacitacion r, Curso cursoRF, out bool jornadaCreada, ref List<Jornada> jornadasCreadas)
         {
             jornadaCreada = false;

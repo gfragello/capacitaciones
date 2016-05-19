@@ -1,0 +1,26 @@
+﻿
+@{
+    ViewBag.Title = "Unificar cédulas repetidas";
+}
+
+<h2>Unificar cédulas repetidas</h2>
+<hr />
+
+@using (Html.BeginForm("UnificarCedulasRepetidas", "CustomTools", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <table>
+        <tr>
+            <td>File:</td>
+            <td><input type="file" name="UploadedFile" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" name="Submit" value="Unificar cédulas repetidas" /></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="checkbox" name="actualizarDB" value="true"> Actualizar Base de Datos</td>
+        </tr>
+    </table>
+}
+
