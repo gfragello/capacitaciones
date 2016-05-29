@@ -644,110 +644,157 @@ namespace Cursos.Controllers
 
             List<List<int>> gruposCapacitadosIdsParaUnificar = new List<List<int>>();
 
+            HttpPostedFileBase file = null;
+
             if (Request != null)
             {
-                HttpPostedFileBase file = Request.Files["UploadedFile"];
+                file = Request.Files["UploadedFile"];
 
                 if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
                 {
-
                     string fileName = file.FileName;
                     string fileContentType = file.ContentType;
 
                     byte[] fileBytes = new byte[file.ContentLength];
 
                     var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
+                }
 
+                //si se actualiza la DB el archivo de origen ya tiene marcado en la columna F el capacitado que se persistirá
+                //y en la columna G se indica cuando se pasa de un capacitado a otro
+                if (actualizarDB)
+                {
+                    using (var ep = new ExcelPackage(file.InputStream))
+                    {
+                        var ws = ep.Workbook.Worksheets[1];
+
+                        var TotalColumns = ws.Dimension.End.Column;
+                        var TotalRows = ws.Dimension.End.Row;
+
+                        const int cCapacitadoId = 1;
+                        const int cSeleccionado = 6;
+                        const int cNuevoCapacitado = 7;
+
+                        Capacitado capacitadoBase = null;
+                        List<Capacitado> capacitadosAEliminar = null;
+
+                        for (int i = 2; i < TotalRows + 1; i++)
+                        {
+                            bool capacitadoNuevo = false;
+                            if (ws.Cells[i, cNuevoCapacitado].Value != null)
+                                capacitadoNuevo = ws.Cells[i, cNuevoCapacitado].Value.ToString() == "nuevo";
+
+
+                            bool capacitadoSeleccionado = false;
+                            if (ws.Cells[i, cSeleccionado].Value != null)
+                                capacitadoSeleccionado = ws.Cells[i, cSeleccionado].Value.ToString() == "X";
+
+                            int capacitadoActualId = int.Parse(ws.Cells[i, cCapacitadoId].Value.ToString());
+                            var capacitadoActual = db.Capacitados
+                                                     .Include("RegistrosCapacitacion")
+                                                     .SingleOrDefault(x => x.CapacitadoID == capacitadoActualId); //.Find(int.Parse(ws.Cells[i, cCapacitadoId].Value.ToString()));
+
+                            if (capacitadoNuevo)
+                            {
+                                //impactar los cambios del Capacitado anterior
+                                if (capacitadoBase != null)
+                                {
+                                    UnificarCapacitados(capacitadoBase, capacitadosAEliminar);
+                                    capacitadoBase = null;           
+                                }
+
+                                capacitadosAEliminar = new List<Capacitado>();
+                            }
+
+                            if (capacitadoSeleccionado)
+                                    capacitadoBase = capacitadoActual;
+                                else
+                                    capacitadosAEliminar.Add(capacitadoActual);
+                        }
+
+                        if (capacitadoBase != null)
+                        {
+                            UnificarCapacitados(capacitadoBase, capacitadosAEliminar);
+                        }
+
+                        db.SaveChanges();
+                    }
+                }
+                else
+                {
                     var capacitados = new List<Capacitado>();
 
                     using (var package = new ExcelPackage(file.InputStream))
                     {
                         gruposCapacitadosIdsParaUnificar = GruposCapacitadosIdsParaUnificar(package);
                     }
-                }
 
-            }
-
-            if (actualizarDB)
-            {
-                foreach (var capacitadosIdsParaUnificar in gruposCapacitadosIdsParaUnificar)
-                {
-                    List<Capacitado> capacitadosParaUnificar = new List<Capacitado>();
-
-                    foreach (var capacitadoId in capacitadosIdsParaUnificar)
+                    using (ExcelPackage package = new ExcelPackage())
                     {
-                        var capacitado = db.Capacitados.Find(capacitadoId);
-                        capacitadosParaUnificar.Add(capacitado);
-                    }
-                }
-            }
-            else
-            {
-                using (ExcelPackage package = new ExcelPackage())
-                {
-                    var ws = package.Workbook.Worksheets.Add("Capacitados");
+                        var ws = package.Workbook.Worksheets.Add("Capacitados");
 
-                    const int rowInicial = 1;
-                    int i = rowInicial + 1;
+                        const int rowInicial = 1;
+                        int i = rowInicial + 1;
 
-                    ws.Cells[rowInicial, 1].Value = "Id";
-                    ws.Cells[rowInicial, 2].Value = "Documento";
-                    ws.Cells[rowInicial, 3].Value = "Nombre";
-                    ws.Cells[rowInicial, 4].Value = "Apellido";
-                    ws.Cells[rowInicial, 5].Value = "Empresa";
-                    ws.Cells[rowInicial, 6].Value = "Seleccionado";
+                        ws.Cells[rowInicial, 1].Value = "Id";
+                        ws.Cells[rowInicial, 2].Value = "Documento";
+                        ws.Cells[rowInicial, 3].Value = "Nombre";
+                        ws.Cells[rowInicial, 4].Value = "Apellido";
+                        ws.Cells[rowInicial, 5].Value = "Empresa";
+                        ws.Cells[rowInicial, 6].Value = "Seleccionado";
 
-                    foreach (var capacitadosIdsParaUnificar in gruposCapacitadosIdsParaUnificar)
-                    {
-                        List<Capacitado> capacitadosParaUnificar = new List<Capacitado>();
-
-                        foreach (var capacitadoId in capacitadosIdsParaUnificar)
+                        foreach (var capacitadosIdsParaUnificar in gruposCapacitadosIdsParaUnificar)
                         {
-                            var capacitado = db.Capacitados.Find(capacitadoId);
-                            capacitadosParaUnificar.Add(capacitado);
-                        }
+                            List<Capacitado> capacitadosParaUnificar = new List<Capacitado>();
 
-                        int? posicionCapacitadoBase = seleccionarPosicionCapacitadoBase(capacitadosParaUnificar);
-                        int j = 0;
-
-                        foreach (var c in capacitadosParaUnificar)
-                        {
-                            ws.Cells[i, 1].Value = c.CapacitadoID;
-                            ws.Cells[i, 2].Value = c.DocumentoCompleto;
-                            ws.Cells[i, 3].Value = c.Nombre;
-                            ws.Cells[i, 4].Value = c.Apellido;
-                            ws.Cells[i, 5].Value = c.Empresa.NombreFantasia;
-
-                            if (posicionCapacitadoBase != null)
+                            foreach (var capacitadoId in capacitadosIdsParaUnificar)
                             {
-                                if (j == posicionCapacitadoBase)
-                                    ws.Cells[i, 6].Value = "X";
+                                var capacitado = db.Capacitados.Find(capacitadoId);
+                                capacitadosParaUnificar.Add(capacitado);
                             }
 
-                            j++;
-                            i++;
+                            int? posicionCapacitadoBase = seleccionarPosicionCapacitadoBase(capacitadosParaUnificar);
+                            int j = 0;
+
+                            foreach (var c in capacitadosParaUnificar)
+                            {
+                                ws.Cells[i, 1].Value = c.CapacitadoID;
+                                ws.Cells[i, 2].Value = c.DocumentoCompleto;
+                                ws.Cells[i, 3].Value = c.Nombre;
+                                ws.Cells[i, 4].Value = c.Apellido;
+                                ws.Cells[i, 5].Value = c.Empresa.NombreFantasia;
+
+                                if (posicionCapacitadoBase != null)
+                                {
+                                    if (j == posicionCapacitadoBase)
+                                        ws.Cells[i, 6].Value = "X";
+                                }
+
+                                j++;
+                                i++;
+                            }
+
+                            if (posicionCapacitadoBase == null)
+                            {
+                                ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                                ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Fill.BackgroundColor.SetColor(Color.Salmon);
+                            }
+
+                            ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
                         }
 
-                        if (posicionCapacitadoBase == null)
-                        {
-                            ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                            ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Fill.BackgroundColor.SetColor(Color.Salmon);
-                        }
+                        ws.Cells[ws.Dimension.Address].AutoFitColumns();
 
-                        ws.Cells[i - capacitadosParaUnificar.Count, 1, i - 1, 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                        var stream = new MemoryStream();
+                        package.SaveAs(stream);
+
+                        string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                        stream.Position = 0;
+                        return File(stream, contentType, "UnificarCapacitados.xlsx");
                     }
-
-                    ws.Cells[ws.Dimension.Address].AutoFitColumns();
-
-                    var stream = new MemoryStream();
-                    package.SaveAs(stream);
-
-                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-                    stream.Position = 0;
-                    return File(stream, contentType, "UnificarCapacitados.xlsx");
                 }
-            } 
+            }
 
             return View();
         }
@@ -809,6 +856,19 @@ namespace Cursos.Controllers
         private string quitarTildes(string textoOriginal)
         {
             return textoOriginal.Replace("Á", "A").Replace("É", "E").Replace("Í", "I").Replace("Ó", "O").Replace("Ú", "U");
+        }
+
+        private void UnificarCapacitados(Capacitado capacitadoBase, List<Capacitado> capacitadosAEliminar)
+        {
+            foreach (var ce in capacitadosAEliminar)
+            {
+                foreach (var r in ce.RegistrosCapacitacion)
+                {
+                    capacitadoBase.RegistrosCapacitacion.Add(r);
+                }
+
+                db.Capacitados.Remove(ce);
+            }
         }
 
         private Jornada obtenerNuevaJornada(RegistroCapacitacion r, Curso cursoRF, out bool jornadaCreada, ref List<Jornada> jornadasCreadas)
