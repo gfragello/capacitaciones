@@ -628,6 +628,75 @@ namespace Cursos.Controllers
             return View();
         }
 
+        public ActionResult ActualizarFechasRF()
+        {
+            return View("ActualizarFechasRF");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ActualizarFechasRF(FormCollection formCollection)
+        {
+            bool actualizarDB;
+            Boolean.TryParse(Request["actualizarDB"], out actualizarDB);
+
+            var registrosRF = db.RegistroCapacitacion.Where(r => r.Jornada.CursoId == 2).ToList();
+
+            if (actualizarDB)
+            {
+                foreach (var r in registrosRF)
+                {
+                    r.FechaVencimiento = ObtenerUltimoDiaAnio(r.Jornada.Fecha);
+                }
+
+                db.SaveChanges();
+            }
+            else
+            {
+                using (ExcelPackage package = new ExcelPackage())
+                {
+                    var ws = package.Workbook.Worksheets.Add("Capacitados");
+
+                    const int rowInicial = 1;
+                    int i = rowInicial + 1;
+
+                    ws.Cells[rowInicial, 1].Value = "Capacitado";
+                    ws.Cells[rowInicial, 2].Value = "Documento";
+                    ws.Cells[rowInicial, 4].Value = "Jornada";
+                    ws.Cells[rowInicial, 5].Value = "Nueva fecha de vencimiento";
+
+                    foreach (var r in registrosRF)
+                    {
+                        r.FechaVencimiento = ObtenerUltimoDiaAnio(r.Jornada.Fecha);
+
+                        ws.Cells[i, 1].Value = r.Capacitado.NombreCompleto;
+                        ws.Cells[i, 2].Value = r.Capacitado.DocumentoCompleto;
+                        ws.Cells[i, 4].Value = r.Jornada.JornadaIdentificacionCompleta;
+                        ws.Cells[i, 5].Value = r.FechaVencimiento.ToShortDateString();
+
+                        i++;
+                    }
+
+                    ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                    var stream = new MemoryStream();
+                    package.SaveAs(stream);
+
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    stream.Position = 0;
+                    return File(stream, contentType, "RegistrosRFActualizados.xlsx");
+                }
+            }
+
+            return View();
+        }
+
+        private DateTime ObtenerUltimoDiaAnio(DateTime fechaVencimientoActual)
+        {
+            return new DateTime(fechaVencimientoActual.Year, 12, 31);
+        }
+
         public ActionResult UnificarCedulasRepetidas()
         {
             return View("UnificarCedulasRepetidas");

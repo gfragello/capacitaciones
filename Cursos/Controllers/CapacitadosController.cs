@@ -319,5 +319,20 @@ namespace Cursos.Controllers
                 return File(stream, contentType, fileName);
             }
         }
+
+        public ActionResult ObtenerCapacitadoIDPorDocumento(string documento)
+        {
+            return Json(BuscarCapacitadoIDPorDocumento(documento), JsonRequestBehavior.AllowGet);
+        }
+
+        public int BuscarCapacitadoIDPorDocumento(string documento)
+        {
+            var capacitado = db.Capacitados.Where(c => c.Documento == documento).FirstOrDefault();
+
+            if (capacitado != null)
+                return capacitado.CapacitadoID;
+            else
+                return -1;
+        }
     }
 }

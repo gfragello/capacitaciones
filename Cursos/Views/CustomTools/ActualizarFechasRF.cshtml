@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewBag.Title = "Actualizar Fecha de Vencimiento de Registros RF";
+}
+
+<h2>Actualizar Fecha de Vencimiento de Registros RF</h2>
+<hr />
+
+@using (Html.BeginForm("ActualizarFechasRF", "CustomTools", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <table>
+        <tr>
+            <td><input type="submit" name="Submit" value="Actualizar Registros RF Migrados" /></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" name="actualizarDB" value="true"> Actualizar Base de Datos</td>
+        </tr>
+    </table>
+}
+
