@@ -55,7 +55,7 @@ namespace Cursos.Models
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Contraseña")]
         public string Password { get; set; }
 
         [Display(Name = "No cerrar sesión")]
