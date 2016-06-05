@@ -39,5 +39,7 @@ namespace Cursos.Models
         public string Email { get; set; }
 
         public virtual List<Capacitado> Capacitados { get; set; }
+
+        public virtual List<EmpresaUsuario> Usuarios { get; set; }
     }
 }

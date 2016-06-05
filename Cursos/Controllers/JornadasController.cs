@@ -13,7 +13,7 @@ using System.Drawing;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Users = "guillefra@gmail.com,alejandro.lacruz@gmail.com")]
+    [Authorize(Roles = "Administrador")]
     public class JornadasController : Controller
     {
         private CursosDbContext db = new CursosDbContext();

@@ -257,6 +257,10 @@
     <Compile Include="Migrations\201604210229118_Capacitado_FechaCumpelanos.Designer.cs">
       <DependentUpon>201604210229118_Capacitado_FechaCumpelanos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606042150443_Empresa_Usuarios.cs" />
+    <Compile Include="Migrations\201606042150443_Empresa_Usuarios.Designer.cs">
+      <DependentUpon>201606042150443_Empresa_Usuarios.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -265,6 +269,7 @@
     <Compile Include="Models\CursosDbContext.cs" />
     <Compile Include="Models\Departamento.cs" />
     <Compile Include="Models\Empresa.cs" />
+    <Compile Include="Models\EmpresaUsuario.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Instructor.cs" />
     <Compile Include="Models\Jornada.cs" />
@@ -432,6 +437,7 @@
     <Content Include="Views\CustomTools\ActualizarRegistrosRF.cshtml" />
     <Content Include="Views\CustomTools\UnificarCedulasRepetidas.cshtml" />
     <Content Include="Views\CustomTools\ActualizarFechasRF.cshtml" />
+    <Content Include="Views\Capacitados\ConsultaDocumento.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -488,6 +494,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604210229118_Capacitado_FechaCumpelanos.resx">
       <DependentUpon>201604210229118_Capacitado_FechaCumpelanos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606042150443_Empresa_Usuarios.resx">
+      <DependentUpon>201606042150443_Empresa_Usuarios.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

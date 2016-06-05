@@ -11,7 +11,7 @@ using PagedList;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Users = "guillefra@gmail.com,alejandro.lacruz@gmail.com")]
+    [Authorize(Roles = "Administrador")]
     public class EmpresasController : Controller
     {
         private CursosDbContext db = new CursosDbContext();

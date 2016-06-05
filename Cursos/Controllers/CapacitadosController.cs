@@ -14,6 +14,7 @@ using System.Drawing;
 
 namespace Cursos.Controllers
 {
+    [Authorize(Roles = "Administrador,ConsultaEmpresa")]
     public class CapacitadosController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -64,9 +65,23 @@ namespace Cursos.Controllers
 
             ViewBag.CurrentCursoID = CursoID;
 
-            List<Empresa> empresasDD = db.Empresas.OrderBy(e => e.NombreFantasia).ToList();
-            empresasDD.Insert(0, new Empresa { EmpresaID = -1, NombreFantasia = "Todas" });
-            ViewBag.EmpresaID = new SelectList(empresasDD, "EmpresaID", "NombreFantasia", EmpresaID);
+            List<Empresa> empresasDD;
+
+            if (User.IsInRole("ConsultaEmpresa"))
+            {
+                var empresaUsuario = db.EmpresasUsuarios.Where(eu => eu.Usuario == User.Identity.Name).FirstOrDefault();
+
+                empresasDD = db.Empresas.Where(e => e.EmpresaID == empresaUsuario.EmpresaID).ToList();
+                EmpresaID = empresaUsuario.EmpresaID;
+
+                ViewBag.EmpresaID = new SelectList(empresasDD, "EmpresaID", "NombreFantasia", EmpresaID);
+            }
+            else
+            {
+                empresasDD = db.Empresas.OrderBy(e => e.NombreFantasia).ToList();
+                empresasDD.Insert(0, new Empresa { EmpresaID = -1, NombreFantasia = "Todas" });
+                ViewBag.EmpresaID = new SelectList(empresasDD, "EmpresaID", "NombreFantasia", EmpresaID);
+            }
 
             List<Curso> cursosDD = db.Cursos.OrderBy(c => c.Descripcion).ToList();
             cursosDD.Insert(0, new Curso { CursoID = -1, Descripcion = "Todos" });
@@ -104,7 +119,29 @@ namespace Cursos.Controllers
                 return ExportDataExcel(capacitados.ToList(), CursoID);
         }
 
+        [Authorize(Roles = "Administrador,ConsultaEmpresa")]
+        public ActionResult ConsultaDocumento(string documento)
+        {
+            if (!string.IsNullOrEmpty(documento))
+            {
+                int pageSize = 100;
+                int pageNumber = 1;
+
+                var capacitados = db.Capacitados.Where(c => c.Documento == documento).Include(c => c.RegistrosCapacitacion);
+                ViewBag.Capacitados = capacitados.OrderBy(c => c.Apellido).ToPagedList(pageNumber, pageSize);
+            }
+            else
+            {
+                ViewBag.Capacitados = new List<Capacitado>().ToPagedList(1,1);
+            }
+
+            ViewBag.Cursos = db.Cursos.OrderBy(c => c.Descripcion).ToList();
+
+            return View();
+        }
+
         // GET: Capacitados/Details/5
+        [Authorize(Roles = "Administrador,ConsultaEmpresa")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -123,7 +160,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Create
-        [Authorize(Users = "guillefra@gmail.com,alejandro.lacruz@gmail.com")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Create()
         {
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
@@ -154,7 +191,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Edit/5
-        [Authorize(Users = "guillefra@gmail.com,alejandro.lacruz@gmail.com")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -190,7 +227,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Delete/5
-        [Authorize(Users = "guillefra@gmail.com,alejandro.lacruz@gmail.com")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Delete(int? id)
         {
             if (id == null)

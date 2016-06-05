@@ -1,0 +1,42 @@
+﻿@model PagedList.IPagedList<Cursos.Models.Capacitado>
+
+@{
+    ViewBag.Title = "Consulta por documento";
+}
+
+<h4>Consulta por documento</h4>
+
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td>
+
+                <div class="form-inline" style="margin:5px 3px;">
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Documento"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                </div>
+            </td>
+            <td width="1%">
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <input type="submit" value="Buscar" />
+                    </div>
+                </div>
+            </td>
+
+        </tr>
+    </table>
+}
+
+<br />
+
+@Html.Partial("_ListCapacitadosPartial", (PagedList.IPagedList<Cursos.Models.Capacitado>)ViewBag.Capacitados)

@@ -20,7 +20,7 @@
                 @Html.ActionLink("Registro y control de capacitaciones", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                @if (User.Identity.IsAuthenticated)
+                @if (User.IsInRole("Administrador"))
                 {
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
@@ -52,6 +52,13 @@
                             <li><a href="@Url.Action("Index", "RegistrosCapacitacion")">Registros de Capacitación</a></li>
                         </ul>
                     </li>
+                </ul>
+                }
+                @if (User.IsInRole("ConsultaEmpresa"))
+                {
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Consulta por documento", "ConsultaDocumento", "Capacitados")</li>
                 </ul>
                 }
                 @Html.Partial("_LoginPartial")

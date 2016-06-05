@@ -47,5 +47,7 @@ namespace Cursos.Models
         public DbSet<TipoDocumento> TiposDocumento { get; set; }
 
         public DbSet<Departamento> Departamentos { get; set; }
+
+        public DbSet<EmpresaUsuario> EmpresasUsuarios { get; set; }
     }
 }

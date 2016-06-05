@@ -10,7 +10,7 @@ using Cursos.Models;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Users = "guillefra@gmail.com,alejandro.lacruz@gmail.com")]
+    [Authorize(Roles = "Administrador")]
     public class InstructoresController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
