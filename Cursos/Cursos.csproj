@@ -196,6 +196,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
+    <Compile Include="Helpers\UsuarioHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Migrations\201602211431159_InitialCreate.cs" />
     <Compile Include="Migrations\201602211431159_InitialCreate.Designer.cs">
@@ -438,6 +439,7 @@
     <Content Include="Views\CustomTools\UnificarCedulasRepetidas.cshtml" />
     <Content Include="Views\CustomTools\ActualizarFechasRF.cshtml" />
     <Content Include="Views\Capacitados\ConsultaDocumento.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

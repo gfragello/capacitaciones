@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Cursos.Models.ApplicationUser>
+@using Cursos.Helpers;
+
+@{
+    ViewBag.Title = "Usuarios";
+}
+
+<h2>Usuarios</h2>
+
+<p>
+    @Html.ActionLink("Registar Nuevo", "Register")
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.Label("Usuario")
+        </th>
+        <th>
+            @Html.Label("Rol")
+        </th>
+        <th>
+            @Html.Label("Empresa")
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @UsuarioHelper.GetInstance().ObtenerRoleName(item.Roles.ElementAt(0).RoleId)
+            </td>
+            <td>
+                @UsuarioHelper.GetInstance().ObtenerNombreEmpresaAsociada(item.Email)
+            </td>
+        </tr>
+    }
+
+</table>
+
+

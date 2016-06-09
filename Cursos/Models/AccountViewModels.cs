@@ -79,6 +79,11 @@ namespace Cursos.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        public string RoleName { get; set; }
+
+        public int EmpresaID { get; set; }
     }
 
     public class ResetPasswordViewModel

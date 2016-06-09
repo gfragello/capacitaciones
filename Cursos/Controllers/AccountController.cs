@@ -18,6 +18,9 @@ namespace Cursos.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
+        private ApplicationDbContext db = new ApplicationDbContext();
+        private CursosDbContext dbcursos = new CursosDbContext();
+
         public AccountController()
         {
         }
@@ -26,6 +29,13 @@ namespace Cursos.Controllers
         {
             UserManager = userManager;
             SignInManager = signInManager;
+        }
+
+        public ActionResult Index()
+        {   
+            var users = db.Users.OrderBy(o => o.Email).ToList();
+
+            return View(users);
         }
 
         public ApplicationSignInManager SignInManager
@@ -136,9 +146,12 @@ namespace Cursos.Controllers
 
         //
         // GET: /Account/Register
-        [AllowAnonymous]
+        [Authorize(Roles = "Administrador")]
         public ActionResult Register()
         {
+            ViewBag.RoleName = new SelectList(db.Roles.OrderBy(r => r.Name) .ToList(), "Name", "Name");
+            ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
+
             return View();
         }
 
@@ -155,16 +168,25 @@ namespace Cursos.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    await this.UserManager.AddToRoleAsync(user.Id, model.RoleName);
+
+                    if (model.RoleName == "ConsultaEmpresa")
+                        this.AsociarUsuarioAEmpresa(model.EmpresaID, model.Email);
+
+                    return RedirectToAction("Index");
                 }
+
+                ViewBag.RoleName = new SelectList(db.Roles.ToList(), "Name", "Name");
+                ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.ToList(), "EmpresaID", "NombreFantasia");
+
                 AddErrors(result);
             }
 
@@ -481,5 +503,14 @@ namespace Cursos.Controllers
             }
         }
         #endregion
+
+        private void AsociarUsuarioAEmpresa(int empresaID, string usuario)
+        {
+            EmpresaUsuario eu = new EmpresaUsuario { Usuario = usuario };
+
+            dbcursos.Empresas.Find(empresaID).Usuarios.Add(eu);
+            dbcursos.SaveChanges();
+        }
+
     }
 }
