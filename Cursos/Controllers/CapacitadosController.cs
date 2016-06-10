@@ -14,7 +14,7 @@ using System.Drawing;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,ConsultaEmpresa")]
+    [Authorize(Roles = "Administrador,ConsultaEmpresa,ConsultaGeneral")]
     public class CapacitadosController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -141,7 +141,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Details/5
-        [Authorize(Roles = "Administrador,ConsultaEmpresa")]
+        [Authorize(Roles = "Administrador,ConsultaEmpresa,ConsultaGeneral")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -269,17 +269,45 @@ namespace Cursos.Controllers
             {
                 var ws = package.Workbook.Worksheets.Add("Capacitados");
 
-                const int rowInicial = 1;
+                const int rowEncabezadoVencimientos = 1;
+                const int rowInicial = 2;
                 int i = rowInicial + 1;
                 
                 ws.Cells[rowInicial, 1].Value = "Apellido";
                 ws.Cells[rowInicial, 2].Value = "Nombre";
                 ws.Cells[rowInicial, 3].Value = "Documento";
                 ws.Cells[rowInicial, 4].Value = "Empresa";
-                ws.Cells[rowInicial, 5].Value = "Últimos cursos";
-                ws.Cells[rowInicial, 6].Value = "Instructor";
 
-                ws.Cells[rowInicial, 1, rowInicial, 6].Style.Font.Bold = true;
+                var colIinicioCursos = 5;
+                var j = colIinicioCursos;
+
+                List<Curso> cursos;
+
+                if (CursoID == -1)
+                    cursos = db.Cursos.OrderBy(cu => cu.Descripcion).ToList();
+                else
+                    cursos = db.Cursos.Where(cu => cu.CursoID == CursoID).ToList();
+
+                foreach (var curso in cursos)
+                {
+                    ws.Cells[rowInicial, j].Value = curso.Descripcion.Substring(0, 2);
+
+                    ws.Cells[rowInicial, j].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    ws.Cells[rowInicial, j].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws.Cells[rowInicial, j].Style.Fill.BackgroundColor.SetColor(Color.FromName(curso.ColorDeFondo));
+
+                    j++;
+                }
+
+                //sobre los cabezales de los cursos se pone el encabezado "Vencimientos"
+                ws.Cells[rowEncabezadoVencimientos, colIinicioCursos].Value = "Vencimientos";
+                ws.Cells[rowEncabezadoVencimientos, colIinicioCursos, rowEncabezadoVencimientos, j - 1].Merge = true;
+                ws.Cells[rowEncabezadoVencimientos, colIinicioCursos, rowEncabezadoVencimientos, j - 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                ws.Cells[rowEncabezadoVencimientos, colIinicioCursos, rowEncabezadoVencimientos, j - 1].Style.Font.Bold = true;
+
+                //se ponen en negrita los encabezados
+                ws.Cells[rowInicial, 1, rowInicial, j-1].Style.Font.Bold = true;
 
                 var bgColor = Color.White;
 
@@ -290,58 +318,46 @@ namespace Cursos.Controllers
                     ws.Cells[i, 3].Value = c.DocumentoCompleto;
                     ws.Cells[i, 4].Value = c.Empresa.NombreFantasia;
 
-                    var rowsToMerge = 0;
+                    j = colIinicioCursos;
 
-                    foreach (var r in c.UltimoRegistroCapacitacionPorCurso(CursoID))
+                    foreach (var curso in cursos)
                     {
-                        ws.Cells[i, 5].Value = r.Jornada.JornadaIdentificacionCompleta;
-                        ws.Cells[i, 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws.Cells[i, 5].Style.Fill.BackgroundColor.SetColor(Color.FromName(r.Jornada.Curso.ColorDeFondo));
-
-                        ws.Cells[i, 6].Value = r.Jornada.Instructor.NombreCompleto;
-                        ws.Cells[i, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws.Cells[i, 6].Style.Fill.BackgroundColor.SetColor(Color.FromName(r.Jornada.Curso.ColorDeFondo));
-
-                        rowsToMerge++;
-                        i++;
-                    }
-
-                    //se hace un merge para que los datos del capacitado abarquen los rows de los datos de los últimos cursos y para setear el background color
-                    if (rowsToMerge > 1)
-                    {
-                        var rowMergeStart = i - rowsToMerge;
-                        var rowMergeEnd = i - 1;
-
-                        for (int col = 1; col <= 4; col++)
+                        if (c.UltimoRegistroCapacitacionPorCurso(curso.CursoID).Count > 0)
                         {
-                            if (bgColor != Color.White) //blanco es el color del renglón por defecto, por lo que no es necesario hacer nada si corresponde ese color
+                            var r = c.UltimoRegistroCapacitacionPorCurso(curso.CursoID)[0];
+
+                            ws.Cells[i, j].Value = r.FechaVencimiento.ToShortDateString();
+
+                            if (r.FechaVencimiento < DateTime.Now) //si el regsitro ya está vencido
                             {
-                                ws.Cells[rowMergeStart, col, rowMergeEnd, col].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                                ws.Cells[rowMergeStart, col, rowMergeEnd, col].Style.Fill.BackgroundColor.SetColor(bgColor);
+                                ws.Cells[i, j].Style.Font.Color.SetColor(Color.Red);
+                                ws.Cells[i, j].Style.Font.Bold = true;
                             }
-
-                            ws.Cells[rowMergeStart, col, rowMergeEnd, col].Merge = true;
-                            ws.Cells[rowMergeStart, col, rowMergeEnd, col].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
                         }
-
-                        //se seleccionan las celdas con los datos del capacitado y las celdas con los registros de capacitación
-                        ws.Cells[rowMergeStart, 1, rowMergeEnd, 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                    }
-                    else //se selecciona el único renglón del capacitado para setear el background color.
-                    {
-                        if (bgColor != Color.White)
+                        else
                         {
-                            ws.Cells[i - 1, 1, i - 1, 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                            ws.Cells[i - 1, 1, i - 1, 4].Style.Fill.BackgroundColor.SetColor(bgColor);
+                            ws.Cells[i, j].Value = "-";
                         }
 
-                        ws.Cells[i - 1, 1, i - 1, 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                        ws.Cells[i, j].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i, j].Style.Fill.BackgroundColor.SetColor(Color.FromName(curso.ColorDeFondo));
+
+                        j++;
                     }
+
+                    //se seleccionan las columnas con datos del capacitado para setear el background color.
+                    if (bgColor != Color.White)
+                    {
+                        ws.Cells[i - 1, 1, i - 1, 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i - 1, 1, i - 1, 4].Style.Fill.BackgroundColor.SetColor(bgColor);
+                    }
+
+                    //se pone un borde alrededor del renglón del encabezado
+                    ws.Cells[i - 1, 1, i - 1, j-1].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
 
                     bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
 
-                    if (c.UltimoRegistroCapacitacionPorCurso(CursoID).Count() == 0)
-                        i++;
+                    i++;
                 }
 
                 ws.Cells[ws.Dimension.Address].AutoFitColumns();
