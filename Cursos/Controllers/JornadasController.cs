@@ -13,7 +13,7 @@ using System.Drawing;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,AdministradorExterno")]
     public class JornadasController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -64,8 +64,11 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                jornada.SetearAtributosControl();
+
                 db.Jornada.Add(jornada);
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
@@ -87,10 +90,18 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
-            ViewBag.InstructorId = new SelectList(db.Instructores, "InstructorID", "NombreCompleto", jornada.InstructorId);
-            ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
-            return View(jornada);
+
+            if (jornada.PuedeModificarse())
+            {
+                ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
+                ViewBag.InstructorId = new SelectList(db.Instructores, "InstructorID", "NombreCompleto", jornada.InstructorId);
+                ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
+                return View(jornada);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
         }
 
         // POST: Jornadas/Edit/5
@@ -102,8 +113,11 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                jornada.SetearAtributosControl();
+
                 db.Entry(jornada).State = EntityState.Modified;
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
             ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
@@ -124,7 +138,11 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            return View(jornada);
+
+            if (jornada.PuedeModificarse())
+                return View(jornada);
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
         // POST: Jornadas/Delete/5

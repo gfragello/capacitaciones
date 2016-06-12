@@ -9,7 +9,7 @@
     <h4>Capacitado</h4>
     <p>
         <a href="@Url.Action("Index") "><img src="@Url.Content("~/images/back.png")" title="Volver a la lista" /></a>
-        @if (User.Identity.IsAuthenticated)
+        @if (Model.PuedeModificarse())
         {
         @:&nbsp; &nbsp;
         <a href="@Url.Action("Edit", new { id = Model.CapacitadoID }) "><img src="@Url.Content("~/images/editar.png")" title="Editar" /></a>
@@ -17,6 +17,7 @@
         <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion.png")" title="Agregar Registro" /></a>
         }
     </p>
+    @Html.Partial("_DatosModificacionPartial", Model)
     <hr />
     <dl class="dl-horizontal">
         <dt>

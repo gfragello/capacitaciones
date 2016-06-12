@@ -14,7 +14,7 @@ using System.Drawing;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,ConsultaEmpresa,ConsultaGeneral")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral")]
     public class CapacitadosController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -141,7 +141,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Details/5
-        [Authorize(Roles = "Administrador,ConsultaEmpresa,ConsultaGeneral")]
+        [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -160,7 +160,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Create
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,AdministradorExterno")]
         public ActionResult Create()
         {
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
@@ -177,10 +177,11 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                capacitado.SetearAtributosControl();
+
                 db.Capacitados.Add(capacitado);
                 db.SaveChanges();
-                //return RedirectToAction("Index");
-                //return View("Details", capacitado);
+
                 return RedirectToAction("Details", "Capacitados", new { id = capacitado.CapacitadoID });
             }
 
@@ -191,7 +192,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Edit/5
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,AdministradorExterno")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -203,9 +204,17 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
-            ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
-            return View(capacitado);
+
+            if (capacitado.PuedeModificarse())
+            {
+                ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
+                ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
+                return View(capacitado);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
         }
 
         // POST: Capacitados/Edit/5
@@ -217,6 +226,8 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                capacitado.SetearAtributosControl();
+
                 db.Entry(capacitado).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -227,7 +238,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Delete/5
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador,AdministradorExterno")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -239,7 +250,11 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            return View(capacitado);
+            
+            if (capacitado.PuedeModificarse())   
+                return View(capacitado);
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
         // POST: Capacitados/Delete/5

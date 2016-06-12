@@ -9,7 +9,7 @@ using System.Web.Mvc;
 namespace Cursos.Models
 {
     [Table("Capacitados")]
-    public class Capacitado
+    public class Capacitado : ElementoAccesoControlado
     {
         public int CapacitadoID { get; set; }
 

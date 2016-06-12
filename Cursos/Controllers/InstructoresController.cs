@@ -10,7 +10,7 @@ using Cursos.Models;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,AdministradorExterno")]
     public class InstructoresController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -51,8 +51,11 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                instructor.SetearAtributosControl();
+
                 db.Instructores.Add(instructor);
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
@@ -71,7 +74,11 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            return View(instructor);
+
+            if (instructor.PuedeModificarse())
+                return View(instructor);
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
         // POST: Instructores/Edit/5
@@ -83,6 +90,8 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                instructor.SetearAtributosControl();
+
                 db.Entry(instructor).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -102,7 +111,11 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            return View(instructor);
+
+            if (instructor.PuedeModificarse())
+                return View(instructor);
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
         // POST: Instructores/Delete/5

@@ -8,7 +8,7 @@ using System.Web;
 namespace Cursos.Models
 {
     [Table("RegistrosCapacitaciones")]
-    public class RegistroCapacitacion
+    public class RegistroCapacitacion : ElementoAccesoControlado
     {
         //CONS: Acalarale a Alejandro que fue necesario cambiar el nombre de esta tabla
         //CONS: Consultar si durante la prueba de la etapa 1Alejandro quiere tener acceso a la base de datos a través de un ciente

@@ -8,7 +8,7 @@ using System.Web;
 namespace Cursos.Models
 {
     [Table("Instructores")]
-    public class Instructor
+    public class Instructor : ElementoAccesoControlado
     {
         public int InstructorID { get; set; }
 

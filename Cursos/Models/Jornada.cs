@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Cursos.Models
 {
-    public class Jornada
+    public class Jornada : ElementoAccesoControlado
     {
         public int JornadaID { get; set; }
 

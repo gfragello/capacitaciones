@@ -20,7 +20,7 @@
 <h4>Capacitados</h4>
 
 <p>
-    @if (User.IsInRole("Administrador"))
+    @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
     {
         @*<a href="@Url.Action("Create") "><img src="@Url.Content("~/images/capacitados.png")" title="Nuevo Capacitado" /></a>*@
         @Html.ActionLink("Crear nuevo", "Create")
