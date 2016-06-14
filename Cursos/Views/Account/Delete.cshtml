@@ -1,0 +1,48 @@
+﻿@model Cursos.Models.ApplicationUser
+@using Cursos.Helpers;
+
+@{
+    ViewBag.Title = "Eliminar usuario";
+}
+
+<h3 style="color: red">¡Atención! Una vez eliminado el usuario no podrá acceder a la aplicación.</h3>
+<hr />
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.Label("Usuario")
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        <dt>
+            @Html.Label("Rol")
+        </dt>
+
+        <dd>
+            @*UsuarioHelper.GetInstance().ObtenerRoleName(model.Roles.ElementAt(0).RoleId)*@
+        </dd>
+
+        <dt>
+            @Html.Label("Empresa")
+        </dt>
+
+        <dd>
+            @*Html.DisplayFor(model => UsuarioHelper.GetInstance().ObtenerNombreEmpresaAsociada(model.Email))*@
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
+

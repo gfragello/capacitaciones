@@ -55,6 +55,31 @@
                     </li>
                 </ul>
                 }
+                @if (User.IsInRole("AdministradorExterno"))
+                {
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Mantenimiento
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="@Url.Action("Index", "Instructores")">Instructores</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Funcionalidades
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="@Url.Action("Index", "Capacitados")">Capacitados</a></li>
+                                <li><a href="@Url.Action("Index", "Jornadas")">Jornadas</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                }
                 @if (User.IsInRole("ConsultaEmpresa"))
                 {
                 <ul class="nav navbar-nav">

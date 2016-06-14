@@ -450,6 +450,7 @@
     <Content Include="Views\Capacitados\ConsultaDocumento.cshtml" />
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Shared\_DatosModificacionPartial.cshtml" />
+    <Content Include="Views\Account\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

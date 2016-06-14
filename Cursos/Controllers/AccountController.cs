@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Cursos.Models;
+using System.Net;
 
 namespace Cursos.Controllers
 {
@@ -36,6 +37,22 @@ namespace Cursos.Controllers
             var users = db.Users.OrderBy(o => o.Email).ToList();
 
             return View(users);
+        }
+
+        // GET: Empresas/Delete/5
+        [Authorize(Roles = "Administrador")]
+        public ActionResult Delete(String id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var usuario = db.Users.Where(u => u.Id == id).FirstOrDefault();
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+            return View(usuario);
         }
 
         public ApplicationSignInManager SignInManager

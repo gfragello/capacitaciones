@@ -59,9 +59,13 @@
             @Html.DisplayFor(modelItem => item.Activo)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.InstructorID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.InstructorID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.InstructorID })
+            <a href="@Url.Action("Details", "Instructores", new { id = item.InstructorID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
+            @if (item.PuedeModificarse())
+            {
+                @:&nbsp;|
+                <a href="@Url.Action("Edit", "Instructores", new { id = item.InstructorID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
+                <a href = "@Url.Action("Delete", "Instructores", new { id = item.InstructorID }) " ><img src = "@Url.Content("~/images/borrar_16x16.png")" title = "Borrar" /></a>
+            }
         </td>
     </tr>
 }

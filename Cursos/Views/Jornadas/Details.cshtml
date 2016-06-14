@@ -11,6 +11,7 @@
         &nbsp;&nbsp;
         @Html.ActionLink("Exportar a Excel", "Details", new { id = Model.JornadaID, exportarExcel = true })
     </p>
+    @Html.Partial("_DatosModificacionPartial", Model)
     <hr />
     <dl class="dl-horizontal">
         <dt>
