@@ -5,7 +5,7 @@
     ViewBag.Title = "Eliminar usuario";
 }
 
-<h3 style="color: red">¡Atención! Una vez eliminado el usuario no podrá acceder a la aplicación.</h3>
+<h3 style="color: red">¡Atención! Una vez eliminado, el usuario no podrá acceder a la aplicación.</h3>
 <hr />
 <div>
     <dl class="dl-horizontal">
@@ -22,7 +22,7 @@
         </dt>
 
         <dd>
-            @*UsuarioHelper.GetInstance().ObtenerRoleName(model.Roles.ElementAt(0).RoleId)*@
+            <label>@UsuarioHelper.GetInstance().ObtenerRoleName(Model.Roles.ElementAt(0).RoleId)</label>
         </dd>
 
         <dt>
@@ -30,7 +30,7 @@
         </dt>
 
         <dd>
-            @*Html.DisplayFor(model => UsuarioHelper.GetInstance().ObtenerNombreEmpresaAsociada(model.Email))*@
+            <label>@UsuarioHelper.GetInstance().ObtenerNombreEmpresaAsociada(Model.Email)</label>
         </dd>
 
     </dl>

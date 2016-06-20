@@ -45,12 +45,16 @@
             </td>
             <td>
                 <a href="@Url.Action("Details", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
+                @if (item.PuedenAgregarseRegistrosDeCapacitacion())
+                {
+                    @:&nbsp;|
+                    <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = item.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion_16x16.png")" title="Agregar Registro" /></a>
+                }
                 @if (item.PuedeModificarse())
                 {
                     @:&nbsp;|
                     <a href="@Url.Action("Edit", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
-                    <a href="@Url.Action("Delete", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>@:&nbsp;|
-                    <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = item.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion_16x16.png")" title="Agregar Registro" /></a>
+                    <a href="@Url.Action("Delete", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
                 }
             </td>
                 @foreach (Curso c in ViewBag.Cursos)

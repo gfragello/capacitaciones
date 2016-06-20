@@ -22,6 +22,7 @@
         <th>
             @Html.Label("Empresa")
         </th>
+        <th></th>
     </tr>
 
     @foreach (var item in Model)
@@ -35,6 +36,10 @@
             </td>
             <td>
                 @UsuarioHelper.GetInstance().ObtenerNombreEmpresaAsociada(item.Email)
+            </td>
+            <td>
+                <a href="@Url.Action("Edit", "Account", new { id = item.Id }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>
+                <a href="@Url.Action("Delete", "Account", new { id = item.Id }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
             </td>
         </tr>
     }

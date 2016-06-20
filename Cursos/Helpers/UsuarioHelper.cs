@@ -38,5 +38,15 @@ namespace Cursos.Helpers
                 return String.Empty;
         }
 
+        public Empresa ObtenerEmpresaAsociada(string username)
+        {
+            var empresausuario = dbcursos.EmpresasUsuarios.Where(eu => eu.Usuario == username).FirstOrDefault();
+
+            if (empresausuario != null)
+                return empresausuario.Empresa;
+
+            return empresausuario != null ? empresausuario.Empresa : null;
+        }
+
     }
 }

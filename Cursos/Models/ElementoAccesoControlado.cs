@@ -33,5 +33,10 @@ namespace Cursos.Models
 
             return false;
         }
+
+        public bool PuedenAgregarseRegistrosDeCapacitacion()
+        {
+            return HttpContext.Current.User.IsInRole("Administrador") || HttpContext.Current.User.IsInRole("AdministradorExterno") ? true : false;
+        }
     }
 }

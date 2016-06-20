@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Cursos.Models;
 using System.Net;
+using Cursos.Helpers;
 
 namespace Cursos.Controllers
 {
@@ -26,17 +27,91 @@ namespace Cursos.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
         }
 
         public ActionResult Index()
-        {   
+        {
             var users = db.Users.OrderBy(o => o.Email).ToList();
 
             return View(users);
+        }
+
+        // GET: Account/Edit/5
+        [Authorize(Roles = "Administrador")]
+        public ActionResult Edit(String id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var usuario = db.Users.Where(u => u.Id == id).FirstOrDefault();
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            string rolActual = UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId);
+            ViewBag.RoleName = new SelectList(db.Roles.OrderBy(r => r.Name).ToList(), "Name", "Name", rolActual);
+
+            if (rolActual == "ConsultaEmpresa")
+                ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(usuario.UserName).EmpresaID);
+            else
+                ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
+
+            return View(usuario);
+        }
+
+        // POST: Account/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit()
+        {
+            string id = Request["Id"];
+            string roleNameEditado = Request["RoleName"];
+            Empresa empresaEditada = dbcursos.Empresas.Find(int.Parse(Request["EmpresaID"]));
+
+            var usuario = db.Users.Where(u => u.Id == id).FirstOrDefault();
+
+            string roleNameActual = UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId);
+            var empresaActual = UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(usuario.UserName);
+
+            bool quitarAsociacionEmpresa = false;
+
+            //si se modificó el rol del usuario
+            if (roleNameActual != roleNameEditado)
+            {
+                if (roleNameActual == "ConsultaEmpresa") //si antes el usuario estaba asociado a una empresa, se debe remover la asociación a esta empresa
+                    quitarAsociacionEmpresa = true;
+
+                this.UserManager.RemoveFromRole(id, roleNameActual);
+                await this.UserManager.AddToRoleAsync(id, roleNameEditado);
+            }
+
+            int empresaActualID = -1;
+            if (empresaActual != null)
+                empresaActualID = empresaActual.EmpresaID;
+
+            int empresaEditadaID = -1;
+            if (empresaEditada != null)
+                empresaEditadaID = empresaEditada.EmpresaID;
+
+            //si el usuario estaba asociado a una empresa y se cambió esa empresa, o si tenía el rol "ConsultaEmpresa" y cambió por otro 
+            if ((empresaActualID != -1 && empresaActualID != empresaEditadaID) || quitarAsociacionEmpresa)
+                this.RemoverAsociacionUsuarioAEmpresa(usuario.UserName);
+
+            if (roleNameEditado == "ConsultaEmpresa")
+                if (empresaActualID != empresaEditadaID)
+                    this.AsociarUsuarioAEmpresa(empresaEditadaID, usuario.UserName);
+
+            dbcursos.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
         // GET: Empresas/Delete/5
@@ -55,15 +130,31 @@ namespace Cursos.Controllers
             return View(usuario);
         }
 
+        // POST: Empresas/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(String id)
+        {
+            var usuario = db.Users.Where(u => u.Id == id).FirstOrDefault();
+
+            //si era un usuario de tipo ConsultaEmpresa se debe remover la asociación con la empresa
+            if (UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId) == "ConsultaEmpresa")
+                RemoverAsociacionUsuarioAEmpresa(usuario.UserName);
+
+            db.Users.Remove(usuario);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
         public ApplicationSignInManager SignInManager
         {
             get
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -147,7 +238,7 @@ namespace Cursos.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -166,7 +257,7 @@ namespace Cursos.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult Register()
         {
-            ViewBag.RoleName = new SelectList(db.Roles.OrderBy(r => r.Name) .ToList(), "Name", "Name");
+            ViewBag.RoleName = new SelectList(db.Roles.OrderBy(r => r.Name).ToList(), "Name", "Name");
             ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
 
             return View();
@@ -529,5 +620,11 @@ namespace Cursos.Controllers
             dbcursos.SaveChanges();
         }
 
+        private void RemoverAsociacionUsuarioAEmpresa(string usuario)
+        {
+            var eu = dbcursos.EmpresasUsuarios.Where(eus => eus.Usuario == usuario).FirstOrDefault();
+            dbcursos.EmpresasUsuarios.Remove(eu);
+            dbcursos.SaveChanges();
+        }
     }
 }

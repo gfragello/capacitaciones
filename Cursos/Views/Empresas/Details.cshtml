@@ -1,5 +1,6 @@
 ﻿@model Cursos.Models.Empresa
 @using PagedList.Mvc;
+@using Cursos.Models;
 
 @{
     ViewBag.Title = "Details";
@@ -75,7 +76,23 @@
 
     </dl>
 </div>
+@if (Model.Usuarios.Count > 0)
+{
+<hr />
 
+<h4>Usuarios</h4>
+
+<table class="table">
+    @foreach (EmpresaUsuario eu in Model.Usuarios)
+    {
+        <tr>
+            <td>
+                <label>@eu.Usuario</label>
+            </td>
+        </tr>
+    }
+</table>
+}
 <hr />
 
 <h4>Capacitados</h4>
