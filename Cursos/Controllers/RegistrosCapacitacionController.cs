@@ -114,6 +114,8 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                registroCapacitacion.SetearAtributosControl();
+
                 db.RegistroCapacitacion.Add(registroCapacitacion);
                 db.SaveChanges();
                 //return RedirectToAction("Index");
@@ -181,6 +183,8 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                registroCapacitacion.SetearAtributosControl();
+
                 db.Entry(registroCapacitacion).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
