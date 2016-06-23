@@ -13,9 +13,13 @@
         {
         @:&nbsp; &nbsp;
         <a href="@Url.Action("Edit", new { id = Model.CapacitadoID }) "><img src="@Url.Content("~/images/editar.png")" title="Editar" /></a>
-        @:&nbsp;&nbsp;
-        <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion.png")" title="Agregar Registro" /></a>
         }
+        @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
+        {
+            @:&nbsp;&nbsp;
+            <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion.png")" title="Agregar Registro" /></a>
+        }
+        
     </p>
     @Html.Partial("_DatosModificacionPartial", Model)
     <hr />
@@ -115,11 +119,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Aprobado)
             </td>
-            @if (User.Identity.IsAuthenticated)
+            @if (item.PuedeModificarse())
             {
                 <td>
                     <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
                 </td>
+            }
+            else
+            {
+                <td>&nbsp;</td>
             }
         </tr>
     }

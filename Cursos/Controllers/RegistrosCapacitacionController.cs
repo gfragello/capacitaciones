@@ -206,7 +206,10 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            return View(registroCapacitacion);
+            if (registroCapacitacion.PuedeModificarse())
+                return View(registroCapacitacion);
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
         // POST: RegistrosCapacitacion/Delete/5
