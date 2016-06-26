@@ -285,6 +285,7 @@
     <Compile Include="Models\Jornada.cs" />
     <Compile Include="Models\Lugar.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\MultipleMailValidator.cs" />
     <Compile Include="Models\RegistroCapacitacion.cs" />
     <Compile Include="Models\TipoDocumento.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -338,6 +339,7 @@
     <Content Include="images\editar.png" />
     <Content Include="images\editar_16x16.png" />
     <Content Include="images\empresas.png" />
+    <Content Include="images\forzarContrasena_16x16.png" />
     <Content Include="images\porVencer.png" />
     <Content Include="images\porVencer_20x20.png" />
     <Content Include="images\registroCapacitacion.png" />
@@ -452,6 +454,7 @@
     <Content Include="Views\Shared\_DatosModificacionPartial.cshtml" />
     <Content Include="Views\Account\Delete.cshtml" />
     <Content Include="Views\Account\Edit.cshtml" />
+    <Content Include="Views\Account\ForcePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -11,6 +11,10 @@ using Microsoft.Owin.Security;
 using Cursos.Models;
 using System.Net;
 using Cursos.Helpers;
+using System.Collections.Generic;
+using Microsoft.AspNet.Identity.EntityFramework;
+using PagedList;
+using System.Data.Entity;
 
 namespace Cursos.Controllers
 {
@@ -33,11 +37,76 @@ namespace Cursos.Controllers
             SignInManager = signInManager;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(string currentNombreUsuario, string nombreUsuario,
+                                  int? currentEmpresaID, int? EmpresaID, 
+                                  string currentRoleId, string RoleId,
+                                  int? page)
         {
-            var users = db.Users.OrderBy(o => o.Email).ToList();
+            if (nombreUsuario != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
+                page = 1;
+            else
+                nombreUsuario = currentNombreUsuario;
 
-            return View(users);
+            ViewBag.CurrentNombreUsuario = nombreUsuario;
+
+            if (EmpresaID != null)
+                page = 1;
+            else
+            {
+                if (currentEmpresaID == null)
+                    currentEmpresaID = -1;
+
+                EmpresaID = currentEmpresaID;
+            }
+
+            ViewBag.CurrentEmpresaID = EmpresaID;
+
+            if (RoleId != null)
+                page = 1;
+            else
+            {
+                if (currentRoleId == null)
+                    currentRoleId = string.Empty;
+
+                RoleId = currentRoleId;
+            }
+
+            ViewBag.CurrentRoleId = RoleId;
+
+            var users = (IQueryable<ApplicationUser>) db.Users;
+
+            List<IdentityRole> rolesDD = db.Roles.OrderBy(r => r.Name).ToList();
+            rolesDD.Insert(0, new IdentityRole { Id = string.Empty, Name = "Todas" } );
+            ViewBag.RoleId = new SelectList(rolesDD, "Id", "Name", RoleId);
+
+            List<Empresa> empresasDD = dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList();
+            empresasDD.Insert(0, new Empresa { EmpresaID = -1, NombreFantasia = "Todas" });
+            ViewBag.EmpresaID = new SelectList(empresasDD, "EmpresaID", "NombreFantasia", EmpresaID);
+
+            if (!String.IsNullOrEmpty(nombreUsuario))
+                users = users.Where(u => u.UserName.Contains(nombreUsuario));
+
+            if (EmpresaID != -1 && EmpresaID != null)
+            {
+                var usuariosEmpresa = new List<String>();
+
+                foreach (var empresaUsuario in dbcursos.EmpresasUsuarios.Where(eu => eu.EmpresaID == EmpresaID))
+                {
+                    usuariosEmpresa.Add(empresaUsuario.Usuario);
+                }
+
+                users = users.Where(u => usuariosEmpresa.Contains(u.UserName));
+            }
+
+            if (!String.IsNullOrEmpty(RoleId))
+                users = users.Where(u => u.Roles.Select(r => r.RoleId).Contains(RoleId));
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            users = users.OrderBy(o => o.Email);
+
+            return View(users.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Account/Edit/5
@@ -400,6 +469,57 @@ namespace Cursos.Controllers
         {
             return View();
         }
+
+        //-----------------------
+
+        // GET: /Account/ForcePassword/123456
+        [AllowAnonymous]
+        public ActionResult ForcePassword(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var usuario = db.Users.Where(u => u.Id == id).FirstOrDefault();
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(usuario);
+        }
+
+        //
+        // POST: /Account/ForcePassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult ForcePassword()
+        {
+            string id = Request["Id"];
+            string nuevaPassword = Request["NuevaPassword"];
+
+            var usuario = db.Users.Where(u => u.Id == id).FirstOrDefault();
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
+            var result = UserManager.PasswordValidator.ValidateAsync(nuevaPassword).Result;
+
+            if (result.Succeeded)
+            {
+                UserManager.RemovePassword(id);
+                UserManager.AddPassword(id, nuevaPassword);
+
+                return RedirectToAction("Index", "Account");
+            }
+
+            AddErrors(result);
+            return View(usuario);
+        }
+
+        //-----------------------------
 
         //
         // POST: /Account/ExternalLogin

@@ -35,7 +35,8 @@ namespace Cursos.Models
         [Display(Name = "Código Postal")]
         public string CodigoPostal { get; set; }
 
-        [EmailAddress(ErrorMessage = "La dirección de Email ingresada no es válida")]
+        //[EmailAddress(ErrorMessage = "La dirección de Email ingresada no es válida")]
+        [MultipleMailValidator]
         public string Email { get; set; }
 
         public virtual List<Capacitado> Capacitados { get; set; }
