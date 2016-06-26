@@ -7,7 +7,7 @@ using System.Web;
 namespace Cursos.Models
 {
     //CONS: Consultar cuales son los valores obligatorio para esta y para el resto de las clases
-    public class Empresa
+    public class Empresa : ElementoAccesoControlado
     {
         public int EmpresaID { get; set; }
 

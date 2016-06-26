@@ -445,6 +445,64 @@ namespace Cursos.Controllers
 
         #endregion
 
+        #region Ingreso masivo email Empresas
+
+        public ActionResult IngresoMasivoEmailEmpresas()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IngresoMasivoEmailEmpresas(FormCollection formCollection)
+        {
+            /*
+                DateTime FechaCambioDuracion = new DateTime(2012, 1, 1);
+                int anioVencimiento;
+                DateTime fechaVencimiento;
+
+                foreach (var r in db.RegistroCapacitacion.ToList())
+                {
+                    if (r.Jornada.Fecha >= FechaCambioDuracion)
+                        anioVencimiento = r.Jornada.Fecha.Year + 3;
+                    else
+                        anioVencimiento = r.Jornada.Fecha.Year + 5;
+
+                    int mesVencimiento = r.Jornada.Fecha.Month;
+                    int diaVencimiento = r.Jornada.Fecha.Day;
+
+                    try
+                    {
+                        fechaVencimiento = new DateTime(anioVencimiento, mesVencimiento, diaVencimiento);
+                    }
+                    catch (Exception)
+                    {
+                        if (mesVencimiento == 2 && diaVencimiento == 29)
+                            diaVencimiento = 28;
+                        else
+                            throw;
+                    }
+
+                    try
+                    {
+                        fechaVencimiento = new DateTime(anioVencimiento, mesVencimiento, diaVencimiento);
+                    }
+                    catch (Exception)
+                    {
+
+                        throw;
+                    }
+
+                    r.FechaVencimiento = fechaVencimiento;
+                }
+
+                db.SaveChanges();
+            */
+            return View();
+        }
+
+        #endregion
+
         public ActionResult IniciarFechaVencimientoRegistros()
         {
             return View("IniciarFechaVencimientoRegistros");

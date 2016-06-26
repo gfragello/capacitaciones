@@ -70,6 +70,8 @@
 
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombreUsuario = ViewBag.CurrentNombreUsuario, currentRoleId = ViewBag.CurrentRoleId, currentEmpresaID = ViewBag.CurrentEmpresaID }))
 
+<label>@String.Format("Total de Usuarios: {0}", ViewBag.TotalUsuarios)</label>
+
 <table class="table table-striped">
     <tr>
         <th>
@@ -105,5 +107,12 @@
     }
 
 </table>
+
+<br />
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombreUsuario = ViewBag.CurrentNombreUsuario, currentRoleId = ViewBag.CurrentRoleId, currentEmpresaID = ViewBag.CurrentEmpresaID }))
+
+
 
 

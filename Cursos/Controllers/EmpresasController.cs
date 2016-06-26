@@ -11,20 +11,35 @@ using PagedList;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,AdministradorExterno")]
     public class EmpresasController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
 
         // GET: Empresas
-        public ActionResult Index(string nombreFantasia)
+        public ActionResult Index(string currentNombreFantasia, string nombreFantasia,
+                                  int? page)
         {
+            if (nombreFantasia != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
+                page = 1;
+            else
+                nombreFantasia = currentNombreFantasia;
+
+            ViewBag.CurrentNombreFantasia = nombreFantasia;
+
             var empresas = db.Empresas.AsQueryable();
 
             if (!String.IsNullOrEmpty(nombreFantasia))
                 empresas = empresas.Where(e => e.NombreFantasia.Contains(nombreFantasia));
 
-            return View(empresas.ToList().OrderBy(o => o.NombreFantasia));
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            empresas = empresas.OrderBy(o => o.NombreFantasia);
+
+            ViewBag.TotalEmpresas = empresas.Count();
+
+            return View(empresas.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Empresas/Details/5
@@ -68,8 +83,11 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                empresa.SetearAtributosControl();
+
                 db.Empresas.Add(empresa);
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
@@ -91,9 +109,15 @@ namespace Cursos.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.DepartamentoID = new SelectList(db.Departamentos, "DepartamentoID", "Nombre");
-
-            return View(empresa);
+            if (empresa.PuedeModificarse())
+            {
+                ViewBag.DepartamentoID = new SelectList(db.Departamentos, "DepartamentoID", "Nombre");
+                return View(empresa);
+            }
+            else
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            }
         }
 
         // POST: Empresas/Edit/5
@@ -105,8 +129,11 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
+                empresa.SetearAtributosControl();
+
                 db.Entry(empresa).State = EntityState.Modified;
                 db.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
@@ -127,7 +154,11 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
-            return View(empresa);
+
+            if (empresa.PuedeModificarse())
+                return View(empresa);
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
         // POST: Empresas/Delete/5

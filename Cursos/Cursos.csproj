@@ -270,6 +270,10 @@
     <Compile Include="Migrations\201606122032482_Elementos_Acceso_Controlado_Todos.Designer.cs">
       <DependentUpon>201606122032482_Elementos_Acceso_Controlado_Todos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201606262300253_Elemento_Acceso_Controlado_Empresa.cs" />
+    <Compile Include="Migrations\201606262300253_Elemento_Acceso_Controlado_Empresa.Designer.cs">
+      <DependentUpon>201606262300253_Elemento_Acceso_Controlado_Empresa.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -455,6 +459,7 @@
     <Content Include="Views\Account\Delete.cshtml" />
     <Content Include="Views\Account\Edit.cshtml" />
     <Content Include="Views\Account\ForcePassword.cshtml" />
+    <Content Include="Views\CustomTools\IngresoMasivoEmailEmpresas.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -520,6 +525,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606122032482_Elementos_Acceso_Controlado_Todos.resx">
       <DependentUpon>201606122032482_Elementos_Acceso_Controlado_Todos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606262300253_Elemento_Acceso_Controlado_Empresa.resx">
+      <DependentUpon>201606262300253_Elemento_Acceso_Controlado_Empresa.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -106,6 +106,8 @@ namespace Cursos.Controllers
 
             users = users.OrderBy(o => o.Email);
 
+            ViewBag.TotalUsuarios = users.Count();
+
             return View(users.ToPagedList(pageNumber, pageSize));
         }
 

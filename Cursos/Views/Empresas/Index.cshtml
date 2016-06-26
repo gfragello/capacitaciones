@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Cursos.Models.Empresa>
+﻿@model PagedList.IPagedList<Cursos.Models.Empresa>
+@using PagedList.Mvc;
 
 @{
     ViewBag.Title = "Empresas";
@@ -24,7 +25,7 @@
                             @Html.Label("Nombre de fantasía")
                         </div>
                         <div class="col-md-10">
-                            @Html.TextBox("nombreFantasia", null, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.TextBox("nombreFantasia", ViewBag.CurrentNombreFantasia as string, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
                     </div>
 
@@ -42,21 +43,20 @@
     </table>
 }
 
-<br />
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombreFantasia = ViewBag.CurrentNombreFantasia }))
 
-<table class="table">
+<label>@String.Format("Total de Empresas: {0}", ViewBag.TotalEmpresas)</label>
+
+<table class="table table-striped">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.NombreFantasia)
+            Nombre
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Domicilio)
+            Departamento
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.RazonSocial)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.RUT)
+            Email
         </th>
         <th></th>
     </tr>
@@ -68,20 +68,27 @@
                 @Html.DisplayFor(modelItem => item.NombreFantasia)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Domicilio)
+                @Html.DisplayFor(modelItem => item.Departamento.Nombre)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RazonSocial)
+                @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RUT)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.EmpresaID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.EmpresaID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.EmpresaID })
+                <a href="@Url.Action("Details", "Empresas", new { id = item.EmpresaID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
+                @if (item.PuedeModificarse())
+                {
+                    @:&nbsp;|
+                    <a href="@Url.Action("Edit", "Empresas", new { id = item.EmpresaID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
+                    <a href="@Url.Action("Delete", "Empresas", new { id = item.EmpresaID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                }
             </td>
         </tr>
     }
 
 </table>
+
+<br />
+
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombreFantasia = ViewBag.CurrentNombreFantasia }))
