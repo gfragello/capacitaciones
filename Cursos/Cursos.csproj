@@ -342,6 +342,10 @@
     <Content Include="images\capacitados.png" />
     <Content Include="images\editar.png" />
     <Content Include="images\editar_16x16.png" />
+    <Content Include="images\email.png" />
+    <Content Include="images\email_16x16.png" />
+    <Content Include="images\email_disabled.png" />
+    <Content Include="images\email_disabled_16x16.png" />
     <Content Include="images\empresas.png" />
     <Content Include="images\forzarContrasena_16x16.png" />
     <Content Include="images\porVencer.png" />

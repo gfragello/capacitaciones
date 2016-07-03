@@ -71,10 +71,27 @@
                 @Html.DisplayFor(modelItem => item.Departamento.Nombre)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Email)
+                @if (!string.IsNullOrEmpty(item.Email))
+                {
+                    foreach (var email in item.Email.Split(','))
+                    {
+                        <a href='mailto:@email'>@email</a>
+                        <br />
+                    }
+                }
             </td>
             <td>
                 <a href="@Url.Action("Details", "Empresas", new { id = item.EmpresaID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
+                @if (!string.IsNullOrEmpty(item.Email))
+                {
+                    @:&nbsp;|
+                    <a href="mailto:@item.Email"><img src="@Url.Content("~/images/email_16x16.png")" title="Enviar mail" /></a>
+                }
+                else
+                {
+                    @:&nbsp;|
+                    <img src="@Url.Content("~/images/email_disabled_16x16.png")" />
+                }
                 @if (item.PuedeModificarse())
                 {
                     @:&nbsp;|

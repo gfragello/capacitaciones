@@ -8,6 +8,18 @@
 
 <div>
     <h4>Empresa - Detalles</h4>
+    <p>
+        @if (!string.IsNullOrEmpty(Model.Email))
+        {
+            <a href="mailto:@Model.Email"><img src="@Url.Content("~/images/email.png")" title="Enviar mail" /></a>
+        }
+        else
+        {
+            <img src="@Url.Content("~/images/email_disabled.png")" />
+        }
+
+
+    </p>
     @Html.Partial("_DatosModificacionPartial", Model)
     <hr />
     <dl class="dl-horizontal">
@@ -72,7 +84,14 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Email)
+            @if (!string.IsNullOrEmpty(Model.Email))
+            {
+                foreach (var email in Model.Email.Split(','))
+                {
+                    <a href='mailto:@email'>@email</a>
+                    <br />
+                }
+            }
         </dd>
 
     </dl>

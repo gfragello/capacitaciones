@@ -9,6 +9,7 @@ using Cursos.Helpers;
 using System.IO;
 using System.Drawing;
 using System.Data.Entity.Validation;
+using System.Diagnostics;
 
 namespace Cursos.Controllers
 {
@@ -456,48 +457,122 @@ namespace Cursos.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult IngresoMasivoEmailEmpresas(FormCollection formCollection)
         {
-            /*
-                DateTime FechaCambioDuracion = new DateTime(2012, 1, 1);
-                int anioVencimiento;
-                DateTime fechaVencimiento;
+            if (Request != null)
+            {
+                HttpPostedFileBase file = Request.Files["UploadedFile"];
 
-                foreach (var r in db.RegistroCapacitacion.ToList())
+                if ((file != null) && (file.ContentLength > 0) && !string.IsNullOrEmpty(file.FileName))
                 {
-                    if (r.Jornada.Fecha >= FechaCambioDuracion)
-                        anioVencimiento = r.Jornada.Fecha.Year + 3;
-                    else
-                        anioVencimiento = r.Jornada.Fecha.Year + 5;
+                    string fileName = file.FileName;
+                    string fileContentType = file.ContentType;
 
-                    int mesVencimiento = r.Jornada.Fecha.Month;
-                    int diaVencimiento = r.Jornada.Fecha.Day;
+                    byte[] fileBytes = new byte[file.ContentLength];
 
-                    try
+                    var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
+
+                    var capacitados = new List<Capacitado>();
+
+                    using (var package = new ExcelPackage(file.InputStream))
                     {
-                        fechaVencimiento = new DateTime(anioVencimiento, mesVencimiento, diaVencimiento);
+                        return CargarMailsEmpresas(package);
                     }
-                    catch (Exception)
-                    {
-                        if (mesVencimiento == 2 && diaVencimiento == 29)
-                            diaVencimiento = 28;
-                        else
-                            throw;
-                    }
+                }
+            }
 
-                    try
-                    {
-                        fechaVencimiento = new DateTime(anioVencimiento, mesVencimiento, diaVencimiento);
-                    }
-                    catch (Exception)
-                    {
+            return View();
+        }
 
-                        throw;
-                    }
+        private ActionResult CargarMailsEmpresas(ExcelPackage ep)
+        {
+            const int colEmpresaId = 1;
+            const int colEmpresaNombre = 2;
+            const int colEmail1 = 6;
+            const int colEmail2 = 7;
+            const int colEmail3 = 8;
+            const int colEmail4 = 9;
 
-                    r.FechaVencimiento = fechaVencimiento;
+            var ws = ep.Workbook.Worksheets.ElementAt(0);
+
+            var TotalColumns = ws.Dimension.End.Column;
+            var TotalRows = ws.Dimension.End.Row;
+
+            using (ExcelPackage epWrite = new ExcelPackage())
+            {
+                //se inicializa un archivo Excel de salida
+                var wsWrite = epWrite.Workbook.Worksheets.Add("Empresas sin actualizar");
+
+                const int rowInicial = 2;
+                int j = rowInicial + 1;
+
+                wsWrite.Cells[rowInicial, colEmpresaId].Value = "Id";
+                wsWrite.Cells[rowInicial, colEmpresaNombre].Value = "Nombre";
+
+                for (int i = 2; i <= TotalRows; i++)
+                {
+                    int empresaId = int.Parse(ws.Cells[i, colEmpresaId].Value.ToString());
+                    string empresaNombre = ws.Cells[i, colEmpresaNombre].Value.ToString();
+
+                    var empresa = db.Empresas.Where(e => e.NombreFantasia == empresaNombre).FirstOrDefault();
+
+                    if (empresa != null) //la empresas se buscan por nombre por lo que podría no haberse encontrado
+                    {
+                        string emails = string.Empty;
+
+                        string email1 = ws.Cells[i, colEmail1].Value != null ? ws.Cells[i, colEmail1].Value.ToString() : string.Empty;
+                        string email2 = ws.Cells[i, colEmail2].Value != null ? ws.Cells[i, colEmail2].Value.ToString() : string.Empty;
+                        string email3 = ws.Cells[i, colEmail3].Value != null ? ws.Cells[i, colEmail3].Value.ToString() : string.Empty;
+                        string email4 = ws.Cells[i, colEmail4].Value != null ? ws.Cells[i, colEmail4].Value.ToString() : string.Empty;
+
+                        emails = email1;
+
+                        if (!string.IsNullOrEmpty(emails))
+                        {
+                            emails += email2 != string.Empty ? string.Format(",{0}", email2) : string.Empty;
+                            emails += email3 != string.Empty ? string.Format(",{0}", email3) : string.Empty;
+                            emails += email4 != string.Empty ? string.Format(",{0}", email4) : string.Empty;
+
+                            empresa.Email = emails;
+                        }
+                    }
+                    else //no se encontró una empresa con ese nombre fantasía por lo que se agrega un registro al archivo de salida
+                    {
+                        wsWrite.Cells[j, colEmpresaId].Value = empresaId;
+                        wsWrite.Cells[j, colEmpresaNombre].Value = empresaNombre;
+                        j++;
+                    }
                 }
 
-                db.SaveChanges();
-            */
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (DbEntityValidationException ex)
+                {
+
+                    foreach (var validationErrors in ex.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            Trace.TraceInformation("Property: {0} Error: {1}",
+                                                    validationError.PropertyName,
+                                                    validationError.ErrorMessage);
+                        }
+                    }
+                }
+
+                if (wsWrite.Dimension.End.Row > 1) //el archivo de salida solo se genera si se le ingresan registros
+                {
+                    wsWrite.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                    var stream = new MemoryStream();
+                    epWrite.SaveAs(stream);
+
+                    string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    stream.Position = 0;
+                    return File(stream, contentType, "EmpresasSinActualizar.xlsx");
+                }
+            }
             return View();
         }
 
