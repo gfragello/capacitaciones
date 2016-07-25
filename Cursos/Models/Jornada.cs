@@ -15,7 +15,7 @@ namespace Cursos.Models
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Fecha { get; set; }
 
-        [Required(ErrorMessage = "Debe ingresar la Hora del curso")]
+        [Required(ErrorMessage = "Debe ingresar la Hora de la Jornada")]
         [RegularExpression(@"([01]?[0-9]|2[0-3]):[0-5][0-9]", ErrorMessage = "Hora no válida.")]
         public string Hora { get; set; }
 

@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Cursos.Models.Jornada>
+﻿@model PagedList.IPagedList<Cursos.Models.Jornada>
+@using PagedList.Mvc;
 
 @{
     ViewBag.Title = "Jornada";
@@ -9,53 +10,137 @@
 <p>
     @Html.ActionLink("Crear Nueva", "Create")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Curso.Descripcion)
-        </th>
-        <th>
-            @Html.Label("Instructor")
-        </th>
-        <th>
-            @Html.Label("Lugar")
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Fecha)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Hora)
-        </th>
-        <th></th>
-    </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Curso.Descripcion)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Instructor.NombreCompleto)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Lugar.NombreLugar)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Fecha)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Hora)
-        </td>
-        <td>
-            <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
-            @if (item.PuedeModificarse())
-            {
-                @:&nbsp;|
-                <a href="@Url.Action("Edit", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
-                <a href="@Url.Action("Delete", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
-            }
-        </td>
-    </tr>
+<hr />
+
+@using (Html.BeginForm())
+{
+    <table>
+        <tr>
+            <td>
+
+                <div class="form-inline" style="margin:5px 3px;">
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Curso:")
+                        </div>
+                        <div class="col-md-10">
+                            @Html.DropDownList("CursoID", null, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Desde")
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("fechaInicio", ViewBag.CurrentFechaInicio as string, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Hasta"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("fechaFin", ViewBag.CurrentFechaInicio as string, new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="width: 550px">
+                        <div class="col-md-5">
+                            @Html.Label("Creadas otros usuarios:")
+                        </div>
+                        <div class="col-md-10">
+                            @{bool creadasOtrosUsuarios = ViewBag.CurrentCreadasOtrosUsuarios != null ? ViewBag.CurrentCreadasOtrosUsuarios : false;}
+                            @Html.CheckBox("creadasOtrosUsuarios", creadasOtrosUsuarios)
+                        </div>
+                    </div>
+
+                </div>
+            </td>
+            <td width="1%">
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <input type="submit" value="Buscar" />
+                    </div>
+                    <!--
+                    <div class="col-md-2">
+                        @Html.ActionLink("Limpiar filtros", "Index")
+                    </div>
+                    -->
+                </div>
+            </td>
+
+        </tr>
+    </table>
 }
 
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentCreadasOtrosUsuarios = ViewBag.CurrentCreadasOtrosUsuarios }))
+
+<table class="table table-striped">
+    <tr>
+        <th>
+            Curso
+        </th>
+        <th>
+            Intructor
+        </th>
+        <th>
+            Lugar
+        </th>
+        <th>
+            Fecha
+        </th>
+        <th>
+            Hora
+        </th>
+        <th></th> <!--Columna con acciones sobre el elemento -->
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Curso.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Instructor.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lugar.NombreLugar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hora)
+            </td>
+            <td>
+                <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
+                @if (ViewBag.CurrentCreadasOtrosUsuarios != null) //solo si se muestran las Jornadas creadas por otros usuarios se muestra el ícono para mostrar los datos de los usuarios
+                {
+                    bool mostrarCreadasOtrosUsuarios = (bool)ViewBag.CurrentCreadasOtrosUsuarios;
+                    if (mostrarCreadasOtrosUsuarios)
+                    {
+                        @:&nbsp;|
+                        <img src="@Url.Content("~/images/usuario_16x16.png")" title="@item.UsuarioModificacion - @item.FechaModficacion" />
+                    }
+}
+                @if (item.PuedeModificarse())
+                {
+                    @:&nbsp;|
+                    <a href="@Url.Action("Edit", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
+                    <a href="@Url.Action("Delete", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                }
+            </td>
+        </tr>
+    }
+
 </table>
+
+<br />
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentCreadasOtrosUsuarios = ViewBag.CreadasOtrosUsuarios }))

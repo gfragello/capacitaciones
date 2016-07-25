@@ -10,6 +10,7 @@ using Cursos.Models;
 using OfficeOpenXml;
 using System.IO;
 using System.Drawing;
+using PagedList;
 
 namespace Cursos.Controllers
 {
@@ -19,10 +20,73 @@ namespace Cursos.Controllers
         private CursosDbContext db = new CursosDbContext();
 
         // GET: Jornadas
-        public ActionResult Index()
+        public ActionResult Index(int? currentCursoID, int? CursoID,
+                                  DateTime? currentFechaInicio, DateTime? fechaInicio,
+                                  DateTime? currentFechaFin, DateTime? fechaFin,
+                                  bool? currentCreadasOtrosUsuarios, bool? creadasOtrosUsuarios,
+                                  int? page)
         {
-            var jornadas = db.Jornada.Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar).OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora);
-            return View(jornadas.ToList());
+            if (CursoID != null)
+                page = 1;
+            else
+            {
+                if (currentCursoID == null)
+                    currentCursoID = -1;
+
+                CursoID = currentCursoID;
+            }
+
+            ViewBag.CurrentCursoID = CursoID;
+
+            if (fechaInicio != null)
+                page = 1;
+            else
+                fechaInicio = currentFechaInicio;
+
+            ViewBag.CurrentFechaInicio = fechaInicio;
+
+            if (fechaFin != null)
+                page = 1;
+            else
+                fechaFin = currentFechaFin;
+
+            ViewBag.CurrentFechaFin = fechaFin;
+
+            if (creadasOtrosUsuarios != null)
+                page = 1;
+            else
+                creadasOtrosUsuarios = currentCreadasOtrosUsuarios;
+
+            ViewBag.CurrentCreadasOtrosUsuarios = creadasOtrosUsuarios;
+
+            List<Curso> cursosDD = db.Cursos.OrderBy(c => c.Descripcion).ToList();
+            cursosDD.Insert(0, new Curso { CursoID = -1, Descripcion = "Todos" });
+            ViewBag.CursoID = new SelectList(cursosDD, "CursoID", "Descripcion", CursoID);
+
+            var jornadas = db.Jornada.Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
+
+            if (CursoID != -1)
+                jornadas = jornadas.Where(j => j.CursoId == CursoID);
+
+            if (fechaInicio != null)
+                jornadas = jornadas.Where(j => j.Fecha >= fechaInicio.Value);
+
+            if (fechaFin != null)
+                jornadas = jornadas.Where(j => j.Fecha <= fechaFin.Value);
+
+            bool motrarCreadasOtrosUsuarios = creadasOtrosUsuarios != null ? creadasOtrosUsuarios.Value : false;
+
+            //si no se aplicó el filtro de ver las jornadas creadas por otro usuarios (está opción solo es válida para el rol Administrador)
+            //o si el usuario tiene el rol AdministradorExterno, solo se mostrarán las jornadas creadas por el usuario
+            if (!motrarCreadasOtrosUsuarios || User.IsInRole("AdministradorExterno"))
+                jornadas = jornadas.Where(j => j.UsuarioModificacion == User.Identity.Name);
+
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            jornadas = jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora);
+
+            return View(jornadas.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Jornadas/Details/5
@@ -50,7 +114,7 @@ namespace Cursos.Controllers
         public ActionResult Create()
         {
             ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion");
-            ViewBag.InstructorId = new SelectList(db.Instructores, "InstructorID", "NombreCompleto");
+            ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto");
             ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar");
             return View();
         }
@@ -73,7 +137,7 @@ namespace Cursos.Controllers
             }
 
             ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
-            ViewBag.InstructorId = new SelectList(db.Instructores, "InstructorID", "NombreCompleto", jornada.InstructorId);
+            ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto", jornada.InstructorId);
             ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
             return View(jornada);
         }
@@ -94,7 +158,7 @@ namespace Cursos.Controllers
             if (jornada.PuedeModificarse())
             {
                 ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
-                ViewBag.InstructorId = new SelectList(db.Instructores, "InstructorID", "NombreCompleto", jornada.InstructorId);
+                ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto", jornada.InstructorId);
                 ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
                 return View(jornada);
             }
@@ -121,7 +185,7 @@ namespace Cursos.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
-            ViewBag.InstructorId = new SelectList(db.Instructores, "InstructorID", "NombreCompleto", jornada.InstructorId);
+            ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto", jornada.InstructorId);
             ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
             return View(jornada);
         }

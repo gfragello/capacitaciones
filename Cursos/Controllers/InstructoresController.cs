@@ -16,9 +16,18 @@ namespace Cursos.Controllers
         private CursosDbContext db = new CursosDbContext();
 
         // GET: Instructores
-        public ActionResult Index()
+        public ActionResult Index(bool? soloActivos)
         {
-            return View(db.Instructores.ToList());
+            List<Instructor> instructores = null;
+
+            bool activos = soloActivos != null ? (bool)soloActivos : false;
+
+            if (!activos)
+                instructores = db.Instructores.ToList();
+            else
+                instructores = db.Instructores.Where(i => i.Activo == true).ToList();
+
+            return View(instructores);
         }
 
         // GET: Instructores/Details/5

@@ -17,6 +17,12 @@ namespace Cursos.Models
             this.FechaModficacion = DateTime.Now;
         }
 
+        public void ForzarUsuario(string usuarioModificacion)
+        {
+            this.UsuarioModificacion = usuarioModificacion;
+            this.FechaModficacion = DateTime.Now;
+        }
+
         public bool PuedeModificarse()
         {
             if (HttpContext.Current.User.IsInRole("Administrador"))

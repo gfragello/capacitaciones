@@ -74,23 +74,24 @@ namespace Cursos.Controllers
             var jornadas = GetJornadas(ep, lugares, cursos, instructores);
             var registrosCapacitacion = GetRegistrosCapacitacion(ep, jornadas, capacitados);
 
+            string usuarioModificacion = "angelina.rostan@upm.com";
+
             SaveLugares(lugares);
-            SaveInstructores(instructores);
-            SaveEmpresas(empresas);
+            SaveInstructores(instructores, usuarioModificacion);
+            SaveEmpresas(empresas, usuarioModificacion);
             SaveCursos(cursos);
 
-            SaveCapacitados(capacitados);
-            SaveJornadas(jornadas);
-            SaveRegistrosCapacitacion(registrosCapacitacion);
+            SaveCapacitados(capacitados, usuarioModificacion);
+            SaveJornadas(jornadas, usuarioModificacion);
+            SaveRegistrosCapacitacion(registrosCapacitacion, usuarioModificacion);
 
             try
             {
                 db.SaveChanges();
             }
-            catch (System.Data.Entity.Validation.DbEntityValidationException e)
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
             {
                 //TODO: Mejorar el mensaje de error que se muestra cuando ocurre un error durante la migración de datos
-                /*
                 // Retrieve the error messages as a list of strings.
                 var errorMessages = ex.EntityValidationErrors
                         .SelectMany(x => x.ValidationErrors)
@@ -104,7 +105,6 @@ namespace Cursos.Controllers
 
                 // Throw a new DbEntityValidationException with the improved exception message.
                 throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
-                */
             }
 
         }
@@ -140,6 +140,10 @@ namespace Cursos.Controllers
                     l.AbrevLugar = abrevLugar;
                     l.NombreLugar = ws.Cells[i, 3].Value.ToString();
                 }
+                else
+                {
+                    //se incluye este else para poner un breakpoint
+                }
 
                 lugares.Add(key, l);
             }
@@ -172,14 +176,18 @@ namespace Cursos.Controllers
 
                     ins.Apellido = apellido;
                     ins.Nombre = nombre;
-                    ins.Documento = ws.Cells[i, 4].Value.ToString();
+                    ins.Documento = ws.Cells[i, 4].Value != null ? ws.Cells[i, 4].Value.ToString() : null;
 
                     var FechaNacimientoStr = ws.Cells[i, 5].Value == null ? String.Empty : ws.Cells[i, 5].Value.ToString();
-                    ins.FechaNacimiento = FechaNacimientoStr == String.Empty ? DateTime.Parse("13/09/1980") : DateTime.Parse(FechaNacimientoStr);
+                    ins.FechaNacimiento = FechaNacimientoStr == String.Empty ? DateTime.Parse("01/01/2001") : DateTime.Parse(FechaNacimientoStr);
 
-                    ins.Domicilio = ws.Cells[i, 6].Value.ToString();
-                    ins.Telefono = ws.Cells[i, 7].Value.ToString();
+                    ins.Domicilio = ws.Cells[i, 6].Value != null ? ws.Cells[i, 6].Value.ToString() : null;
+                    ins.Telefono = ws.Cells[i, 7].Value != null ? ws.Cells[i, 7].Value.ToString() : null;
                     ins.Activo = bool.Parse(ws.Cells[i, 9].Value.ToString());
+                }
+                else
+                {
+                    //se incluye este else para poner un breakpoint
                 }
 
                 instructores.Add(key, ins);
@@ -219,6 +227,10 @@ namespace Cursos.Controllers
                     e.RazonSocial = ws.Cells[i, 4].Value.ToString();
                     e.RUT = RUT;
                 }
+                else
+                {
+                    //se incluye este else para poner un breakpoint
+                }
 
                 empresas.Add(key, e);
             }
@@ -253,6 +265,10 @@ namespace Cursos.Controllers
                     c.Horas = int.Parse(ws.Cells[i, 4].Value.ToString());
                     c.Modulo = ws.Cells[i, 5].Value.ToString();
                 }
+                else
+                {
+                    //se incluye este else para poner un breakpoint
+                }
 
                 cursos.Add(key, c);
             }
@@ -268,19 +284,19 @@ namespace Cursos.Controllers
             var TotalColumns = ws.Dimension.End.Column;
             var TotalRows = ws.Dimension.End.Row;
 
-            TipoDocumento td_Default = db.TiposDocumento.Where(td => td.Abreviacion == "N/E").First();
+            TipoDocumento td_Default = db.TiposDocumento.Where(td => td.Abreviacion == "OTR").First();
             TipoDocumento td_CIUruguay = db.TiposDocumento.Where(td => td.Abreviacion == "CI").First();
 
             for (int i = 2; i <= TotalRows; i++)
             {
-                var c = new Capacitado();
+                Capacitado c = null;
 
                 int key = int.Parse(ws.Cells[i, 1].Value.ToString());
 
                 TipoDocumento tipoDocumento = td_Default;
 
-                string documento = ws.Cells[i, 4].Value.ToString();
-                string documentoSinGuion = ws.Cells[i, 4].Value.ToString(); //en el archivo Excel, el documento puede estar sin guión
+                string documento = ws.Cells[i, 5].Value.ToString();
+                string documentoSinGuion = ws.Cells[i, 5].Value.ToString(); //en el archivo Excel, el documento puede estar sin guión
 
                 if (documento.Contains("-")) //si el documento tiene un guión, podría ser una CI uruguaya
                 {
@@ -293,13 +309,20 @@ namespace Cursos.Controllers
                     tipoDocumento = td_CIUruguay;
                 }
 
-                c.Nombre = ws.Cells[i, 2].Value.ToString();
-                c.Apellido = ws.Cells[i, 3].Value.ToString();
-                c.TipoDocumento = tipoDocumento;
-                c.Documento = documento;
-                c.Fecha = DateTime.Parse("13/09/1980");
+                c = db.Capacitados.Where(cap => cap.Documento == documento).FirstOrDefault();
 
-                var keyEmpresa = int.Parse(ws.Cells[i, 7].Value.ToString());
+                if (c == null)
+                {
+                    c = new Capacitado();
+
+                    c.Nombre = ws.Cells[i, 2].Value.ToString();
+                    c.Apellido = ws.Cells[i, 3].Value.ToString();
+                    c.TipoDocumento = tipoDocumento;
+                    c.Documento = documento;
+                    c.Fecha = null;
+                }
+
+                var keyEmpresa = int.Parse(ws.Cells[i, 6].Value.ToString());
                 c.Empresa = empresas[keyEmpresa];
 
                 capacitados.Add(key, c);
@@ -358,7 +381,7 @@ namespace Cursos.Controllers
                 else
                     continue;
 
-                var keyCapacitado = int.Parse(ws.Cells[i, 6].Value.ToString());
+                var keyCapacitado = int.Parse(ws.Cells[i, 7].Value.ToString());
 
                 if (capacitados.ContainsKey(keyCapacitado))
                     r.Capacitado = capacitados[keyCapacitado];
@@ -374,6 +397,8 @@ namespace Cursos.Controllers
                     r.NotaPrevia = int.Parse(ws.Cells[i, 9].Value.ToString());
                 else
                     r.NotaPrevia = null;
+
+                r.FechaVencimiento = new DateTime(r.Jornada.Fecha.Year + r.Jornada.Curso.Vigencia, r.Jornada.Fecha.Month, r.Jornada.Fecha.Day);
 
                 registrosCapacitacion.Add(r);
             }
@@ -391,21 +416,27 @@ namespace Cursos.Controllers
             }
         }
 
-        private void SaveInstructores(Dictionary<int, Instructor> instructores)
+        private void SaveInstructores(Dictionary<int, Instructor> instructores, string usuarioModificacion)
         {
             foreach (var i in instructores)
             {
                 if (i.Value.InstructorID == 0)
+                {
+                    i.Value.ForzarUsuario(usuarioModificacion);
                     db.Instructores.Add(i.Value);
+                }
             }
         }
 
-        private void SaveEmpresas(Dictionary<int, Empresa> empresas)
+        private void SaveEmpresas(Dictionary<int, Empresa> empresas, string usuarioModificacion)
         {
             foreach (var e in empresas)
             {
                 if (e.Value.EmpresaID == 0)
+                {
+                    e.Value.ForzarUsuario(usuarioModificacion);
                     db.Empresas.Add(e.Value);
+                }
             }
         }
 
@@ -418,28 +449,44 @@ namespace Cursos.Controllers
             }
         }
 
-        private void SaveCapacitados(Dictionary<int, Capacitado> capacitados)
+        private void SaveCapacitados(Dictionary<int, Capacitado> capacitados, string usuarioModificacion)
         {
+            int total = 0;
+
             foreach (var c in capacitados)
             {
                 if (c.Value.CapacitadoID == 0)
+                {
+                    c.Value.ForzarUsuario(usuarioModificacion);
                     db.Capacitados.Add(c.Value);
+                    total++;
+                }
             }
+
+            total = total;
         }
 
-        private void SaveJornadas(Dictionary<int, Jornada> jornadas)
+        private void SaveJornadas(Dictionary<int, Jornada> jornadas, string usuarioModificacion)
         {
             foreach (var j in jornadas)
             {
                 if (j.Value.JornadaID == 0)
+                {
+                    j.Value.ForzarUsuario(usuarioModificacion);
+
+                    if (string.IsNullOrEmpty(j.Value.Hora))
+                        j.Value.Hora = "13:00";
+
                     db.Jornada.Add(j.Value);
+                }
             }
         }
 
-        private void SaveRegistrosCapacitacion(List<RegistroCapacitacion> registrosCapacitacion)
+        private void SaveRegistrosCapacitacion(List<RegistroCapacitacion> registrosCapacitacion, string usuarioModificacion)
         {
             foreach (var r in registrosCapacitacion)
             {
+                r.ForzarUsuario(usuarioModificacion);
                 db.RegistroCapacitacion.Add(r);
             }
         }

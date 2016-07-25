@@ -67,7 +67,7 @@ namespace Cursos.Controllers
 
             List<Empresa> empresasDD;
 
-            if (User.IsInRole("ConsultaEmpresa"))
+            if (User.IsInRole("ConsultaEmpresa")) //para este rol solo se muestran los Capacitados de esa empresa
             {
                 var empresaUsuario = db.EmpresasUsuarios.Where(eu => eu.Usuario == User.Identity.Name).FirstOrDefault();
 

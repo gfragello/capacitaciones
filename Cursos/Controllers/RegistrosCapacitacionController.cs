@@ -81,7 +81,8 @@ namespace Cursos.Controllers
 
         public ActionResult CreateWithCapacitado(int? id)
         {
-            ViewBag.JornadaID = new SelectList(db.Jornada.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora).ToList(), "JornadaID", "JornadaIdentificacionCompleta");
+            var jornadas = db.Jornada.Where(j => j.UsuarioModificacion == User.Identity.Name);
+            ViewBag.JornadaID = new SelectList(jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora).ToList(), "JornadaID", "JornadaIdentificacionCompleta");
 
             if (id == null)
             {
@@ -134,7 +135,9 @@ namespace Cursos.Controllers
                 return new HttpNotFoundResult();
             }
 
-            ViewBag.JornadaID = new SelectList(db.Jornada.ToList(), "JornadaID", "JornadaIdentificacionCompleta", registroCapacitacion.JornadaID);
+            var jornadas = db.Jornada.Where(j => j.UsuarioModificacion == User.Identity.Name);
+            ViewBag.JornadaID = new SelectList(jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora).ToList(), "JornadaID", "JornadaIdentificacionCompleta", registroCapacitacion.JornadaID);
+
             return View("Create");
         }
 
@@ -170,7 +173,10 @@ namespace Cursos.Controllers
                 return HttpNotFound();
             }
             ViewBag.CapacitadoID = new SelectList(db.Capacitados, "CapacitadoID", "Nombre", registroCapacitacion.CapacitadoID);
-            ViewBag.JornadaID = new SelectList(db.Jornada, "JornadaID", "JornadaID", registroCapacitacion.JornadaID);
+
+            var jornadas = db.Jornada.Where(j => j.UsuarioModificacion == User.Identity.Name);
+            ViewBag.JornadaID = new SelectList(jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora).ToList(), "JornadaID", "JornadaIdentificacionCompleta");
+
             return View(registroCapacitacion);
         }
 
@@ -190,7 +196,10 @@ namespace Cursos.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.CapacitadoID = new SelectList(db.Capacitados, "CapacitadoID", "Nombre", registroCapacitacion.CapacitadoID);
-            ViewBag.JornadaID = new SelectList(db.Jornada, "JornadaID", "JornadaID", registroCapacitacion.JornadaID);
+
+            var jornadas = db.Jornada.Where(j => j.UsuarioModificacion == User.Identity.Name);
+            ViewBag.JornadaID = new SelectList(jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora).ToList(), "JornadaID", "JornadaIdentificacionCompleta");
+
             return View(registroCapacitacion);
         }
 

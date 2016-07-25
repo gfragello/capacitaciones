@@ -352,6 +352,7 @@
     <Content Include="images\porVencer_20x20.png" />
     <Content Include="images\registroCapacitacion.png" />
     <Content Include="images\registroCapacitacion_16x16.png" />
+    <Content Include="images\usuario_16x16.png" />
     <Content Include="images\vencido_20x20.png" />
     <Content Include="images\verDetalle_16x16.png" />
     <Content Include="images\vigente_20x20.png" />

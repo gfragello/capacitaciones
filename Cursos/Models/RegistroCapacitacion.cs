@@ -10,14 +10,7 @@ namespace Cursos.Models
     [Table("RegistrosCapacitaciones")]
     public class RegistroCapacitacion : ElementoAccesoControlado
     {
-        //CONS: Acalarale a Alejandro que fue necesario cambiar el nombre de esta tabla
-        //CONS: Consultar si durante la prueba de la etapa 1Alejandro quiere tener acceso a la base de datos a través de un ciente
-        //      Enterprise Studio Express
         public int RegistroCapacitacionID { get; set; }
-
-        //CONS: Los atributos Fecha, LugarID, CursoID, InstitucionID no son necesario porque se acceden directamente a través de la 
-        //      referencia que existe a JornadaID. Verificar que la columna RegistroCapacitacion.Fecha se coresponda con la columna
-        //      Jornada.Fecha
 
         [Required(AllowEmptyStrings = false)]
         public bool Aprobado { get; set; }
