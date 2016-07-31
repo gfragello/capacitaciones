@@ -74,7 +74,7 @@ namespace Cursos.Controllers
             var jornadas = GetJornadas(ep, lugares, cursos, instructores);
             var registrosCapacitacion = GetRegistrosCapacitacion(ep, jornadas, capacitados);
 
-            string usuarioModificacion = "angelina.rostan@upm.com";
+            string usuarioModificacion = "maria.andrada@andritz.com";
 
             SaveLugares(lugares);
             SaveInstructores(instructores, usuarioModificacion);
@@ -211,7 +211,7 @@ namespace Cursos.Controllers
                 int key = int.Parse(ws.Cells[i, 1].Value.ToString());
 
                 string nombreFantasia = ws.Cells[i, 2].Value.ToString();
-                string RUT = ws.Cells[i, 5].Value.ToString();
+                string RUT = ws.Cells[i, 5].Value != null ? ws.Cells[i, 5].Value.ToString() : null;
 
                 if (!String.IsNullOrEmpty(RUT))
                     e = db.Empresas.Where(empresa => empresa.RUT == RUT).FirstOrDefault();
@@ -223,9 +223,10 @@ namespace Cursos.Controllers
                     e = new Empresa();
 
                     e.NombreFantasia = nombreFantasia;
-                    e.Domicilio = ws.Cells[i, 3].Value.ToString();
-                    e.RazonSocial = ws.Cells[i, 4].Value.ToString();
+                    e.Domicilio = ws.Cells[i, 3].Value != null ? ws.Cells[i, 3].Value.ToString() : null;
+                    e.RazonSocial = ws.Cells[i, 4].Value != null ? ws.Cells[i, 4].Value.ToString() : null;
                     e.RUT = RUT;
+                    e.DepartamentoID = 13;
                 }
                 else
                 {
