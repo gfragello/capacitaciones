@@ -4,28 +4,57 @@
     ViewBag.Title = "Edit";
 }
 
-<h2>Edit</h2>
-
-
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
+    <input type="hidden" name="PreviousUrl" value="@ViewBag.PreviousUrl" />
+
     <div class="form-horizontal">
-        <h4>RegistroCapacitacion</h4>
+        <h4>Registro de Capacitacion - Editar</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.RegistroCapacitacionID)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Aprobado, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.Aprobado)
-                    @Html.ValidationMessageFor(model => model.Aprobado, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
+        @Html.HiddenFor(model => model.RegistroCapacitacionID)
+        @Html.HiddenFor(model => model.JornadaID)
+        @Html.HiddenFor(model => model.CapacitadoID)
+        @Html.HiddenFor(model => model.Aprobado)
+
+        <dl class="dl-horizontal">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Jornada)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Jornada.JornadaIdentificacionCompleta)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Capacitado.Documento)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Capacitado.DocumentoCompleto)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Capacitado.Nombre)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Capacitado.NombreCompleto)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Aprobado)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Aprobado)
+            </dd>
+
+        </dl>
 
         <div class="form-group">
             @Html.LabelFor(model => model.Nota, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -36,18 +65,18 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.JornadaID, "JornadaID", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.NotaPrevia, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("JornadaID", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.JornadaID, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.NotaPrevia, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NotaPrevia, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.CapacitadoID, "CapacitadoID", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.FechaVencimiento, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("CapacitadoID", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.CapacitadoID, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.FechaVencimiento, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.FechaVencimiento, "", new { @class = "text-danger" })
             </div>
         </div>
 

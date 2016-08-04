@@ -79,7 +79,10 @@
         <th>
             @Html.DisplayName("Aprobado")
         </th>
-        <th></th>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <th></th> <!--Columna con acciones sobre el registro -->
+        }
     </tr>
 
     @foreach (var item in Model.RegistrosCapacitacion)
@@ -104,6 +107,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Aprobado)
             </td>
+            @if (item.PuedeModificarse())
+            {
+                <td>
+                    <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>&nbsp;|
+                    <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                </td>
+            }
+            else
+            {
+                <td>&nbsp;</td>
+            }
         </tr>
     }
 </table>

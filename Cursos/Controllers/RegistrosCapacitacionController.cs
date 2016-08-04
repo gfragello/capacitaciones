@@ -174,8 +174,11 @@ namespace Cursos.Controllers
             }
             ViewBag.CapacitadoID = new SelectList(db.Capacitados, "CapacitadoID", "Nombre", registroCapacitacion.CapacitadoID);
 
-            var jornadas = db.Jornada.Where(j => j.UsuarioModificacion == User.Identity.Name);
-            ViewBag.JornadaID = new SelectList(jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora).ToList(), "JornadaID", "JornadaIdentificacionCompleta");
+            ViewBag.JornadaID = registroCapacitacion.JornadaID;
+            ViewBag.JornadaIdentificacionCompleta = registroCapacitacion.Jornada.JornadaIdentificacionCompleta;
+
+            // get the previous url and store it with view model
+            ViewBag.PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer;
 
             return View(registroCapacitacion);
         }
@@ -185,7 +188,8 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion)
+        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion, 
+                                  string PreviousUrl)
         {
             if (ModelState.IsValid)
             {
@@ -193,7 +197,13 @@ namespace Cursos.Controllers
 
                 db.Entry(registroCapacitacion).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                //return RedirectToAction(PreviousUrl);
+                //return RedirectToRoute(PreviousUrl);
+
+                if (!String.IsNullOrEmpty(PreviousUrl))
+                    return Redirect(PreviousUrl);
+                else
+                    return RedirectToAction("Details", new { id = registroCapacitacion.RegistroCapacitacionID });
             }
             ViewBag.CapacitadoID = new SelectList(db.Capacitados, "CapacitadoID", "Nombre", registroCapacitacion.CapacitadoID);
 

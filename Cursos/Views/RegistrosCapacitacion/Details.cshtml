@@ -4,27 +4,34 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Details</h2>
-
 <div>
-    <h4>RegistroCapacitacion</h4>
+    <h4>Registro de Capacitacion</h4>
     @Html.Partial("_DatosModificacionPartial", Model)
     <hr />
     <dl class="dl-horizontal">
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Jornada)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Jornada.JornadaIdentificacionCompleta)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Capacitado.Documento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Capacitado.DocumentoCompleto)
+        </dd>
+
         <dt>
             @Html.DisplayNameFor(model => model.Capacitado.Nombre)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Capacitado.Nombre)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Jornada.JornadaID)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Jornada.JornadaID)
+            @Html.DisplayFor(model => model.Capacitado.NombreCompleto)
         </dd>
 
         <dt>
@@ -41,6 +48,22 @@
 
         <dd>
             @Html.DisplayFor(model => model.Nota)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NotaPrevia)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NotaPrevia)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FechaVencimiento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FechaVencimiento)
         </dd>
 
     </dl>
