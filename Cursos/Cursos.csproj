@@ -348,6 +348,8 @@
     <Content Include="images\email_disabled_16x16.png" />
     <Content Include="images\empresas.png" />
     <Content Include="images\forzarContrasena_16x16.png" />
+    <Content Include="images\logos\CSL_logo_main.png" />
+    <Content Include="images\logos\UPM_logo_main.png" />
     <Content Include="images\porVencer.png" />
     <Content Include="images\porVencer_20x20.png" />
     <Content Include="images\registroCapacitacion.png" />
