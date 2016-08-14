@@ -3,15 +3,23 @@
 @{
     ViewBag.Title = "Iniciar sesión";
 }
-
+<div class="row">
+    <div class="col-sm-6">
+        <img src="~/images/logos/CSL_logo_main_h.png" class="img-responsive" alt="UPM The Biofore Company">
+    </div>
+    <div class="col-sm-6">
+        <img src="~/images/logos/UPM_logo_main_h.png" class="img-responsive" alt="UPM The Biofore Company">
+    </div>
+</div>
+<hr />
 <h2>@ViewBag.Title.</h2>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-8">
         <section id="loginForm">
             @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
             {
                 @Html.AntiForgeryToken()
-                <hr />
+                <br />
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                 <div class="form-group">
                     @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
@@ -52,15 +60,7 @@
             }
         </section>
     </div>
-    <div class="col-md-6">
-        <div class="row">
-            <div class="col-sm-6">
-                <img src="~/images/logos/UPM_logo_main.png" class="img-responsive" alt="UPM The Biofore Company">
-            </div>
-            <div class="col-sm-6">
-                <img src="~/images/logos/CSL_logo_main.png" class="img-responsive" alt="UPM The Biofore Company">
-            </div>
-    </div>
+    <div class="col-md-4" >
         @*
             <div class="col-md-4">
                 <section id="socialLoginForm">
@@ -69,6 +69,7 @@
             </div>
         *@
     </div>
+</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
