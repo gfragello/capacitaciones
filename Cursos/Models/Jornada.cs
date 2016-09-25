@@ -41,5 +41,17 @@ namespace Cursos.Models
                 return String.Format("{0} - {1} {2} - {3}", Curso.Descripcion, this.Fecha.ToShortDateString(), this.Hora, this.Lugar.AbrevLugar);
             }
         }
+
+        public DateTime ObtenerFechaVencimiento()
+        {
+            //TODO: hacer que esto sea configurable
+            //que se pueda especificar en el curso que vence el último día del año
+            //Tener en cuenta que al usar esta función desde la funcionalidad Copiar Jornada, this.Curso
+            //no estará instanciado
+            if (this.CursoId == 2)
+                return new DateTime(this.Fecha.Year, 12, 31);
+            else
+                return new DateTime(this.Fecha.Year + this.Curso.Vigencia, this.Fecha.Month, this.Fecha.Day);
+        }
     }
 }

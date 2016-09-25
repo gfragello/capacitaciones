@@ -10,6 +10,8 @@
         <a href="@Url.Action("Index") "><img src="@Url.Content("~/images/back.png")" title="Volver a la lista" /></a>
         &nbsp;&nbsp;
         @Html.ActionLink("Exportar a Excel", "Details", new { id = Model.JornadaID, exportarExcel = true })
+        &nbsp;&nbsp;
+        @Html.ActionLink("Copiar capacitados a otra jornada", "Create", new { id = Model.JornadaID })
     </p>
     @Html.Partial("_DatosModificacionPartial", Model)
     <hr />

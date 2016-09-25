@@ -256,8 +256,7 @@ namespace Cursos.Controllers
 
         private DateTime CalcularFechaVencimiento(int JornadaId)
         {
-            var j = db.Jornada.Find(JornadaId);
-            return new DateTime(j.Fecha.Year + j.Curso.Vigencia, j.Fecha.Month, j.Fecha.Day);
+            return db.Jornada.Find(JornadaId).ObtenerFechaVencimiento();
         }
 
         protected override void Dispose(bool disposing)

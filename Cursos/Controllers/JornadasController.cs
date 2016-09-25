@@ -110,12 +110,38 @@ namespace Cursos.Controllers
                 return ExportDataExcel(jornada);
         }
 
-        // GET: Jornadas/Create
-        public ActionResult Create()
+        // GET: Jornadas/Create - Si se especifica un valor en el parámtero id, se copiaran sus registros de 
+        // capacitación a la jornada creada
+        public ActionResult Create(int? id)
         {
             ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion");
             ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto");
             ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar");
+
+            ViewBag.JornadaTemplateId = id;
+
+            if (id != null)
+            {
+                //ViewBag.JornadaTemplate = db.Jornada.FirstOrDefault(j => j.JornadaID == id);
+                //ViewBag.JornadaTemplate = db.Jornada.Where(j => j.JornadaID == id).Include(j => j.RegistrosCapacitacion).FirstOrDefault();
+                //ViewBag.JornadaTemplate = db.Jornada.Find(id);
+                Jornada jornadaTemplate = db.Jornada.Find(id);
+
+                if (jornadaTemplate == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                else
+                {
+                    List<Capacitado> capacitadosTemplate = new List<Capacitado>();
+
+                    foreach (var r in jornadaTemplate.RegistrosCapacitacion)
+                    {
+                        capacitadosTemplate.Add(r.Capacitado);
+                    }
+
+                    ViewBag.CapacitadosTemplate = capacitadosTemplate;
+                }
+            }
+
             return View();
         }
 
@@ -124,16 +150,48 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,InstructorId,Hora")] Jornada jornada)
+        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,InstructorId,Hora")] Jornada jornada, int? JornadaTemplateId)
         {
             if (ModelState.IsValid)
             {
                 jornada.SetearAtributosControl();
 
+                if (JornadaTemplateId != null)
+                {
+                    Jornada jornadaTemplate = db.Jornada.Find(JornadaTemplateId);
+
+                    if (jornadaTemplate == null)
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                    foreach (var rc in jornadaTemplate.RegistrosCapacitacion)
+                    {
+                        var nuevoRC = new RegistroCapacitacion();
+                        nuevoRC.SetearAtributosControl();
+
+                        nuevoRC.Jornada = jornada;
+                        nuevoRC.Capacitado = rc.Capacitado;
+                        nuevoRC.Nota = 0;
+                        nuevoRC.Aprobado = true;
+                        nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento(); 
+
+                        db.RegistroCapacitacion.Add(nuevoRC);
+                    }
+                }
+
                 db.Jornada.Add(jornada);
                 db.SaveChanges();
 
-                return RedirectToAction("Index");
+                if (JornadaTemplateId == null)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    //jornada = db.Jornada.Find(jornada.JornadaID);
+                    //return View("Details", jornada);
+                    //return RedirectToAction("Details", jornada);
+                    return RedirectToAction("Details", "Jornadas", new { id = jornada.JornadaID });
+                }
             }
 
             ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);

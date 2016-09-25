@@ -4,10 +4,10 @@
     ViewBag.Title = "Create";
 }
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Jornada - Crear</h4>
         <hr />
@@ -53,12 +53,49 @@
             </div>
         </div>
 
+        <input type="hidden" name="JornadaTemplateId" value="@ViewBag.JornadaTemplateId" />
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Crear" class="btn btn-default" />
             </div>
         </div>
     </div>
+
+    if (ViewBag.CapacitadosTemplate != null)
+    {
+        <hr />
+
+        <h4>Se incluirán en la Jornada los siguientes capacitados</h4>
+
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    @Html.DisplayName("Capacitado")
+                </th>
+                <td></td>
+                <th>
+                    @Html.DisplayName("Empresa")
+                </th>
+            </tr>
+
+            @foreach (var item in ViewBag.CapacitadosTemplate)
+            {
+                <tr>
+                    <td>
+                        @item.DocumentoCompleto
+                    </td>
+                    <td>
+                        @item.NombreCompleto
+                    </td>
+                    <td>
+                        @item.Empresa.NombreFantasia
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
 }
 
 <div>
