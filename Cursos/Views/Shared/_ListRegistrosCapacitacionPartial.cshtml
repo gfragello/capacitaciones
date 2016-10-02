@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Cursos.Models.RegistroCapacitacion>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Documento)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Empresa)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nota)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.NotaPrevia)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Aprobado)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        string bgcolor = item.Aprobado ? "darkseagreen" : "darksalmon";
+        <tr style="background-color: @bgcolor;">
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NotaPrevia)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nota)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Aprobado)
+            </td>
+            @if (item.PuedeModificarse())
+            {
+                <td>
+                    <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>&nbsp;|
+                    <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                </td>
+            }
+            else
+            {
+                <td>&nbsp;</td>
+            }
+        </tr>
+    }
+
+</table>

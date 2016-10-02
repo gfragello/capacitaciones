@@ -471,6 +471,8 @@
     <Content Include="Views\Account\Edit.cshtml" />
     <Content Include="Views\Account\ForcePassword.cshtml" />
     <Content Include="Views\CustomTools\IngresoMasivoEmailEmpresas.cshtml" />
+    <Content Include="Views\Shared\_ListRegistrosCapacitacionPartial.cshtml" />
+    <Content Include="Views\Shared\_SeleccionarCapacitadosPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

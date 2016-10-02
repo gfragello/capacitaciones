@@ -2,5 +2,7 @@
 
 @if (!String.IsNullOrEmpty(Model.UsuarioModificacion))
 {
-    <label style="font-size:x-small;color:#808080">@String.Format("{0} - {1}", Model.UsuarioModificacion, Model.FechaModficacion.ToString()) </label>
+    <div style="text-align: right;">
+        <label style="font-size:x-small;color:#808080">@String.Format("{0} - {1}", Model.UsuarioModificacion, Model.FechaModficacion.ToString()) </label>
+    </div>
 }

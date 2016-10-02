@@ -402,5 +402,20 @@ namespace Cursos.Controllers
             else
                 return -1;
         }
+
+        //el parámetro jornadaIdExcluir indica que los capacitados que participaron de esas jornadas no pueden ser seleccionados
+        [HttpGet]
+        public ActionResult ObtenerSelecionarCapacitados(string documento,
+                                                         int jornadaIdExcluir)
+        {
+            var capacitados = db.Capacitados.Include(c => c.Empresa).Include(c => c.RegistrosCapacitacion);
+
+            if (!String.IsNullOrEmpty(documento))
+                capacitados = capacitados.Where(c => c.Documento.Contains(documento));
+
+            ViewBag.JornadaIdExcluir = jornadaIdExcluir;
+
+            return PartialView("_SeleccionarCapacitadosPartial", capacitados);
+        }
     }
 }

@@ -5,121 +5,85 @@
 }
 
 <div>
-    <h4>Jornada - Detalles</h4>
-    <p>
-        <a href="@Url.Action("Index") "><img src="@Url.Content("~/images/back.png")" title="Volver a la lista" /></a>
-        &nbsp;&nbsp;
-        @Html.ActionLink("Exportar a Excel", "Details", new { id = Model.JornadaID, exportarExcel = true })
-        &nbsp;&nbsp;
-        @Html.ActionLink("Copiar capacitados a otra jornada", "Create", new { id = Model.JornadaID })
-    </p>
+    <div style="background-color: whitesmoke; padding-left: 10px; padding-bottom: 10px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+        <table>
+            <tr>
+                <td style="vertical-align: bottom; padding-right: 10px"><h4>Jornada</h4></td>
+                <td style="padding-right: 10px"><h3><span class="label label-default" style="color: #333333; background-color: @Model.Curso.ColorDeFondo">@Html.DisplayFor(model => model.Curso.Descripcion)</span></h3></td>
+                <td style="vertical-align: bottom; padding-right: 10px"><h4>@String.Format("{0} {1} - {2} - {3}", Model.Fecha.ToShortDateString(), Model.Hora.Trim(), Model.Lugar.NombreLugar, Model.Instructor.NombreCompleto)</h4></td>
+            </tr>
+        </table>
+    </div>
+
     @Html.Partial("_DatosModificacionPartial", Model)
+
+    <p style="vertical-align: middle;">
+        <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
+        &nbsp;&nbsp;&nbsp;
+        <a href="@Url.Action("Details", new { id = Model.JornadaID, exportarExcel = true })"><span class="glyphicon glyphicon-share" style="font-size: 25px; color: #017d49"></span>&nbsp;Exportar a Excel</a>
+        &nbsp;&nbsp;&nbsp;
+        <a href="@Url.Action("Create", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-paperclip" style="font-size: 25px; color: #017d49"></span>&nbsp;Copiar capacitados a otra jornada</a>
+    </p>
+    
     <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.Label("Curso")
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Curso.Descripcion)
-        </dd>
+ </div>
 
-        <dt>
-            @Html.Label("Instructor")
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Instructor.NombreCompleto)
-        </dd>
-
-        <dt>
-            @Html.Label("Lugar")
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Lugar.NombreLugar)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Fecha)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Fecha)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Hora)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Hora)
-        </dd>
-
-    </dl>
+<div>
+    <button data-toggle="collapse" data-target="#demo" class="btn btn-default">Agregar Capacitado&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-down"></span></button>
 </div>
 
-<hr />
+<div id="demo" class="collapse well" style="background-color: whitesmoke">
+    <table>
+        <tr>
+            <td>
+                <div class="form-inline" style="margin:5px 3px;">
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Documento"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                @*
+                <button class="btn btn-default" onclick="agregarCapacitado();"><span class="glyphicon glyphicon-plus-sign"></span></button>
+                *@
+                <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span></button>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div id="dvSeleccionarCapacitados">
+        @Html.Partial("_SeleccionarCapacitadosPartial", new List<Cursos.Models.Capacitado>())
+    </div>
+</div>
+
+<br />
 
 <h4>Registros de capacitación</h4>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayName("Capacitado")
-        </th>
-        <td></td>
-        <th>
-            @Html.DisplayName("Empresa")
-        </th>
-        <th>
-            @Html.DisplayName("Nota Previa")
-        </th>
-        <th>
-            @Html.DisplayName("Nota")
-        </th>
-        <th>
-            @Html.DisplayName("Aprobado")
-        </th>
-        @if (User.Identity.IsAuthenticated)
-        {
-            <th></th> <!--Columna con acciones sobre el registro -->
-        }
-    </tr>
+<div id="dvRegistrosCapacitacion">
+    @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
+</div>
 
-    @foreach (var item in Model.RegistrosCapacitacion)
-    {
-        string bgcolor = item.Aprobado ? "darkseagreen" : "darksalmon";
-        <tr style="background-color: @bgcolor;">
-            <td>
-                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NotaPrevia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nota)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Aprobado)
-            </td>
-            @if (item.PuedeModificarse())
-            {
-                <td>
-                    <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>&nbsp;|
-                    <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
-                </td>
-            }
-            else
-            {
-                <td>&nbsp;</td>
-            }
-        </tr>
-    }
-</table>
+@section Scripts {
+    <script type="text/javascript">
+
+        function buscarCapacitados()
+        {
+            var documento = $("#documento").val();
+            $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerSelecionarCapacitados", "Capacitados",null, Request.Url.Scheme))?documento=' + documento + '&jornadaIdExcluir=' + @Model.JornadaID);
+        }
+
+        function seleccionarCapacitado(capacitadoId)
+        {
+            $("#dvRegistrosCapacitacion").load('@(Url.Action("AgregarYObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID + '&capacitadoId=' + capacitadoId);
+            buscarCapacitados();
+        }
+
+    </script>
+}

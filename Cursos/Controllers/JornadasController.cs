@@ -11,6 +11,7 @@ using OfficeOpenXml;
 using System.IO;
 using System.Drawing;
 using PagedList;
+using System.Threading.Tasks;
 
 namespace Cursos.Controllers
 {
@@ -122,9 +123,6 @@ namespace Cursos.Controllers
 
             if (id != null)
             {
-                //ViewBag.JornadaTemplate = db.Jornada.FirstOrDefault(j => j.JornadaID == id);
-                //ViewBag.JornadaTemplate = db.Jornada.Where(j => j.JornadaID == id).Include(j => j.RegistrosCapacitacion).FirstOrDefault();
-                //ViewBag.JornadaTemplate = db.Jornada.Find(id);
                 Jornada jornadaTemplate = db.Jornada.Find(id);
 
                 if (jornadaTemplate == null)
@@ -285,6 +283,32 @@ namespace Cursos.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        [HttpGet]
+        public ActionResult AgregarYObtenerRegistrosCapacitacionJornada(int jornadaId, int capacitadoId)
+        {
+            var jornada = db.Jornada.Find(jornadaId);
+            var capacitado = db.Capacitados.Find(capacitadoId);
+
+            if (jornada == null || capacitado == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            RegistroCapacitacion registroCapacitacion = new RegistroCapacitacion
+                                                        {
+                                                            Jornada = jornada,
+                                                            Capacitado = capacitado,
+                                                            Nota = 0,
+                                                            Aprobado = true,
+                                                            FechaVencimiento = jornada.ObtenerFechaVencimiento()
+                                                        };
+
+            registroCapacitacion.SetearAtributosControl();
+            db.RegistroCapacitacion.Add(registroCapacitacion);
+
+            db.SaveChanges();
+            
+            return PartialView("_ListRegistrosCapacitacionPartial", jornada.RegistrosCapacitacion.ToList());
         }
 
         private ActionResult ExportDataExcel(Jornada j)
