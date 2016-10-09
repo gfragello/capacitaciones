@@ -91,7 +91,9 @@ namespace Cursos.Controllers
         }
 
         // GET: Jornadas/Details/5
-        public ActionResult Details(int? id, bool? exportarExcel)
+        public ActionResult Details(int? id, 
+                                    bool? exportarExcel,
+                                    bool? generarActa)
         {
             if (id == null)
             {
@@ -103,12 +105,17 @@ namespace Cursos.Controllers
                 return HttpNotFound();
             }
 
-            bool exportar = exportarExcel != null ? (bool)exportarExcel : false;
+            bool excel = exportarExcel != null ? (bool)exportarExcel : false;
+            bool acta = generarActa != null ? (bool)generarActa : false;
 
-            if (!exportar)
-                return View(jornada);
-            else
+            if (excel)
                 return ExportDataExcel(jornada);
+
+            if (acta)
+                return GenerarActa(jornada);
+
+            return View(jornada);
+                
         }
 
         // GET: Jornadas/Create - Si se especifica un valor en el parámtero id, se copiaran sus registros de 
@@ -285,28 +292,38 @@ namespace Cursos.Controllers
             base.Dispose(disposing);
         }
 
-        [HttpGet]
-        public ActionResult AgregarYObtenerRegistrosCapacitacionJornada(int jornadaId, int capacitadoId)
+        public ActionResult AgregarRegistroCapacitacion(int jornadaId, int capacitadoId)
         {
             var jornada = db.Jornada.Find(jornadaId);
             var capacitado = db.Capacitados.Find(capacitadoId);
 
             if (jornada == null || capacitado == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return Json(false, JsonRequestBehavior.AllowGet);
 
             RegistroCapacitacion registroCapacitacion = new RegistroCapacitacion
-                                                        {
-                                                            Jornada = jornada,
-                                                            Capacitado = capacitado,
-                                                            Nota = 0,
-                                                            Aprobado = true,
-                                                            FechaVencimiento = jornada.ObtenerFechaVencimiento()
-                                                        };
+            {
+                Jornada = jornada,
+                Capacitado = capacitado,
+                Nota = 0,
+                Aprobado = true,
+                FechaVencimiento = jornada.ObtenerFechaVencimiento()
+            };
 
             registroCapacitacion.SetearAtributosControl();
             db.RegistroCapacitacion.Add(registroCapacitacion);
 
             db.SaveChanges();
+
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult ObtenerRegistrosCapacitacionJornada(int jornadaId)
+        {
+            var jornada = db.Jornada.Find(jornadaId);
+
+            if (jornada == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             
             return PartialView("_ListRegistrosCapacitacionPartial", jornada.RegistrosCapacitacion.ToList());
         }
@@ -367,70 +384,6 @@ namespace Cursos.Controllers
                     i++;
                 }
 
-                /*
-                var bgColor = Color.White;
-
-                foreach (var c in capacitados)
-                {
-                    ws.Cells[i, 1].Value = c.Apellido;
-                    ws.Cells[i, 2].Value = c.Nombre;
-                    ws.Cells[i, 3].Value = c.DocumentoCompleto;
-                    ws.Cells[i, 4].Value = c.Empresa.NombreFantasia;
-
-                    var rowsToMerge = 0;
-
-                    foreach (var r in c.UltimoRegistroCapacitacionPorCurso(CursoID))
-                    {
-                        ws.Cells[i, 5].Value = r.Jornada.JornadaIdentificacionCompleta;
-                        ws.Cells[i, 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws.Cells[i, 5].Style.Fill.BackgroundColor.SetColor(Color.FromName(r.Jornada.Curso.ColorDeFondo));
-
-                        ws.Cells[i, 6].Value = r.Jornada.Instructor.NombreCompleto;
-                        ws.Cells[i, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws.Cells[i, 6].Style.Fill.BackgroundColor.SetColor(Color.FromName(r.Jornada.Curso.ColorDeFondo));
-
-                        rowsToMerge++;
-                        i++;
-                    }
-
-                    //se hace un merge para que los datos del capacitado abarquen los rows de los datos de los últimos cursos y para setear el background color
-                    if (rowsToMerge > 1)
-                    {
-                        var rowMergeStart = i - rowsToMerge;
-                        var rowMergeEnd = i - 1;
-
-                        for (int col = 1; col <= 4; col++)
-                        {
-                            if (bgColor != Color.White) //blanco es el color del renglón por defecto, por lo que no es necesario hacer nada si corresponde ese color
-                            {
-                                ws.Cells[rowMergeStart, col, rowMergeEnd, col].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                                ws.Cells[rowMergeStart, col, rowMergeEnd, col].Style.Fill.BackgroundColor.SetColor(bgColor);
-                            }
-
-                            ws.Cells[rowMergeStart, col, rowMergeEnd, col].Merge = true;
-                            ws.Cells[rowMergeStart, col, rowMergeEnd, col].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
-                        }
-
-                        //se seleccionan las celdas con los datos del capacitado y las celdas con los registros de capacitación
-                        ws.Cells[rowMergeStart, 1, rowMergeEnd, 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                    }
-                    else //se selecciona el único renglón del capacitado para setear el background color.
-                    {
-                        if (bgColor != Color.White)
-                        {
-                            ws.Cells[i - 1, 1, i - 1, 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                            ws.Cells[i - 1, 1, i - 1, 4].Style.Fill.BackgroundColor.SetColor(bgColor);
-                        }
-
-                        ws.Cells[i - 1, 1, i - 1, 6].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-                    }
-
-                    bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
-
-                    if (c.UltimoRegistroCapacitacionPorCurso(CursoID).Count() == 0)
-                        i++;
-                }
-                */
                 ws.Cells[ws.Dimension.Address].AutoFitColumns();
 
                 var stream = new MemoryStream();
@@ -443,5 +396,161 @@ namespace Cursos.Controllers
                 return File(stream, contentType, fileName);
             }
         }
+
+        private ActionResult GenerarActa(Jornada j)
+        {
+            const int totalCapacitadosPorActa = 25;
+            const int heightSeparaciónCabezal = 15;
+
+            const int heightDetalleCapacitado = 30;
+
+            const int rowHeaderCapacitados = 3;
+
+            const int colOrdinal =         1;
+            const int colNombre =          2;
+            const int colApellido =        3;
+            const int colTipoDocumento =   4;
+            const int colDocumento =       5;
+            const int colFechaNacimiento = 6;
+            const int colEmpresa =         7;
+            const int colFirma =           8;
+            const int colAprobado =        9;
+            const int colNota =           10;
+
+            const int widthOrdinal = 8;
+            const int widthFirma = 27;
+
+            const int breakRow = 30;
+            const int breakCol = 10;
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add(j.Curso.Descripcion);
+
+                //se setea el cabezal de los capacitados
+                ws.Cells[rowHeaderCapacitados, colNombre].Value = "Nombre";
+                ws.Cells[rowHeaderCapacitados, colApellido].Value = "Apellido";
+                ws.Cells[rowHeaderCapacitados, colTipoDocumento].Value = "Tipo";
+                ws.Cells[rowHeaderCapacitados, colDocumento].Value = "Documento";
+                ws.Cells[rowHeaderCapacitados, colFechaNacimiento].Value = "Fecha Nac";
+                ws.Cells[rowHeaderCapacitados, colEmpresa].Value = "Empresa";
+                ws.Cells[rowHeaderCapacitados, colFirma].Value = "Firma";
+
+                //se setea el estilo del cabezal de los capacitados
+                ws.Cells[rowHeaderCapacitados, colOrdinal, rowHeaderCapacitados, colNota].Style.Font.Bold = true;
+                ws.Row(rowHeaderCapacitados).Height = heightDetalleCapacitado;
+
+                int ordinal = 1;
+                int rowActual = rowHeaderCapacitados + 1;
+
+                foreach (var r in j.RegistrosCapacitacion)
+                {
+                    ws.Cells[rowActual, colOrdinal].Value = ordinal;
+                    ws.Cells[rowActual, colOrdinal].Style.Font.Bold = true;
+                    ws.Cells[rowActual, colOrdinal].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    ws.Cells[rowActual, colNombre].Value = r.Capacitado.Nombre;
+                    ws.Cells[rowActual, colApellido].Value = r.Capacitado.Apellido;
+                    ws.Cells[rowActual, colTipoDocumento].Value = r.Capacitado.TipoDocumento.Abreviacion;
+                    ws.Cells[rowActual, colDocumento].Value = r.Capacitado.Documento;
+
+                    if (r.Capacitado.Fecha != null)
+                        ws.Cells[rowActual, colFechaNacimiento].Value = ((DateTime)r.Capacitado.Fecha).ToShortDateString();
+
+                    ws.Cells[rowActual, colEmpresa].Value = r.Capacitado.Empresa.NombreFantasia;
+
+                    ws.Row(rowActual).Height = heightDetalleCapacitado;
+
+                    ordinal++;
+                    rowActual++;
+                }
+
+                while (ordinal <= totalCapacitadosPorActa)
+                {
+                    ws.Cells[rowActual, colOrdinal].Value = ordinal;
+                    ws.Cells[rowActual, colOrdinal].Style.Font.Bold = true;
+                    ws.Cells[rowActual, colOrdinal].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    ws.Row(rowActual).Height = heightDetalleCapacitado;
+
+                    ordinal++;
+                    rowActual++;
+                }
+
+                var rangoContenido = ws.Cells[rowHeaderCapacitados, colOrdinal, rowActual - 1, colNota];
+
+                rangoContenido.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+
+                rangoContenido.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                rangoContenido.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                rangoContenido.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                rangoContenido.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+
+                //seteo de anchos de columna
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+                ws.Column(colFirma).Width = widthFirma;
+                ws.Column(colOrdinal).Width = widthOrdinal;
+
+                //seteo de los parámetros de impresión
+                ws.PrinterSettings.PaperSize = ePaperSize.A4;
+                ws.PrinterSettings.Orientation = eOrientation.Portrait;
+                ws.PrinterSettings.FitToPage = true;
+
+                AgregarEncuestaActa(ws);
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = String.Format("ACTA {0} {1}.xlsx", j.Curso.Descripcion, j.FechaFormatoYYYYYMMDD);
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
+        }
+
+        private void AgregarEncuestaActa(ExcelWorksheet ws)
+        {
+            const int colInicioEncuesta = 1;
+            const int colFinEncuesta = 10;
+            const int rowInicioEncuesta = 32;
+            const int rowFinEncuesta = 34;
+
+            ws.Cells[rowInicioEncuesta, colInicioEncuesta, rowFinEncuesta, colFinEncuesta].Merge = true;
+
+            AgregarOpcionEncuesta(ws, "Malo", "Malo", rowInicioEncuesta, colInicioEncuesta);
+
+            //Regular
+            //Bueno
+            //MuyBueno
+            //Excelente
+        }
+
+        private void AgregarOpcionEncuesta(ExcelWorksheet ws, string label, string nombreShape, int rowPos, int colPos)
+        {
+            double widthShapeLabel = label.Length * 12.5;
+            const int heightShapeLabel = 30;
+
+            const int widthShapeOpcion = 30;
+            const int heightShapeOpcion = 30;
+
+            var shapeLabel = ws.Drawings.AddShape(String.Format("lblOpcion{0}", nombreShape), eShapeStyle.Rect);
+            shapeLabel.SetPosition(rowPos, 5, colPos, 0);
+            shapeLabel.SetSize((int)widthShapeLabel, heightShapeLabel);
+
+            shapeLabel.Text = label;
+
+            var shapeOpcion = ws.Drawings.AddShape(String.Format("txtOpcion{0}", nombreShape), eShapeStyle.Rect);
+            //shapeOpcion.SetPosition(rowPos, 0, colPos, (int)widthShapeLabel + 5);
+            shapeOpcion.SetPosition(rowPos, 0, 2, 0);
+            shapeOpcion.SetSize(widthShapeOpcion, heightShapeOpcion);
+
+            shapeOpcion.Border.Fill.Style = eFillStyle.SolidFill;
+            shapeOpcion.Border.LineStyle = OfficeOpenXml.Drawing.eLineStyle.Solid;
+            shapeOpcion.Border.Width = 1;
+            shapeOpcion.Border.Fill.Color = Color.Black;
+            shapeOpcion.Fill.Color = Color.White;
+        }
+
     }
 }

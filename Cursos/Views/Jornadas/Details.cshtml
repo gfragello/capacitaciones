@@ -23,6 +23,8 @@
         <a href="@Url.Action("Details", new { id = Model.JornadaID, exportarExcel = true })"><span class="glyphicon glyphicon-share" style="font-size: 25px; color: #017d49"></span>&nbsp;Exportar a Excel</a>
         &nbsp;&nbsp;&nbsp;
         <a href="@Url.Action("Create", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-paperclip" style="font-size: 25px; color: #017d49"></span>&nbsp;Copiar capacitados a otra jornada</a>
+        &nbsp;&nbsp;&nbsp;
+        <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })"><span class="glyphicon glyphicon-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Generar Acta</a>
     </p>
     
     <hr />
@@ -30,7 +32,7 @@
  </div>
 
 <div>
-    <button data-toggle="collapse" data-target="#demo" class="btn btn-default">Agregar Capacitado&nbsp;&nbsp;<span class="glyphicon glyphicon-chevron-down"></span></button>
+    <button data-toggle="collapse" data-target="#demo" class="btn btn-default" onclick="toggleImgAgregarCapacitadoChevron();">Agregar Capacitado&nbsp;&nbsp;<span id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
 </div>
 
 <div id="demo" class="collapse well" style="background-color: whitesmoke">
@@ -49,9 +51,6 @@
                 </div>
             </td>
             <td>
-                @*
-                <button class="btn btn-default" onclick="agregarCapacitado();"><span class="glyphicon glyphicon-plus-sign"></span></button>
-                *@
                 <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span></button>
             </td>
         </tr>
@@ -73,16 +72,45 @@
 @section Scripts {
     <script type="text/javascript">
 
+        function toggleImgAgregarCapacitadoChevron()
+        {
+            $("#imgAgregarCapacitadoChevron").class = 'glyphicon glyphicon-chevron-up';
+            //id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+        }
+
         function buscarCapacitados()
         {
             var documento = $("#documento").val();
-            $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerSelecionarCapacitados", "Capacitados",null, Request.Url.Scheme))?documento=' + documento + '&jornadaIdExcluir=' + @Model.JornadaID);
+
+            if (documento != '')
+            {
+                $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerCargando", "CustomTools"))');
+                $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerSelecionarCapacitados", "Capacitados",null, Request.Url.Scheme))?documento=' + documento + '&jornadaIdExcluir=' + @Model.JornadaID);
+            }
+            else
+            {
+                $("#dvSeleccionarCapacitados").html('<div class="alert alert-warning"><strong>Atención!</strong> Debe ingresar un documento para hacer la búsqueda.</div>');
+            }
         }
 
         function seleccionarCapacitado(capacitadoId)
         {
-            $("#dvRegistrosCapacitacion").load('@(Url.Action("AgregarYObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID + '&capacitadoId=' + capacitadoId);
-            buscarCapacitados();
+            var jornadaId = @Model.JornadaID;
+            $.ajax({
+                url: '/Jornadas/AgregarRegistroCapacitacion',
+                type: "GET",
+                dataType: "JSON",
+                data: { jornadaId: jornadaId,
+                        capacitadoId: capacitadoId },
+                success: function (resultadoOK)
+                         {
+                            if (resultadoOK)
+                            {
+                                $("#dvRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+                                buscarCapacitados();
+                            }
+                         }
+            });
         }
 
     </script>

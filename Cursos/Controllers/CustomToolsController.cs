@@ -1150,5 +1150,11 @@ namespace Cursos.Controllers
             return jornada;
         }
 
+        [HttpGet]
+        public ActionResult ObtenerCargando()
+        {
+            return PartialView("_CargandoPartial");
+        }
+
     }
 }

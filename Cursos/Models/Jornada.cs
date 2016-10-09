@@ -42,6 +42,15 @@ namespace Cursos.Models
             }
         }
 
+        [NotMapped]
+        public string FechaFormatoYYYYYMMDD
+        {
+            get
+            {
+                return String.Format("{0}{1}{2}", this.Fecha.Year.ToString(), this.Fecha.Month.ToString(), this.Fecha.Year.ToString());
+            }
+        }
+
         public DateTime ObtenerFechaVencimiento()
         {
             //TODO: hacer que esto sea configurable

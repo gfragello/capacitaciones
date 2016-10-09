@@ -381,6 +381,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="images\cargando.gif" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -473,6 +474,7 @@
     <Content Include="Views\CustomTools\IngresoMasivoEmailEmpresas.cshtml" />
     <Content Include="Views\Shared\_ListRegistrosCapacitacionPartial.cshtml" />
     <Content Include="Views\Shared\_SeleccionarCapacitadosPartial.cshtml" />
+    <Content Include="Views\Shared\_CargandoPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
