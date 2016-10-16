@@ -46,12 +46,11 @@
                         </div>
                         <div class="col-md-10">
                             @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
+                            &nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span>&nbsp;Buscar</button>
                         </div>
                     </div>
                 </div>
-            </td>
-            <td>
-                <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span></button>
             </td>
         </tr>
     </table>
@@ -74,8 +73,8 @@
 
         function toggleImgAgregarCapacitadoChevron()
         {
-            $("#imgAgregarCapacitadoChevron").class = 'glyphicon glyphicon-chevron-up';
-            //id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+            $("#imgAgregarCapacitadoChevron").toggleClass("glyphicon-chevron-up");
+            $("#imgAgregarCapacitadoChevron").toggleClass("glyphicon-chevron-down");
         }
 
         function buscarCapacitados()

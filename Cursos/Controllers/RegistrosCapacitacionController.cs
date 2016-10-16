@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Cursos.Models;
+using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
@@ -111,7 +112,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateWithCapacitado([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion)
+        public ActionResult CreateWithCapacitado([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion)
         {
             if (ModelState.IsValid)
             {
@@ -188,7 +189,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion, 
+        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion, 
                                   string PreviousUrl)
         {
             if (ModelState.IsValid)
@@ -197,8 +198,6 @@ namespace Cursos.Controllers
 
                 db.Entry(registroCapacitacion).State = EntityState.Modified;
                 db.SaveChanges();
-                //return RedirectToAction(PreviousUrl);
-                //return RedirectToRoute(PreviousUrl);
 
                 if (!String.IsNullOrEmpty(PreviousUrl))
                     return Redirect(PreviousUrl);

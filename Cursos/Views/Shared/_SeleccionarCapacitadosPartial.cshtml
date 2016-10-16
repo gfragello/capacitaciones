@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Cursos.Models.Capacitado>
+@using Cursos.Helpers;
 
 @if (Model.Count() > 0)
 {
@@ -21,6 +22,7 @@
 
         @foreach (var item in Model)
         {
+            var registroCapacitacionEnJornadaActual = item.RegistrosCapacitacion.Where(r => r.JornadaID == ViewBag.JornadaIdExcluir).FirstOrDefault();
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Apellido)
@@ -35,13 +37,15 @@
                     @Html.DisplayFor(modelItem => item.Empresa.NombreFantasia)
                 </td>
                 <td>
-                    @if (item.RegistrosCapacitacion.Where(r => r.JornadaID == ViewBag.JornadaIdExcluir).Count() == 0)
+                    @*Si el capacitado aún no había sido agregado a la Jornada actual*@
+                    @if (registroCapacitacionEnJornadaActual == null)
                     { 
                         <a href="javascript:seleccionarCapacitado(@item.CapacitadoID);"><span class="glyphicon glyphicon-plus-sign"></span></a>
                     }
                     else
-                    { 
-                        <span class="label label-success">Incripto</span>
+                    {
+                        string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(registroCapacitacionEnJornadaActual.Estado);
+                        <span class="label @labelClass">@registroCapacitacionEnJornadaActual.Estado</span>
                     }
                 </td>
             </tr>

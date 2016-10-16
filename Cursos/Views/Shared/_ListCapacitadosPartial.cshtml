@@ -61,9 +61,9 @@
                 {
                     string bgcolor = c.ColorDeFondo != null ? c.ColorDeFondo : "whitesmoke";
 
-                    if (item.UltimoRegistroCapacitacionPorCurso(c.CursoID).Count > 0)
+                    if (item.UltimoRegistroCapacitacionPorCurso(c.CursoID, true).Count > 0)
                     {
-                        var r = item.UltimoRegistroCapacitacionPorCurso(c.CursoID)[0];
+                        var r = item.UltimoRegistroCapacitacionPorCurso(c.CursoID, true)[0];
 
                         string srcImagen = string.Empty;
                         string titleTexto = string.Empty;

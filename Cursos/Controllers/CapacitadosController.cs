@@ -337,9 +337,9 @@ namespace Cursos.Controllers
 
                     foreach (var curso in cursos)
                     {
-                        if (c.UltimoRegistroCapacitacionPorCurso(curso.CursoID).Count > 0)
+                        if (c.UltimoRegistroCapacitacionPorCurso(curso.CursoID, true).Count > 0)
                         {
-                            var r = c.UltimoRegistroCapacitacionPorCurso(curso.CursoID)[0];
+                            var r = c.UltimoRegistroCapacitacionPorCurso(curso.CursoID, true)[0];
 
                             ws.Cells[i, j].Value = r.FechaVencimiento.ToShortDateString();
 

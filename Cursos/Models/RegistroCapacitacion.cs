@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using Cursos.Models.Enums;
 
 namespace Cursos.Models
 {
@@ -44,6 +45,8 @@ namespace Cursos.Models
         [Display(Name = "Fecha Vencimiento")]
         [Required(ErrorMessage = "Debe ingresar la {0}")]
         public DateTime FechaVencimiento { get; set; }
+
+        public EstadosRegistroCapacitacion Estado { get; set; }
 
         /*
         public int EmpresaID { get; set; }

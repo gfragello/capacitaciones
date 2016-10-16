@@ -196,6 +196,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
+    <Compile Include="Helpers\EstadosRegistroCapacitacionHelper.cs" />
     <Compile Include="Helpers\UsuarioHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Migrations\201602211431159_InitialCreate.cs" />
@@ -274,6 +275,14 @@
     <Compile Include="Migrations\201606262300253_Elemento_Acceso_Controlado_Empresa.Designer.cs">
       <DependentUpon>201606262300253_Elemento_Acceso_Controlado_Empresa.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201610101458149_Notas_Cursos.cs" />
+    <Compile Include="Migrations\201610101458149_Notas_Cursos.Designer.cs">
+      <DependentUpon>201610101458149_Notas_Cursos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610131920025_Estados_RegistrosCapasitacion.cs" />
+    <Compile Include="Migrations\201610131920025_Estados_RegistrosCapasitacion.Designer.cs">
+      <DependentUpon>201610131920025_Estados_RegistrosCapasitacion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -284,6 +293,7 @@
     <Compile Include="Models\ElementoAccesoControlado.cs" />
     <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\EmpresaUsuario.cs" />
+    <Compile Include="Models\Enums\EstadosRegistroCapacitacion.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Instructor.cs" />
     <Compile Include="Models\Jornada.cs" />
@@ -543,6 +553,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201606262300253_Elemento_Acceso_Controlado_Empresa.resx">
       <DependentUpon>201606262300253_Elemento_Acceso_Controlado_Empresa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610101458149_Notas_Cursos.resx">
+      <DependentUpon>201610101458149_Notas_Cursos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610131920025_Estados_RegistrosCapasitacion.resx">
+      <DependentUpon>201610131920025_Estados_RegistrosCapasitacion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -400,7 +400,21 @@ namespace Cursos.Controllers
         private ActionResult GenerarActa(Jornada j)
         {
             const int totalCapacitadosPorActa = 25;
-            const int heightSeparaciónCabezal = 15;
+            const int heightSeparaciónCabezal = 40;
+
+            const int colLabelCapacitacion = 2;
+            const int colCurso = 3;
+
+            const int colLabelLugar = 5;
+            const int colLugar = 6;
+
+            const int colFecha = 8;
+
+            const int colLabelInstructor = 7;
+            const int rowLabelInstructor = 30;
+
+            const int colInstructor = 8;
+            const int rowInstructor = 30;
 
             const int heightDetalleCapacitado = 30;
 
@@ -417,15 +431,44 @@ namespace Cursos.Controllers
             const int colAprobado =        9;
             const int colNota =           10;
 
+            const int colRangoPuntajesDesde = 9;
+            const int colRangoPuntajeHasta = 10;
+
             const int widthOrdinal = 8;
             const int widthFirma = 27;
-
-            const int breakRow = 30;
-            const int breakCol = 10;
 
             using (ExcelPackage package = new ExcelPackage())
             {
                 var ws = package.Workbook.Worksheets.Add(j.Curso.Descripcion);
+
+                //se setea el label Capacitación, donde se indica además el curso
+                ws.Cells[1, colLabelCapacitacion].Value = "Capacitación: ";
+                ws.Cells[1, colLabelCapacitacion].Style.Font.Bold = true;
+
+                ws.Cells[1, colCurso].Value = j.Curso.Descripcion;
+                ws.Cells[1, colCurso].Style.Font.Bold = true;
+                ws.Cells[1, colCurso].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                ws.Cells[1, colCurso].Style.Font.Color.SetColor(Color.White);
+                ws.Cells[1, colCurso].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells[1, colCurso].Style.Fill.BackgroundColor.SetColor(Color.FromName(j.Curso.ColorDeFondo));
+
+                ws.Cells[1, colLabelCapacitacion, 1, colCurso].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                //se muestra la información del lugar
+                ws.Cells[1, colLabelLugar].Value = "Lugar: ";
+                ws.Cells[1, colLabelLugar].Style.Font.Bold = true;
+
+                ws.Cells[1, colLugar].Value = j.Lugar.NombreLugar;
+                ws.Cells[1, colLugar].Style.Font.Bold = true;
+
+                ws.Cells[1, colLabelLugar, 1, colLugar].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                //se muetsra la fecha
+                ws.Cells[1, colFecha].Value = String.Format("{0}: {1}", "Fecha", j.Fecha.ToShortDateString());
+                ws.Cells[1, colFecha].Style.Font.Bold = true;
+                ws.Cells[1, colFecha].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                ws.Row(2).Height = heightSeparaciónCabezal;
 
                 //se setea el cabezal de los capacitados
                 ws.Cells[rowHeaderCapacitados, colNombre].Value = "Nombre";
@@ -436,8 +479,17 @@ namespace Cursos.Controllers
                 ws.Cells[rowHeaderCapacitados, colEmpresa].Value = "Empresa";
                 ws.Cells[rowHeaderCapacitados, colFirma].Value = "Firma";
 
+                ws.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajesDesde].Value = String.Format("Max {0} \r\nMín {1}", j.Curso.PuntajeMaximo.ToString(), j.Curso.PuntajeMinimo.ToString());
+                ws.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajeHasta].Merge = true;
+                //esto permite que en la celda se tengan en cuenta los caracteres de escape de nueva línea
+                ws.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajeHasta].Style.WrapText = true;
+
                 //se setea el estilo del cabezal de los capacitados
-                ws.Cells[rowHeaderCapacitados, colOrdinal, rowHeaderCapacitados, colNota].Style.Font.Bold = true;
+                var cellsHeaderCapacitados = ws.Cells[rowHeaderCapacitados, colOrdinal, rowHeaderCapacitados, colNota];
+
+                cellsHeaderCapacitados.Style.Font.Bold = true;
+                cellsHeaderCapacitados.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
                 ws.Row(rowHeaderCapacitados).Height = heightDetalleCapacitado;
 
                 int ordinal = 1;
@@ -496,7 +548,11 @@ namespace Cursos.Controllers
                 ws.PrinterSettings.Orientation = eOrientation.Portrait;
                 ws.PrinterSettings.FitToPage = true;
 
-                AgregarEncuestaActa(ws);
+                //se muestra el nombre del instructor
+                ws.Cells[rowInstructor, colInstructor].Value = String.Format("{0}: {1}", "Instructor", j.Instructor.NombreCompleto);
+                ws.Cells[rowInstructor, colInstructor].Style.Font.Bold = true;
+
+                AgregarEncuestaActa(ws, "ENCUESTA: Cómo consideraron el curso los asistentes");
 
                 var stream = new MemoryStream();
                 package.SaveAs(stream);
@@ -509,47 +565,59 @@ namespace Cursos.Controllers
             }
         }
 
-        private void AgregarEncuestaActa(ExcelWorksheet ws)
+        private void AgregarEncuestaActa(ExcelWorksheet ws, string tituloEncuesta)
         {
-            const int colInicioEncuesta = 1;
-            const int colFinEncuesta = 10;
+            const int rowTituloEncuesta = 31;
+            const int colTituloEncuesta = 2;
+
             const int rowInicioEncuesta = 32;
-            const int rowFinEncuesta = 34;
 
-            ws.Cells[rowInicioEncuesta, colInicioEncuesta, rowFinEncuesta, colFinEncuesta].Merge = true;
+            //se inicializa el título de la encuesta
+            var celdaTitulo = ws.Cells[rowTituloEncuesta, colTituloEncuesta];
+            celdaTitulo.Value = tituloEncuesta;
+            celdaTitulo.Style.Font.Bold = true;
 
-            AgregarOpcionEncuesta(ws, "Malo", "Malo", rowInicioEncuesta, colInicioEncuesta);
+            int rowActual = rowInicioEncuesta;
+            ws.Row(rowActual + 1).Height = 30;
+            AgregarOpcionEncuesta(ws, "Malo: ", "Malo", rowActual);
 
-            //Regular
-            //Bueno
-            //MuyBueno
-            //Excelente
+            rowActual++;
+            ws.Row(rowActual + 1).Height = 30;
+            AgregarOpcionEncuesta(ws, "Regular: ", "Regular", rowActual);
+
+            rowActual++;
+            ws.Row(rowActual + 1).Height = 30;
+            AgregarOpcionEncuesta(ws, "Bueno: ", "Bueno", rowActual);
+
+            rowActual++;
+            ws.Row(rowActual + 1).Height = 30;
+            AgregarOpcionEncuesta(ws, "Muy Bueno: ", "MuyBueno", rowActual);
+
+            rowActual++;
+            ws.Row(rowActual + 1).Height = 30;
+            AgregarOpcionEncuesta(ws, "Excelente: ", "Excelente", rowActual);
         }
 
-        private void AgregarOpcionEncuesta(ExcelWorksheet ws, string label, string nombreShape, int rowPos, int colPos)
+        private void AgregarOpcionEncuesta(ExcelWorksheet ws, string label, string nombreShape, int rowPos)
         {
-            double widthShapeLabel = label.Length * 12.5;
-            const int heightShapeLabel = 30;
+            const int colPos = 1;
 
-            const int widthShapeOpcion = 30;
+            const int widthShapeOpcion = 150;
             const int heightShapeOpcion = 30;
 
-            var shapeLabel = ws.Drawings.AddShape(String.Format("lblOpcion{0}", nombreShape), eShapeStyle.Rect);
-            shapeLabel.SetPosition(rowPos, 5, colPos, 0);
-            shapeLabel.SetSize((int)widthShapeLabel, heightShapeLabel);
-
-            shapeLabel.Text = label;
-
             var shapeOpcion = ws.Drawings.AddShape(String.Format("txtOpcion{0}", nombreShape), eShapeStyle.Rect);
-            //shapeOpcion.SetPosition(rowPos, 0, colPos, (int)widthShapeLabel + 5);
-            shapeOpcion.SetPosition(rowPos, 0, 2, 0);
+            shapeOpcion.SetPosition(rowPos, 0, colPos, 0);
             shapeOpcion.SetSize(widthShapeOpcion, heightShapeOpcion);
+
+            shapeOpcion.Text = label;
 
             shapeOpcion.Border.Fill.Style = eFillStyle.SolidFill;
             shapeOpcion.Border.LineStyle = OfficeOpenXml.Drawing.eLineStyle.Solid;
             shapeOpcion.Border.Width = 1;
             shapeOpcion.Border.Fill.Color = Color.Black;
             shapeOpcion.Fill.Color = Color.White;
+            shapeOpcion.Font.Color = Color.Black;
+            shapeOpcion.Font.Bold = true;
         }
 
     }

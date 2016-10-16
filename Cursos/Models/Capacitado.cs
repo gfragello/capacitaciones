@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Cursos.Models.Enums;
 
 namespace Cursos.Models
 {
@@ -72,7 +73,7 @@ namespace Cursos.Models
 
         public List<RegistroCapacitacion> RegistrosCapacitacion { get; set; }
 
-        public List<RegistroCapacitacion> UltimoRegistroCapacitacionPorCurso(int? CursoID)
+        public List<RegistroCapacitacion> UltimoRegistroCapacitacionPorCurso(int? CursoID, bool soloEvaluados = true)
         {
             List<RegistroCapacitacion> registrosCapacitacionRet = new List<RegistroCapacitacion>();
 
@@ -81,11 +82,15 @@ namespace Cursos.Models
             if (CursoID != null && CursoID != -1)
                 registrosCapacitacion = registrosCapacitacion.Where(r => r.Jornada.CursoId == CursoID).ToList();
 
+            if (soloEvaluados)
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.Estado == EstadosRegistroCapacitacion.Aprobado ||
+                                                                         r.Estado == EstadosRegistroCapacitacion.NoAprobado).ToList();
+
             registrosCapacitacion = registrosCapacitacion.OrderBy(r => r.Jornada.CursoId).ThenByDescending(r => r.Jornada.Fecha).ToList();
 
             int cursoIdActual = -1;
 
-            foreach (var r in registrosCapacitacion)
+            foreach (var r in registrosCapacitacion.ToList())
             {
                 if (r.Jornada.CursoId != cursoIdActual)
                 {

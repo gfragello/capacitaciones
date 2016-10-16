@@ -33,6 +33,18 @@ namespace Cursos.Models
         [Display(Name = "Color de Fondo")]
         public string ColorDeFondo { get; set; }
 
+        //TODO: agregar las siguientes propiedades en las pantallas de edición y creación de cursos
+
+        [Required(AllowEmptyStrings = false)]
+        [Display(Name = "Evaluación con nota")]
+        public bool EvaluacionConNota { get; set; }
+
+        [Display(Name = "Puntaje Máximo")]
+        public int PuntajeMaximo { get; set; }
+
+        [Display(Name = "Puntaje Mínimo")]
+        public int PuntajeMinimo { get; set; }
+
         public virtual List<Jornada> Jornadas { get; set; }
     }
 }
