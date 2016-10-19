@@ -31,38 +31,49 @@
 
  </div>
 
-<div>
-    <button data-toggle="collapse" data-target="#demo" class="btn btn-default" onclick="toggleImgAgregarCapacitadoChevron();">Agregar Capacitado&nbsp;&nbsp;<span id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
-</div>
+@if (Model.PuedeModificarse())
+{
+    <div>
+        <button data-toggle="collapse" data-target="#demo" class="btn btn-default" onclick="toggleImgAgregarCapacitadoChevron();">Agregar Capacitado&nbsp;&nbsp;<span id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+    </div>
 
-<div id="demo" class="collapse well" style="background-color: whitesmoke">
-    <table>
-        <tr>
-            <td>
-                <div class="form-inline" style="margin:5px 3px;">
-                    <div class="form-group">
-                        <div class="col-md-5">
-                            @Html.Label("Documento"):
-                        </div>
-                        <div class="col-md-10">
-                            @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
-                            &nbsp;&nbsp;&nbsp;
-                            <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span>&nbsp;Buscar</button>
+    <div id="demo" class="collapse well" style="background-color: whitesmoke">
+        <table>
+            <tr>
+                <td>
+                    <div class="form-inline" style="margin:5px 3px;">
+                        <div class="form-group">
+                            <div class="col-md-5">
+                                @Html.Label("Documento"):
+                            </div>
+                            <div class="col-md-10">
+                                @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
+                                &nbsp;&nbsp;&nbsp;
+                                <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span>&nbsp;Buscar</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </td>
-        </tr>
-    </table>
-    <br />
-    <div id="dvSeleccionarCapacitados">
-        @Html.Partial("_SeleccionarCapacitadosPartial", new List<Cursos.Models.Capacitado>())
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div id="dvSeleccionarCapacitados">
+            @Html.Partial("_SeleccionarCapacitadosPartial", new List<Cursos.Models.Capacitado>())
+        </div>
     </div>
-</div>
 
-<br />
+    <br />
+}
 
 <h4>Registros de capacitación</h4>
+
+@if (Model.PuedeModificarse() && Model.Curso.EvaluacionConNota == false)
+{
+    <button class="btn btn-default" onclick="marcarTodosAprobados();"><span class="glyphicon glyphicon-check"></span>&nbsp;Marcar todos como aprobados</button>
+
+    <br />
+    <br />
+}
 
 <div id="dvRegistrosCapacitacion">
     @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
@@ -110,6 +121,28 @@
                             }
                          }
             });
+        }
+
+        function marcarTodosAprobados()
+        {
+            if (confirm("¿Marcar todos los registros como aprobados?"))
+            {
+                var jornadaId = @Model.JornadaID;
+                $.ajax({
+                    url: '/Jornadas/SetearRegistroCapacitacionEstado',
+                    type: "GET",
+                    dataType: "JSON",
+                    data: { jornadaId: jornadaId,
+                            estado: 1 },
+                    success: function (resultadoOK)
+                    {
+                        if (resultadoOK)
+                        {
+                            $("#dvRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+                        }
+                    }
+                });
+            }
         }
 
     </script>

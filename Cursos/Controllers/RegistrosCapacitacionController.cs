@@ -266,5 +266,20 @@ namespace Cursos.Controllers
             }
             base.Dispose(disposing);
         }
+
+        public ActionResult ObtenerEstadoRegistroCapacitacion(int cursoId, int nota)
+        {
+            var curso = db.Cursos.Find(cursoId);
+
+            if (curso == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            EstadosRegistroCapacitacion estadoRet = EstadosRegistroCapacitacion.Aprobado;
+
+            if (nota < curso.PuntajeMinimo)
+                estadoRet = EstadosRegistroCapacitacion.NoAprobado;
+
+            return Json((int)estadoRet, JsonRequestBehavior.AllowGet);
+        }
     }
 }

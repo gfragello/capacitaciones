@@ -12,6 +12,7 @@ using System.IO;
 using System.Drawing;
 using PagedList;
 using System.Threading.Tasks;
+using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
@@ -311,6 +312,23 @@ namespace Cursos.Controllers
 
             registroCapacitacion.SetearAtributosControl();
             db.RegistroCapacitacion.Add(registroCapacitacion);
+
+            db.SaveChanges();
+
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult SetearRegistroCapacitacionEstado(int jornadaId, EstadosRegistroCapacitacion estado)
+        {
+            var jornada = db.Jornada.Find(jornadaId);
+
+            if (jornada == null)
+                return Json(false, JsonRequestBehavior.AllowGet);
+
+            foreach (var r in jornada.RegistrosCapacitacion)
+            {
+                r.Estado = estado;
+            }
 
             db.SaveChanges();
 

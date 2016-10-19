@@ -1,5 +1,6 @@
 ﻿@model Cursos.Models.Capacitado
 @using Cursos.Helpers;
+@using Cursos.Models.Enums;
 
 @{
     ViewBag.Title = "Details";
@@ -67,6 +68,24 @@
     </dl>
 </div>
 
+@if (Model.RegistrosCapacitacion.Where(r => r.Estado == EstadosRegistroCapacitacion.Inscripto).Count() > 0)
+{ 
+<hr />
+
+<h4>Jornadas a las que está inscrpto</h4>
+
+<table class="table">
+    @foreach (var item in Model.RegistrosCapacitacion.Where(r => r.Estado == EstadosRegistroCapacitacion.Inscripto).OrderByDescending(r => r.Jornada.Fecha))
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Jornada.JornadaIdentificacionCompleta)
+            </td>
+        </tr>
+    }
+</table>
+}
+
 <hr />
 
 <h4>Registros de capacitación</h4>
@@ -92,7 +111,7 @@
         }
     </tr>
 
-    @foreach (var item in Model.RegistrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha))
+    @foreach (var item in Model.ObtenerRegistrosCapacitacionEvaluados().OrderByDescending(r => r.Jornada.Fecha))
     {
         string bgcolor = item.Jornada.Curso.ColorDeFondo != null ? item.Jornada.Curso.ColorDeFondo : "whitesmoke";
         string srcImagen = string.Empty;

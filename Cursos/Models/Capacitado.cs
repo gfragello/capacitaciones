@@ -102,5 +102,17 @@ namespace Cursos.Models
             return registrosCapacitacionRet;
         }
 
+        public List<RegistroCapacitacion> ObtenerRegistrosCapacitacionEvaluados()
+        {
+            List<RegistroCapacitacion> registrosCapacitacionEvaluados = null;
+
+            if (this.RegistrosCapacitacion != null)
+                registrosCapacitacionEvaluados =
+                this.RegistrosCapacitacion.Where(r => r.Estado == EstadosRegistroCapacitacion.Aprobado ||
+                                                      r.Estado == EstadosRegistroCapacitacion.NoAprobado).ToList();
+
+            return registrosCapacitacionEvaluados;
+        }
+
     }
 }
