@@ -2,6 +2,19 @@
 @using Cursos.Models.Enums;
 @using Cursos.Helpers;
 
+@{string textoTotal = string.Empty; }
+
+@if (@Model.Count() > 0)
+{
+    textoTotal = string.Format("Total de capacitados: {0}", Model.Count().ToString());
+}
+else
+{
+    textoTotal = "Sin incriptos";
+}
+
+<h4><span class="label label-default">@textoTotal</span></h4>
+
 <table class="table table-striped">
     <tr>
         <th>

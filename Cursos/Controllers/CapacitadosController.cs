@@ -415,7 +415,7 @@ namespace Cursos.Controllers
 
             ViewBag.JornadaIdExcluir = jornadaIdExcluir;
 
-            return PartialView("_SeleccionarCapacitadosPartial", capacitados);
+            return PartialView("_SeleccionarCapacitadosPartial", capacitados.ToList());
         }
     }
 }

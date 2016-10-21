@@ -428,11 +428,11 @@ namespace Cursos.Controllers
 
             const int colFecha = 8;
 
-            const int colLabelInstructor = 7;
-            const int rowLabelInstructor = 30;
-
             const int colInstructor = 8;
             const int rowInstructor = 30;
+
+            const int colCoordinador = 8;
+            const int rowCoordinador = 32;
 
             const int heightDetalleCapacitado = 30;
 
@@ -455,66 +455,46 @@ namespace Cursos.Controllers
             const int widthOrdinal = 8;
             const int widthFirma = 27;
 
+            //constantes para implementación de páginado
+            const int totalCapacitadosPorHoja = 25;
+            int totalCapacitadosHojaActual = 0;
+
+            const int colPagina = 10;
+
+            const int colFirmas = 8;
+
+            const int rowFirmaInstructor = 39;
+            const int rowFirmaResponsable = 44;
+
+            int wsActual = 1;
+
             using (ExcelPackage package = new ExcelPackage())
             {
-                var ws = package.Workbook.Worksheets.Add(j.Curso.Descripcion);
+                string nombreWSBase = j.Curso.Descripcion;
+                string nombreWS = nombreWSBase;
 
-                //se setea el label Capacitación, donde se indica además el curso
-                ws.Cells[1, colLabelCapacitacion].Value = "Capacitación: ";
-                ws.Cells[1, colLabelCapacitacion].Style.Font.Bold = true;
+                if (j.RegistrosCapacitacion.Count > 0)
+                    nombreWS = string.Format("{0} - {1}", nombreWSBase, wsActual.ToString());
 
-                ws.Cells[1, colCurso].Value = j.Curso.Descripcion;
-                ws.Cells[1, colCurso].Style.Font.Bold = true;
-                ws.Cells[1, colCurso].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                ws.Cells[1, colCurso].Style.Font.Color.SetColor(Color.White);
-                ws.Cells[1, colCurso].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                ws.Cells[1, colCurso].Style.Fill.BackgroundColor.SetColor(Color.FromName(j.Curso.ColorDeFondo));
-
-                ws.Cells[1, colLabelCapacitacion, 1, colCurso].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-
-                //se muestra la información del lugar
-                ws.Cells[1, colLabelLugar].Value = "Lugar: ";
-                ws.Cells[1, colLabelLugar].Style.Font.Bold = true;
-
-                ws.Cells[1, colLugar].Value = j.Lugar.NombreLugar;
-                ws.Cells[1, colLugar].Style.Font.Bold = true;
-
-                ws.Cells[1, colLabelLugar, 1, colLugar].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-
-                //se muetsra la fecha
-                ws.Cells[1, colFecha].Value = String.Format("{0}: {1}", "Fecha", j.Fecha.ToShortDateString());
-                ws.Cells[1, colFecha].Style.Font.Bold = true;
-                ws.Cells[1, colFecha].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-
-                ws.Row(2).Height = heightSeparaciónCabezal;
-
-                //se setea el cabezal de los capacitados
-                ws.Cells[rowHeaderCapacitados, colNombre].Value = "Nombre";
-                ws.Cells[rowHeaderCapacitados, colApellido].Value = "Apellido";
-                ws.Cells[rowHeaderCapacitados, colTipoDocumento].Value = "Tipo";
-                ws.Cells[rowHeaderCapacitados, colDocumento].Value = "Documento";
-                ws.Cells[rowHeaderCapacitados, colFechaNacimiento].Value = "Fecha Nac";
-                ws.Cells[rowHeaderCapacitados, colEmpresa].Value = "Empresa";
-                ws.Cells[rowHeaderCapacitados, colFirma].Value = "Firma";
-
-                ws.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajesDesde].Value = String.Format("Max {0} \r\nMín {1}", j.Curso.PuntajeMaximo.ToString(), j.Curso.PuntajeMinimo.ToString());
-                ws.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajeHasta].Merge = true;
-                //esto permite que en la celda se tengan en cuenta los caracteres de escape de nueva línea
-                ws.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajeHasta].Style.WrapText = true;
-
-                //se setea el estilo del cabezal de los capacitados
-                var cellsHeaderCapacitados = ws.Cells[rowHeaderCapacitados, colOrdinal, rowHeaderCapacitados, colNota];
-
-                cellsHeaderCapacitados.Style.Font.Bold = true;
-                cellsHeaderCapacitados.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-
-                ws.Row(rowHeaderCapacitados).Height = heightDetalleCapacitado;
+                var ws = package.Workbook.Worksheets.Add(nombreWS);
 
                 int ordinal = 1;
-                int rowActual = rowHeaderCapacitados + 1;
+                int rowActual = rowHeaderCapacitados;
 
                 foreach (var r in j.RegistrosCapacitacion)
                 {
+                    if (totalCapacitadosHojaActual >= totalCapacitadosPorHoja)
+                    {
+                        totalCapacitadosHojaActual = 0;
+                        wsActual++;
+
+                        rowActual = rowHeaderCapacitados;
+
+                        ws = package.Workbook.Worksheets.Add(string.Format("{0} - {1}", nombreWSBase, wsActual.ToString()));
+                    }
+
+                    rowActual++;
+
                     ws.Cells[rowActual, colOrdinal].Value = ordinal;
                     ws.Cells[rowActual, colOrdinal].Style.Font.Bold = true;
                     ws.Cells[rowActual, colOrdinal].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
@@ -532,11 +512,13 @@ namespace Cursos.Controllers
                     ws.Row(rowActual).Height = heightDetalleCapacitado;
 
                     ordinal++;
-                    rowActual++;
+                    totalCapacitadosHojaActual++;
                 }
 
-                while (ordinal <= totalCapacitadosPorActa)
+                while (totalCapacitadosHojaActual < totalCapacitadosPorActa)
                 {
+                    rowActual++;
+
                     ws.Cells[rowActual, colOrdinal].Value = ordinal;
                     ws.Cells[rowActual, colOrdinal].Style.Font.Bold = true;
                     ws.Cells[rowActual, colOrdinal].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
@@ -544,33 +526,117 @@ namespace Cursos.Controllers
                     ws.Row(rowActual).Height = heightDetalleCapacitado;
 
                     ordinal++;
-                    rowActual++;
+                    totalCapacitadosHojaActual++;
                 }
 
-                var rangoContenido = ws.Cells[rowHeaderCapacitados, colOrdinal, rowActual - 1, colNota];
+                int paginaActual = 1;
 
-                rangoContenido.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+                //se agregan cabezal y pie de página
+                foreach (var wsFormat in package.Workbook.Worksheets)
+                {
+                    //Cabezal ////////////////////////////////////////////////////////////////////////////
+                    //se setea el label Capacitación, donde se indica además el curso
+                    wsFormat.Cells[1, colLabelCapacitacion].Value = "Capacitación: ";
+                    wsFormat.Cells[1, colLabelCapacitacion].Style.Font.Bold = true;
 
-                rangoContenido.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-                rangoContenido.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-                rangoContenido.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-                rangoContenido.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    wsFormat.Cells[1, colCurso].Value = j.Curso.Descripcion;
+                    wsFormat.Cells[1, colCurso].Style.Font.Bold = true;
+                    wsFormat.Cells[1, colCurso].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    wsFormat.Cells[1, colCurso].Style.Font.Color.SetColor(Color.White);
+                    wsFormat.Cells[1, colCurso].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    wsFormat.Cells[1, colCurso].Style.Fill.BackgroundColor.SetColor(Color.FromName(j.Curso.ColorDeFondo));
 
-                //seteo de anchos de columna
-                ws.Cells[ws.Dimension.Address].AutoFitColumns();
-                ws.Column(colFirma).Width = widthFirma;
-                ws.Column(colOrdinal).Width = widthOrdinal;
+                    wsFormat.Cells[1, colLabelCapacitacion, 1, colCurso].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
 
-                //seteo de los parámetros de impresión
-                ws.PrinterSettings.PaperSize = ePaperSize.A4;
-                ws.PrinterSettings.Orientation = eOrientation.Portrait;
-                ws.PrinterSettings.FitToPage = true;
+                    //se muestra la información del lugar
+                    wsFormat.Cells[1, colLabelLugar].Value = "Lugar: ";
+                    wsFormat.Cells[1, colLabelLugar].Style.Font.Bold = true;
 
-                //se muestra el nombre del instructor
-                ws.Cells[rowInstructor, colInstructor].Value = String.Format("{0}: {1}", "Instructor", j.Instructor.NombreCompleto);
-                ws.Cells[rowInstructor, colInstructor].Style.Font.Bold = true;
+                    wsFormat.Cells[1, colLugar].Value = j.Lugar.NombreLugar;
+                    wsFormat.Cells[1, colLugar].Style.Font.Bold = true;
 
-                AgregarEncuestaActa(ws, "ENCUESTA: Cómo consideraron el curso los asistentes");
+                    wsFormat.Cells[1, colLabelLugar, 1, colLugar].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    //se muestra la fecha
+                    wsFormat.Cells[1, colFecha].Value = String.Format("{0}: {1}", "Fecha", j.Fecha.ToShortDateString());
+                    wsFormat.Cells[1, colFecha].Style.Font.Bold = true;
+                    wsFormat.Cells[1, colFecha].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    wsFormat.Row(2).Height = heightSeparaciónCabezal;
+
+                    //se setea el cabezal de los capacitados
+                    wsFormat.Cells[rowHeaderCapacitados, colNombre].Value = "Nombre";
+                    wsFormat.Cells[rowHeaderCapacitados, colApellido].Value = "Apellido";
+                    wsFormat.Cells[rowHeaderCapacitados, colTipoDocumento].Value = "Tipo";
+                    wsFormat.Cells[rowHeaderCapacitados, colDocumento].Value = "Documento";
+                    wsFormat.Cells[rowHeaderCapacitados, colFechaNacimiento].Value = "Fecha Nac";
+                    wsFormat.Cells[rowHeaderCapacitados, colEmpresa].Value = "Empresa";
+                    wsFormat.Cells[rowHeaderCapacitados, colFirma].Value = "Firma";
+
+                    wsFormat.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajesDesde].Value = String.Format("Max {0} \r\nMín {1}", j.Curso.PuntajeMaximo.ToString(), j.Curso.PuntajeMinimo.ToString());
+                    wsFormat.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajeHasta].Merge = true;
+                    //esto permite que en la celda se tengan en cuenta los caracteres de escape de nueva línea
+                    wsFormat.Cells[rowHeaderCapacitados, colRangoPuntajesDesde, rowHeaderCapacitados, colRangoPuntajeHasta].Style.WrapText = true;
+
+                    //se setea el estilo del cabezal de los capacitados
+                    var cellsHeaderCapacitados = wsFormat.Cells[rowHeaderCapacitados, colOrdinal, rowHeaderCapacitados, colNota];
+
+                    cellsHeaderCapacitados.Style.Font.Bold = true;
+                    cellsHeaderCapacitados.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    wsFormat.Row(rowHeaderCapacitados).Height = heightDetalleCapacitado;
+
+                    //Cuerpo y Pie de página ////////////////////////////////////////////////////////////////////////////
+                    var rangoContenido = wsFormat.Cells[rowHeaderCapacitados, colOrdinal, rowActual, colNota];
+
+                    rangoContenido.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+
+                    rangoContenido.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    rangoContenido.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    rangoContenido.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    rangoContenido.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+
+                    var rangoContenidoTipoDocumento = wsFormat.Cells[rowHeaderCapacitados + 1, colTipoDocumento, rowActual - 1, colTipoDocumento];
+                    rangoContenidoTipoDocumento.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    var rangoFechaNacimiento = wsFormat.Cells[rowHeaderCapacitados + 1, colFechaNacimiento, rowActual - 1, colFechaNacimiento];
+                    rangoFechaNacimiento.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    //seteo de anchos de columna
+                    wsFormat.Cells[wsFormat.Dimension.Address].AutoFitColumns();
+                    wsFormat.Column(colFirma).Width = widthFirma;
+                    wsFormat.Column(colOrdinal).Width = widthOrdinal;
+
+                    //seteo de los parámetros de impresión
+                    wsFormat.PrinterSettings.PaperSize = ePaperSize.A4;
+                    wsFormat.PrinterSettings.Orientation = eOrientation.Portrait;
+                    wsFormat.PrinterSettings.FitToPage = true;
+
+                    //se muestra el nombre del instructor
+                    wsFormat.Cells[rowInstructor, colInstructor].Value = String.Format("{0}: {1}", "Instructor", j.Instructor.NombreCompleto);
+                    wsFormat.Cells[rowInstructor, colInstructor].Style.Font.Bold = true;
+
+                    //se muestra el nombre del coordinador
+                    wsFormat.Cells[rowCoordinador, colCoordinador].Value = String.Format("{0}: {1}", "Coordinador", "Alejandro Lacruz");
+                    wsFormat.Cells[rowCoordinador, colCoordinador].Style.Font.Bold = true;
+
+                    wsFormat.Cells[1, colPagina].Value = string.Format("Página {0}/{1}", paginaActual, package.Workbook.Worksheets.Count.ToString());
+
+                    paginaActual++;
+                }
+
+                var wsFinal = package.Workbook.Worksheets.Last();
+
+                //en la última ws se agrega el acta
+                AgregarEncuestaActa(wsFinal, "ENCUESTA: Cómo consideraron el curso los asistentes");
+
+                //se agrega el espacio para la firma del instructor
+                wsFinal.Cells[rowFirmaInstructor, colFirmas].Value = "Firma Instructor";
+                wsFinal.Cells[rowFirmaInstructor, colFirmas].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+
+                //se agrega el espacio para la firma del instructor
+                wsFinal.Cells[rowFirmaResponsable, colFirmas].Value = "Firma Responsable";
+                wsFinal.Cells[rowFirmaResponsable, colFirmas].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
 
                 var stream = new MemoryStream();
                 package.SaveAs(stream);
