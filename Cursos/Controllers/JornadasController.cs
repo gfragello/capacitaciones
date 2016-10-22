@@ -417,7 +417,6 @@ namespace Cursos.Controllers
 
         private ActionResult GenerarActa(Jornada j)
         {
-            const int totalCapacitadosPorActa = 25;
             const int heightSeparaciónCabezal = 40;
 
             const int colLabelCapacitacion = 2;
@@ -473,7 +472,7 @@ namespace Cursos.Controllers
                 string nombreWSBase = j.Curso.Descripcion;
                 string nombreWS = nombreWSBase;
 
-                if (j.RegistrosCapacitacion.Count > 0)
+                if (j.RegistrosCapacitacion.Count > totalCapacitadosPorHoja)
                     nombreWS = string.Format("{0} - {1}", nombreWSBase, wsActual.ToString());
 
                 var ws = package.Workbook.Worksheets.Add(nombreWS);
@@ -515,7 +514,7 @@ namespace Cursos.Controllers
                     totalCapacitadosHojaActual++;
                 }
 
-                while (totalCapacitadosHojaActual < totalCapacitadosPorActa)
+                while (totalCapacitadosHojaActual < totalCapacitadosPorHoja)
                 {
                     rowActual++;
 
