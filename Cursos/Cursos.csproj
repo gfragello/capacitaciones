@@ -283,6 +283,18 @@
     <Compile Include="Migrations\201610131920025_Estados_RegistrosCapasitacion.Designer.cs">
       <DependentUpon>201610131920025_Estados_RegistrosCapasitacion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201610291947199_Eliminar_Registros_Jornada_Cascada.cs" />
+    <Compile Include="Migrations\201610291947199_Eliminar_Registros_Jornada_Cascada.Designer.cs">
+      <DependentUpon>201610291947199_Eliminar_Registros_Jornada_Cascada.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611092057106_Foto_Capacitado.cs" />
+    <Compile Include="Migrations\201611092057106_Foto_Capacitado.Designer.cs">
+      <DependentUpon>201611092057106_Foto_Capacitado.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611122152149_Foto_Capacitado_Actualizacion.cs" />
+    <Compile Include="Migrations\201611122152149_Foto_Capacitado_Actualizacion.Designer.cs">
+      <DependentUpon>201611122152149_Foto_Capacitado_Actualizacion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -294,12 +306,14 @@
     <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\EmpresaUsuario.cs" />
     <Compile Include="Models\Enums\EstadosRegistroCapacitacion.cs" />
+    <Compile Include="Models\Enums\TiposArchivo.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Instructor.cs" />
     <Compile Include="Models\Jornada.cs" />
     <Compile Include="Models\Lugar.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MultipleMailValidator.cs" />
+    <Compile Include="Models\PathFotoCapacitado.cs" />
     <Compile Include="Models\RegistroCapacitacion.cs" />
     <Compile Include="Models\TipoDocumento.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -488,6 +502,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="images\FotosCapacitados\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -559,6 +574,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201610131920025_Estados_RegistrosCapasitacion.resx">
       <DependentUpon>201610131920025_Estados_RegistrosCapasitacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610291947199_Eliminar_Registros_Jornada_Cascada.resx">
+      <DependentUpon>201610291947199_Eliminar_Registros_Jornada_Cascada.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611092057106_Foto_Capacitado.resx">
+      <DependentUpon>201611092057106_Foto_Capacitado.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611122152149_Foto_Capacitado_Actualizacion.resx">
+      <DependentUpon>201611122152149_Foto_Capacitado_Actualizacion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

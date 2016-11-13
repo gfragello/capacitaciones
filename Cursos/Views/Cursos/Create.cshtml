@@ -56,6 +56,32 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.EvaluacionConNota, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.EvaluacionConNota, new { htmlAttributes = new { @onclick = "togglePuntajes();" } })
+                    @Html.ValidationMessageFor(model => model.EvaluacionConNota, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" id="grpPuntajeMinimo">
+            @Html.LabelFor(model => model.PuntajeMinimo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PuntajeMinimo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PuntajeMinimo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group" id="grpPuntajeMaximo">
+            @Html.LabelFor(model => model.PuntajeMaximo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.PuntajeMaximo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.PuntajeMaximo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
@@ -69,4 +95,14 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        function togglePuntajes()
+        {
+            $("#grpPuntajeMinimo").toggle();
+            $("#grpPuntajeMaximo").toggle();
+        }
+
+    </script>
 }

@@ -25,7 +25,14 @@ namespace Cursos.Models
             modelbuilder.Entity<Capacitado>().HasRequired(c => c.Empresa).WithMany(e => e.Capacitados).WillCascadeOnDelete(false);
             modelbuilder.Entity<Capacitado>().HasRequired(c => c.TipoDocumento).WithMany(t => t.Capacitados).WillCascadeOnDelete(false);
 
-            modelbuilder.Entity<RegistroCapacitacion>().HasRequired(r => r.Jornada).WithMany(j => j.RegistrosCapacitacion).WillCascadeOnDelete(false);
+            //al borrar una joranda, se borraran sus registros asociados
+            modelbuilder.Entity<RegistroCapacitacion>().HasRequired(r => r.Jornada).WithMany(j => j.RegistrosCapacitacion).WillCascadeOnDelete(true);
+
+            //configura la relación entre el Capacitado y el PathFotoCapacitado
+            modelbuilder.Entity<Capacitado>()
+                        .HasOptional(c => c.PathFotoCapacitado) //se marca la foto del capacitado como opcional
+                        .WithRequired(pc => pc.Capacitado); //se marca el Capacitado como obligatorio en el Path de la foto
+
 
             base.OnModelCreating(modelbuilder);
         }
@@ -49,5 +56,7 @@ namespace Cursos.Models
         public DbSet<Departamento> Departamentos { get; set; }
 
         public DbSet<EmpresaUsuario> EmpresasUsuarios { get; set; }
+
+        public DbSet<PathFotoCapacitado> PathFotosCapacitado { get; set; }
     }
 }

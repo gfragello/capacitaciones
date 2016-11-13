@@ -71,6 +71,10 @@ namespace Cursos.Models
         public int EmpresaID { get; set; }
         public virtual Empresa Empresa { get; set; }
 
+        [Display(Name = "Foto")]
+        public int PathFotoCapacitadoID { get; set; }
+        public virtual PathFotoCapacitado PathFotoCapacitado { get; set; }
+
         public List<RegistroCapacitacion> RegistrosCapacitacion { get; set; }
 
         public List<RegistroCapacitacion> UltimoRegistroCapacitacionPorCurso(int? CursoID, bool soloEvaluados = true)

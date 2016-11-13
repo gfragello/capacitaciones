@@ -173,11 +173,24 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado)
+        public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload)
         {
             if (ModelState.IsValid)
             {
                 capacitado.SetearAtributosControl();
+
+                if (upload != null && upload.ContentLength > 0)
+                {
+                    var pathFotoCapacitado = new PathFotoCapacitado
+                    {
+                        NombreArchivo = System.IO.Path.GetFileName(upload.FileName),
+                        TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
+                    };
+                    capacitado.PathFotoCapacitado = pathFotoCapacitado;
+
+                    var path = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), pathFotoCapacitado.NombreArchivo);
+                    upload.SaveAs(path);
+                }
 
                 db.Capacitados.Add(capacitado);
                 db.SaveChanges();

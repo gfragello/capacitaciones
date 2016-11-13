@@ -39,7 +39,10 @@ namespace Cursos.Controllers
         // GET: Cursos/Create
         public ActionResult Create()
         {
-            return View();
+            //se inicializa la propiedad EvaluacionConNota para que esté chequeado por defecto
+            var c = new Curso { EvaluacionConNota = true };
+
+            return View(c);
         }
 
         // POST: Cursos/Create
@@ -47,7 +50,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo")] Curso curso)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +82,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo")] Curso curso)
         {
             if (ModelState.IsValid)
             {

@@ -34,6 +34,30 @@
 @if (Model.PuedeModificarse())
 {
     <div>
+        <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+    </div>
+
+    <div id="divAgregarActa" class="collapse well" style="background-color: whitesmoke">
+        @using (Html.BeginForm("AgregarActa", "Jornadas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(model => model.JornadaID)
+
+            <div class="form-group">
+                @Html.Label("Acta", new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <input type="file" id="Acta" name="upload" />
+                </div>
+            </div>
+
+            <input type="submit" value="Agregar" />
+        }
+    </div>
+
+    <br />
+
+    <div>
         <button data-toggle="collapse" data-target="#demo" class="btn btn-default" onclick="toggleImgAgregarCapacitadoChevron();">Agregar Capacitado&nbsp;&nbsp;<span id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
     </div>
 
@@ -82,6 +106,12 @@
 @section Scripts {
     <script type="text/javascript">
 
+        function toggleImgAgregarActaChevron()
+        {
+            $("#imgAgregarActaChevron").toggleClass("glyphicon-chevron-up");
+            $("#imgAgregarActaChevron").toggleClass("glyphicon-chevron-down");
+        }
+        
         function toggleImgAgregarCapacitadoChevron()
         {
             $("#imgAgregarCapacitadoChevron").toggleClass("glyphicon-chevron-up");

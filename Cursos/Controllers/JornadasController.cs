@@ -346,6 +346,23 @@ namespace Cursos.Controllers
             return PartialView("_ListRegistrosCapacitacionPartial", jornada.RegistrosCapacitacion.ToList());
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AgregarActa(int? id, HttpPostedFileBase upload)
+        {
+            if (id != null && upload != null && upload.ContentLength > 0)
+            {
+                var j = db.Jornada.Find(id);
+
+                if (j == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+
+            }
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
         private ActionResult ExportDataExcel(Jornada j)
         {
             using (ExcelPackage package = new ExcelPackage())
