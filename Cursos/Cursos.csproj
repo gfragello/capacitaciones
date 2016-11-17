@@ -295,6 +295,10 @@
     <Compile Include="Migrations\201611122152149_Foto_Capacitado_Actualizacion.Designer.cs">
       <DependentUpon>201611122152149_Foto_Capacitado_Actualizacion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611131512174_Acta_Jornada.cs" />
+    <Compile Include="Migrations\201611131512174_Acta_Jornada.Designer.cs">
+      <DependentUpon>201611131512174_Acta_Jornada.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -313,7 +317,7 @@
     <Compile Include="Models\Lugar.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MultipleMailValidator.cs" />
-    <Compile Include="Models\PathFotoCapacitado.cs" />
+    <Compile Include="Models\PathArchivo.cs" />
     <Compile Include="Models\RegistroCapacitacion.cs" />
     <Compile Include="Models\TipoDocumento.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -502,6 +506,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="images\Actas\" />
     <Folder Include="images\FotosCapacitados\" />
   </ItemGroup>
   <ItemGroup>
@@ -583,6 +588,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201611122152149_Foto_Capacitado_Actualizacion.resx">
       <DependentUpon>201611122152149_Foto_Capacitado_Actualizacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611131512174_Acta_Jornada.resx">
+      <DependentUpon>201611131512174_Acta_Jornada.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

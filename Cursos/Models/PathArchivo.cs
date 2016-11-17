@@ -2,19 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
 namespace Cursos.Models
 {
-    public class PathFotoCapacitado
+    [Table("PathsArchivos")]
+    public class PathArchivo
     {
-        public int PathFotoCapacitadoId { get; set; }
+        public int PathArchivoId { get; set; }
         [StringLength(255)]
         public string NombreArchivo { get; set; }
         public TiposArchivo TipoArchivo { get; set; }
-
-        public int CapacitadoID { get; set; }
-        public virtual Capacitado Capacitado { get; set; }
     }
 }

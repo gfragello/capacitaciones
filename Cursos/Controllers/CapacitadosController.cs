@@ -181,12 +181,12 @@ namespace Cursos.Controllers
 
                 if (upload != null && upload.ContentLength > 0)
                 {
-                    var pathFotoCapacitado = new PathFotoCapacitado
+                    var pathFotoCapacitado = new PathArchivo
                     {
                         NombreArchivo = System.IO.Path.GetFileName(upload.FileName),
                         TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
                     };
-                    capacitado.PathFotoCapacitado = pathFotoCapacitado;
+                    capacitado.PathArchivo = pathFotoCapacitado;
 
                     var path = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), pathFotoCapacitado.NombreArchivo);
                     upload.SaveAs(path);
@@ -235,15 +235,30 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado)
+        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload)
         {
             if (ModelState.IsValid)
             {
                 capacitado.SetearAtributosControl();
 
+                if (upload != null && upload.ContentLength > 0)
+                {
+                    var pathFotoCapacitado = new PathArchivo
+                    {
+                        NombreArchivo = System.IO.Path.GetFileName(upload.FileName),
+                        TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
+                    };
+
+                    db.Entry(pathFotoCapacitado).State = EntityState.Added;
+                    capacitado.PathArchivo = pathFotoCapacitado;
+
+                    var path = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), pathFotoCapacitado.NombreArchivo);
+                    upload.SaveAs(path);
+                }
+
                 db.Entry(capacitado).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return View("Details", capacitado);
             }
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
@@ -288,6 +303,34 @@ namespace Cursos.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EliminarFoto(int? capacitadoId)
+        {
+            if (capacitadoId == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            var capacitado = db.Capacitados.Find(capacitadoId);
+
+            if (capacitado == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            var pathFotoCapacitado = capacitado.PathArchivo;
+            capacitado.PathArchivo = null;
+
+            string pathCompleto = Request.MapPath("~/Images/FotosCapacitados/" + pathFotoCapacitado.NombreArchivo);
+            if (System.IO.File.Exists(pathCompleto))
+            {
+                System.IO.File.Delete(pathCompleto);
+            }
+
+            db.PathArchivos.Remove(pathFotoCapacitado);
+
+            db.SaveChanges();
+
+            return View("Edit", new { id = capacitadoId });
         }
 
         private ActionResult ExportDataExcel(List<Capacitado> capacitados, int? CursoID)

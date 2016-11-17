@@ -34,6 +34,10 @@ namespace Cursos.Models
 
         public virtual List<RegistroCapacitacion> RegistrosCapacitacion { get; set; }
 
+        [Display(Name = "Acta")]
+        public int? PathArchivoID { get; set; }
+        public virtual PathArchivo PathArchivo { get; set; }
+
         [NotMapped]
         public string JornadaIdentificacionCompleta
         {

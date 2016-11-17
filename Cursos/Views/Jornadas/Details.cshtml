@@ -33,27 +33,46 @@
 
 @if (Model.PuedeModificarse())
 {
-    <div>
-        <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
-    </div>
+    //si aún no se agregó el archivo del acta
+    if (Model.PathArchivo == null)
+    {
+        <div>
+            <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+        </div>
 
-    <div id="divAgregarActa" class="collapse well" style="background-color: whitesmoke">
-        @using (Html.BeginForm("AgregarActa", "Jornadas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+        <div id="divAgregarActa" class="collapse well" style="background-color: whitesmoke">
+            @using (Html.BeginForm("AgregarActa", "Jornadas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(model => model.JornadaID)
+
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <input type="file" id="Acta" name="upload" class="btn btn-default" />
+                    </div>
+                    <div class="col-md-8">
+                        <input type="submit" value="Agregar" class="btn btn-default" />
+                    </div>
+                </div>
+            }
+            <br />
+            <br />
+        </div>
+    }
+    else //si ya se agregó el archivo del acta
+    {
+        using (Html.BeginForm("EliminarActa", "Jornadas", null, FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
             @Html.HiddenFor(model => model.JornadaID)
 
-            <div class="form-group">
-                @Html.Label("Acta", new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    <input type="file" id="Acta" name="upload" />
-                </div>
-            </div>
-
-            <input type="submit" value="Agregar" />
+            <a href="~/images/Actas/@Model.PathArchivo.NombreArchivo" class="btn btn-default" target="_blank"><span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;Ver Acta</a>
+            <input type="submit" value="Eliminar acta" class="btn btn-default" onclick="return confirm('¿Confirma eliminación del acta?')" />
+            <br />
         }
-    </div>
+    }
 
     <br />
 

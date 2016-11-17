@@ -72,8 +72,8 @@ namespace Cursos.Models
         public virtual Empresa Empresa { get; set; }
 
         [Display(Name = "Foto")]
-        public int PathFotoCapacitadoID { get; set; }
-        public virtual PathFotoCapacitado PathFotoCapacitado { get; set; }
+        public int? PathArchivoID { get; set; }
+        public virtual PathArchivo PathArchivo { get; set; }
 
         public List<RegistroCapacitacion> RegistrosCapacitacion { get; set; }
 

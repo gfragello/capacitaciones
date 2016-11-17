@@ -348,19 +348,63 @@ namespace Cursos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AgregarActa(int? id, HttpPostedFileBase upload)
+        public ActionResult AgregarActa(int? jornadaId, HttpPostedFileBase upload)
         {
-            if (id != null && upload != null && upload.ContentLength > 0)
+            if (jornadaId != null && upload != null && upload.ContentLength > 0)
             {
-                var j = db.Jornada.Find(id);
+                var jornada = db.Jornada.Find(jornadaId);
 
-                if (j == null)
+                if (jornada == null)
                     return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
+                string nombreArchivo = String.Format("Acta_{0}{1}", 
+                                                     jornada.JornadaID.ToString(), 
+                                                     System.IO.Path.GetExtension(upload.FileName));
 
+                var pathActa = new PathArchivo
+                {
+                    NombreArchivo = nombreArchivo,
+                    TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
+                };
+                jornada.PathArchivo = pathActa;
+
+                var path = Path.Combine(Server.MapPath("~/Images/Actas/"), pathActa.NombreArchivo);
+                upload.SaveAs(path);
+
+                db.SaveChanges();
+
+                return RedirectToAction("Details", new { id = jornada.JornadaID });
             }
 
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EliminarActa(int? jornadaId)
+        {
+            if (jornadaId == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            var jornada = db.Jornada.Find(jornadaId);
+
+            if (jornada == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            var pathActa = jornada.PathArchivo;
+            jornada.PathArchivo = null;
+
+             string pathCompleto = Request.MapPath("~/Images/Actas/" + pathActa.NombreArchivo);
+             if (System.IO.File.Exists(pathCompleto))
+             {
+                System.IO.File.Delete(pathCompleto);
+             }
+
+            db.PathArchivos.Remove(pathActa);
+
+            db.SaveChanges();
+
+            return RedirectToAction("Details", new { id = jornada.JornadaID });
         }
 
         private ActionResult ExportDataExcel(Jornada j)

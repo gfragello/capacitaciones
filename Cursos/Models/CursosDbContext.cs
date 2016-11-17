@@ -28,11 +28,11 @@ namespace Cursos.Models
             //al borrar una joranda, se borraran sus registros asociados
             modelbuilder.Entity<RegistroCapacitacion>().HasRequired(r => r.Jornada).WithMany(j => j.RegistrosCapacitacion).WillCascadeOnDelete(true);
 
-            //configura la relación entre el Capacitado y el PathFotoCapacitado
-            modelbuilder.Entity<Capacitado>()
-                        .HasOptional(c => c.PathFotoCapacitado) //se marca la foto del capacitado como opcional
-                        .WithRequired(pc => pc.Capacitado); //se marca el Capacitado como obligatorio en el Path de la foto
+            //configura la relación entre el Capacitado y el PathArchivo
+            modelbuilder.Entity<Capacitado>().HasOptional(c => c.PathArchivo); //se marca la foto del capacitado como opcional
 
+            //configura la relación entre el Capacitado y el PathArchivo
+            modelbuilder.Entity<Jornada>().HasOptional(j => j.PathArchivo); //se marca el acta como opcional
 
             base.OnModelCreating(modelbuilder);
         }
@@ -57,6 +57,6 @@ namespace Cursos.Models
 
         public DbSet<EmpresaUsuario> EmpresasUsuarios { get; set; }
 
-        public DbSet<PathFotoCapacitado> PathFotosCapacitado { get; set; }
+        public DbSet<PathArchivo> PathArchivos { get; set; }
     }
 }
