@@ -4,14 +4,32 @@
     ViewBag.Title = "Edit";
 }
 
+<h4>Capacitado - Editar</h4>
+
+@Html.Partial("_DatosModificacionPartial", Model)
+
+@if (Model.PathArchivo != null)
+{
+    using (Html.BeginForm("EliminarFoto", "Capacitados", null, FormMethod.Post, new { name = "frmEliminarFoto", id = "frmEliminarFoto" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="capacitadoId" value="@Model.CapacitadoID" />
+
+        <p style="vertical-align: middle;">
+            <a href="javascript:frmEliminarFoto.submit();"><span class="glyphicon glyphicon-remove" style="font-size: 25px; color: #017d49"></span>&nbsp;Eliminar foto</a>
+        </p>
+    }
+}
+
+<hr />
+
 @using (Html.BeginForm("Edit", "Capacitados", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     
     <div class="form-horizontal">
-        <h4>Capacitado - Editar</h4>
-        @Html.Partial("_DatosModificacionPartial", Model)
-        <hr />
+
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.CapacitadoID)
 
@@ -34,17 +52,7 @@
         <div class="form-group">
             @Html.Label("Foto", new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @if (Model.PathArchivo == null)
-                {
-                    <input type="file" id="Photo" name="upload" />
-                }
-                else
-                {
-                    using (Html.BeginForm("EliminarFoto", "Capacitados", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
-                    {
-                        <input type="submit" value="Eliminar foto" class="btn btn-default" onclick="return confirm('¡Atención! No es posible deshacer esta acción. ¿Confirma eliminación de la foto del capacitado?')" />
-                    }
-                }
+                <input type="file" id="Photo" name="upload" />
             </div>
         </div>
 

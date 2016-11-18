@@ -258,7 +258,7 @@ namespace Cursos.Controllers
 
                 db.Entry(capacitado).State = EntityState.Modified;
                 db.SaveChanges();
-                return View("Details", capacitado);
+                return RedirectToAction("Details", new { id = capacitado.CapacitadoID });
             }
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
@@ -330,7 +330,7 @@ namespace Cursos.Controllers
 
             db.SaveChanges();
 
-            return View("Edit", new { id = capacitadoId });
+            return RedirectToAction("Edit", new { id = capacitadoId });
         }
 
         private ActionResult ExportDataExcel(List<Capacitado> capacitados, int? CursoID)
