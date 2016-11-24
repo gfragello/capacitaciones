@@ -7,82 +7,86 @@
 }
 
 <div>
-    <h4>Capacitado</h4>
-    <p>
-        <a href="@Url.Action("Index") "><img src="@Url.Content("~/images/back.png")" title="Volver a la lista" /></a>
+    <div style="background-color: whitesmoke; padding-left: 10px; padding-bottom: 10px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+        <table>
+            <tr>
+                <td style="padding-right: 10px">
+                    @if (Model.PathArchivo != null)
+                    {
+                        <a href="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto">
+                            <img src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
+                        </a>
+                    }
+                    else
+                    {
+                        <img src="~/images/sinfoto_150x150.png" alt="Sin foto asociada" />
+                    }
+                </td>
+                <td>
+                    <h4>Capacitado</h4>
+
+                    <dl class="dl-horizontal">
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Nombre)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.NombreCompleto)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Documento)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.DocumentoCompleto)
+                        </dd>
+
+                        <dt>
+                            Empresa
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.Empresa.NombreFantasia)
+                        </dd>
+
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Fecha)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.Fecha)
+                        </dd>
+
+                    </dl>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    @Html.Partial("_DatosModificacionPartial", Model)
+
+    <p style="vertical-align: middle;">
+        <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
         @if (Model.PuedeModificarse())
         {
-        @:&nbsp; &nbsp;
-        <a href="@Url.Action("Edit", new { id = Model.CapacitadoID }) "><img src="@Url.Content("~/images/editar.png")" title="Editar" /></a>
+            @:&nbsp; &nbsp; &nbsp;
+            <a href="@Url.Action("Edit", new { id = Model.CapacitadoID })"><span class="glyphicon glyphicon-edit" style="font-size: 25px; color: #017d49"></span>&nbsp;Editar</a>
         }
         @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
         {
-            @:&nbsp;&nbsp;
-            <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><img src="@Url.Content("~/images/registroCapacitacion.png")" title="Agregar Registro" /></a>
+            @:&nbsp; &nbsp; &nbsp;
+            <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><span class="glyphicon glyphicon-log-in" style="font-size: 25px; color: #017d49"></span>&nbsp;&nbsp;Agregar Registro de capacitación</a>
         }
-        
     </p>
-    @Html.Partial("_DatosModificacionPartial", Model)
+
     <hr />
-    <dl class="dl-horizontal">
 
-        @if (Model.PathArchivo != null)
-        {
-            <dt>
-                Photo
-            </dt>
-            <dd>
-                <img src="~/images/FotosCapacitados/@Model.PathArchivo.NombreArchivo" alt="" />
-            </dd>
-        }
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Apellido)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Apellido)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Documento)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.DocumentoCompleto)
-        </dd>
-
-        <dt>
-            Empresa
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Empresa.NombreFantasia)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Fecha)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Fecha)
-        </dd>
-
-    </dl>
 </div>
 
 @if (Model.RegistrosCapacitacion.Where(r => r.Estado == EstadosRegistroCapacitacion.Inscripto).Count() > 0)
 { 
-<hr />
-
 <h4>Jornadas a las que está inscrpto</h4>
 
 <table class="table">
@@ -95,9 +99,10 @@
         </tr>
     }
 </table>
-}
 
 <hr />
+
+}
 
 <h4>Registros de capacitación</h4>
 

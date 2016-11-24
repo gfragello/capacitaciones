@@ -11,6 +11,7 @@ using PagedList;
 using OfficeOpenXml;
 using System.IO;
 using System.Drawing;
+using Cursos.Helpers;
 
 namespace Cursos.Controllers
 {
@@ -179,21 +180,36 @@ namespace Cursos.Controllers
             {
                 capacitado.SetearAtributosControl();
 
+                db.Capacitados.Add(capacitado);
+                db.SaveChanges();
+
                 if (upload != null && upload.ContentLength > 0)
                 {
+                    string nombreArchivo = String.Format("Foto_{0}{1}", 
+                                           capacitado.CapacitadoID.ToString().Trim(), 
+                                           System.IO.Path.GetExtension(upload.FileName));
+
+                    string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
+
                     var pathFotoCapacitado = new PathArchivo
                     {
-                        NombreArchivo = System.IO.Path.GetFileName(upload.FileName),
+                        NombreArchivo = nombreArchivo,
+                        SubDirectorio = carpetaArchivo,
                         TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
                     };
                     capacitado.PathArchivo = pathFotoCapacitado;
 
-                    var path = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), pathFotoCapacitado.NombreArchivo);
-                    upload.SaveAs(path);
-                }
+                    var pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+                    var pathArchivo = Path.Combine(pathDirectorio, pathFotoCapacitado.NombreArchivo);
 
-                db.Capacitados.Add(capacitado);
-                db.SaveChanges();
+                    if (!System.IO.Directory.Exists(pathDirectorio))
+                        System.IO.Directory.CreateDirectory(pathDirectorio);
+
+                    upload.SaveAs(pathArchivo);
+
+                    db.Entry(capacitado).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
 
                 return RedirectToAction("Details", "Capacitados", new { id = capacitado.CapacitadoID });
             }
