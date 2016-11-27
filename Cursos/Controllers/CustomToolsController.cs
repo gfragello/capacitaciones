@@ -463,8 +463,6 @@ namespace Cursos.Controllers
                     total++;
                 }
             }
-
-            total = total;
         }
 
         private void SaveJornadas(Dictionary<int, Jornada> jornadas, string usuarioModificacion)

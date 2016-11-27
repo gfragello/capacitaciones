@@ -12,6 +12,7 @@ using OfficeOpenXml;
 using System.IO;
 using System.Drawing;
 using Cursos.Helpers;
+using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
@@ -185,27 +186,18 @@ namespace Cursos.Controllers
 
                 if (upload != null && upload.ContentLength > 0)
                 {
-                    string nombreArchivo = String.Format("Foto_{0}{1}", 
-                                           capacitado.CapacitadoID.ToString().Trim(), 
-                                           System.IO.Path.GetExtension(upload.FileName));
+                    string nombreArchivo = PathArchivoHelper.GetInstance().ObtenerNombreFotoCapacitado(capacitado.CapacitadoID,
+                                                                                                       System.IO.Path.GetExtension(upload.FileName));
 
                     string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
 
-                    var pathFotoCapacitado = new PathArchivo
-                    {
-                        NombreArchivo = nombreArchivo,
-                        SubDirectorio = carpetaArchivo,
-                        TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
-                    };
-                    capacitado.PathArchivo = pathFotoCapacitado;
+                    string pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
 
-                    var pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-                    var pathArchivo = Path.Combine(pathDirectorio, pathFotoCapacitado.NombreArchivo);
-
-                    if (!System.IO.Directory.Exists(pathDirectorio))
-                        System.IO.Directory.CreateDirectory(pathDirectorio);
-
-                    upload.SaveAs(pathArchivo);
+                    capacitado.PathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
+                                                                                                carpetaArchivo,
+                                                                                                pathDirectorio,
+                                                                                                upload,
+                                                                                                TiposArchivo.FotoCapacitado);
 
                     db.Entry(capacitado).State = EntityState.Modified;
                     db.SaveChanges();
@@ -251,26 +243,39 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload)
+        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID,PathArchivoID")] Capacitado capacitado, HttpPostedFileBase upload)
         {
             if (ModelState.IsValid)
             {
-                capacitado.SetearAtributosControl();
+                PathArchivo pathArchivo = null;
 
                 if (upload != null && upload.ContentLength > 0)
                 {
-                    var pathFotoCapacitado = new PathArchivo
-                    {
-                        NombreArchivo = System.IO.Path.GetFileName(upload.FileName),
-                        TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
-                    };
+                    string nombreArchivo = PathArchivoHelper.GetInstance().ObtenerNombreFotoCapacitado(capacitado.CapacitadoID,
+                                                                                                       System.IO.Path.GetExtension(upload.FileName));
+                        
+                    string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
 
-                    db.Entry(pathFotoCapacitado).State = EntityState.Added;
-                    capacitado.PathArchivo = pathFotoCapacitado;
+                    string pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
 
-                    var path = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), pathFotoCapacitado.NombreArchivo);
-                    upload.SaveAs(path);
+                    pathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
+                                                                                     carpetaArchivo,
+                                                                                     pathDirectorio,
+                                                                                     upload,
+                                                                                     TiposArchivo.FotoCapacitado);
+
+                    db.Entry(pathArchivo).State = EntityState.Added;
+
+                    capacitado.PathArchivo = pathArchivo;
+                    //db.SaveChanges();
                 }
+
+                capacitado.SetearAtributosControl();
+
+                /*
+                if (pathArchivo != null)
+                    capacitado.PathArchivoID = pathArchivo.PathArchivoId;
+                */
 
                 db.Entry(capacitado).State = EntityState.Modified;
                 db.SaveChanges();
@@ -336,7 +341,7 @@ namespace Cursos.Controllers
             var pathFotoCapacitado = capacitado.PathArchivo;
             capacitado.PathArchivo = null;
 
-            string pathCompleto = Request.MapPath("~/Images/FotosCapacitados/" + pathFotoCapacitado.NombreArchivo);
+            string pathCompleto = Request.MapPath("~/Images/FotosCapacitados/" + pathFotoCapacitado.SubDirectorio + "/" + pathFotoCapacitado.NombreArchivo);
             if (System.IO.File.Exists(pathCompleto))
             {
                 System.IO.File.Delete(pathCompleto);

@@ -23,7 +23,7 @@ namespace Cursos.Models
         {
             get
             {
-                return Path.Combine(this.SubDirectorio, this.NombreArchivo);
+                return Path.Combine(this.SubDirectorio.ToString(), this.NombreArchivo.ToString());
             }
         }
     }

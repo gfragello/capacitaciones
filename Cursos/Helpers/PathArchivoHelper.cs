@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Cursos.Models;
+using Cursos.Models.Enums;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -12,6 +16,34 @@ namespace Cursos.Helpers
         public static PathArchivoHelper GetInstance()
         {
             return _instance;
+        }
+
+        public PathArchivo ObtenerPathArchivo(string nombreArchivo, string carpetaArchivo, string pathDirectorio, HttpPostedFileBase archivo, TiposArchivo tipoArchivo)
+        {
+            PathArchivo pathFotoCapacitado = null;
+
+            pathFotoCapacitado = new PathArchivo
+            {
+                NombreArchivo = nombreArchivo,
+                SubDirectorio = carpetaArchivo,
+                TipoArchivo = tipoArchivo
+            };
+
+            var pathArchivo = Path.Combine(pathDirectorio, pathFotoCapacitado.NombreArchivo);
+
+            if (!System.IO.Directory.Exists(pathDirectorio))
+                System.IO.Directory.CreateDirectory(pathDirectorio);
+
+            archivo.SaveAs(pathArchivo);
+
+            return pathFotoCapacitado;
+        }
+
+        public string ObtenerNombreFotoCapacitado(int capacitadoId, string extesionArchivo)
+        {
+            return string.Format("Foto_{0}{1}",
+                                 capacitadoId.ToString().Trim(),
+                                 extesionArchivo);
         }
 
         public string ObtenerCarpetaFotoCapacitado(int CapacitadoId)
