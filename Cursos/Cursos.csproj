@@ -517,10 +517,12 @@
     <Content Include="Views\Shared\_ListRegistrosCapacitacionPartial.cshtml" />
     <Content Include="Views\Shared\_SeleccionarCapacitadosPartial.cshtml" />
     <Content Include="Views\Shared\_CargandoPartial.cshtml" />
+    <Content Include="Views\CustomTools\AsignarCapacitadosFotos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\Actas\" />
+    <Folder Include="images\FotosCapacitadosImportar\" />
     <Folder Include="images\FotosCapacitados\" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Asignar Fotos a los Capacitados";
+}
+
+<h2>Asignar Fotos a los Capacitados</h2>
+<hr />
+
+@using (Html.BeginForm("AsignarCapacitadosFotos", "CustomTools", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <table>
+        <tr>
+            <td><input type="submit" name="Submit" value="Asignar Fotos" /></td>
+        </tr>
+    </table>
+
+    if (ViewBag.Mensajes != null)
+    {
+        foreach (var mensaje in ViewBag.Mensajes)
+        {
+            <p style="color: red">
+                @mensaje
+            </p>
+        }
+    }
+}

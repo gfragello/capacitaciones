@@ -10,6 +10,7 @@ using System.IO;
 using System.Drawing;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
+using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
@@ -1148,10 +1149,166 @@ namespace Cursos.Controllers
             return jornada;
         }
 
+        public ActionResult AsignarCapacitadosFotos()
+        {
+            return View("AsignarCapacitadosFotos");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AsignarCapacitadosFotos(FormCollection formCollection)
+        {
+            List<String> mensajes = new List<string>();
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var wsFotoYaAsociada = package.Workbook.Worksheets.Add("Foto ya asociada");
+                var wsArchivoError = package.Workbook.Worksheets.Add("No se pudo asociar archivo");
+                var wsDocumentoError = package.Workbook.Worksheets.Add("Error en documento");
+
+                int rowFotoYaAsociada = 1;
+                int rowArchivoError = 1;
+                int rowErrorDocumento = 1;
+
+                foreach (var file in Directory.GetFiles(Server.MapPath("~/Images/FotosCapacitadosImportar")))
+                {
+                    string nombreArchivo = System.IO.Path.GetFileName(file);
+
+                    string ci = ObtenerCINombreArchivo(nombreArchivo);
+
+                    if (!string.IsNullOrEmpty(ci))
+                    {
+                        var capacitado = db.Capacitados.Where(c => c.Documento.Contains(ci)).FirstOrDefault();
+
+                        if (capacitado != null)
+                        {
+                            if (capacitado.PathArchivo == null)
+                            {
+                                if (capacitado.TipoDocumento.Abreviacion == "CI" &&
+                                    !ValidationHelper.GetInstance().ValidateCI(capacitado.Documento))
+                                {
+                                    //mensajes.Add(string.Format("Cédula identidad incorrecta {0} - {1} - {2}", capacitado.CapacitadoID, capacitado.Documento, capacitado.NombreCompleto));
+                                    //continue;
+
+                                    TipoDocumento tipoDocumentoOtro = db.TiposDocumento.Find(3);
+
+                                    //capacitado.Documento = ValidationHelper.GetInstance().RemoveGuionCI(capacitado.Documento);
+                                    capacitado.TipoDocumento = tipoDocumentoOtro;
+
+                                    cargarWSErrorAsignarCapacitadosFotos(ref wsDocumentoError, rowErrorDocumento, capacitado.CapacitadoID.ToString());
+                                    rowErrorDocumento++;
+                                }
+
+                                string nombreArchivoDestino = PathArchivoHelper.GetInstance().ObtenerNombreFotoCapacitado(capacitado.CapacitadoID,
+                                                                                                       System.IO.Path.GetExtension(file));
+
+                                string nombreCarpetaDestino = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
+
+                                string pathCarpetaDestino = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), nombreCarpetaDestino);
+                                string pathArchivoDestino = Path.Combine(pathCarpetaDestino, nombreArchivoDestino);
+
+                                PathArchivo pathArchivo = new PathArchivo
+                                {
+                                    NombreArchivo = nombreArchivoDestino,
+                                    SubDirectorio = nombreCarpetaDestino,
+                                    TipoArchivo = TiposArchivo.FotoCapacitado
+                                };
+
+                                if (!System.IO.Directory.Exists(pathCarpetaDestino))
+                                    System.IO.Directory.CreateDirectory(pathCarpetaDestino);
+
+                                if (!System.IO.File.Exists(pathArchivoDestino))
+                                {
+                                    System.IO.File.Copy(file, pathArchivoDestino);
+                                }
+                                else
+                                {
+                                    //cargarWSErrorAsignarCapacitadosFotos(ref wsArchivoError, rowArchivoError, string.Format("Ya existe el archivo {0}", pathArchivoDestino));
+                                    rowArchivoError++;
+                                }
+
+                                capacitado.PathArchivo = pathArchivo;
+
+                            }
+                            else
+                            {
+                                mensajes.Add(string.Format("El capacitado {0} - {1} ya tiene una foto asociada", capacitado.DocumentoCompleto, capacitado.NombreCompleto));
+                                cargarWSErrorAsignarCapacitadosFotos(ref wsFotoYaAsociada, rowFotoYaAsociada, capacitado.DocumentoCompleto);
+                                rowFotoYaAsociada++;
+                            }
+                        }
+                        else
+                        {
+                            mensajes.Add(string.Format("No se puedo asociar el archivo {0} a ningún capacitado", nombreArchivo));
+                            cargarWSErrorAsignarCapacitadosFotos(ref wsArchivoError, rowArchivoError, nombreArchivo);
+                            rowArchivoError++;
+
+                        }
+                    }
+                    else //el nombre del archivo no contiene el documento
+                    {
+                        mensajes.Add(string.Format("No se puedo asociar el archivo {0} a ningún capacitado porque el nombre del archivo no contiene ningúm documento válido", nombreArchivo));
+                        cargarWSErrorAsignarCapacitadosFotos(ref wsArchivoError, rowArchivoError, nombreArchivo);
+                        rowArchivoError++;
+                    }
+                }
+
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+                {
+                    //TODO: Mejorar el mensaje de error que se muestra cuando ocurre un error durante la migración de datos
+                    // Retrieve the error messages as a list of strings.
+                    var errorMessages = ex.EntityValidationErrors
+                            .SelectMany(x => x.ValidationErrors)
+                            .Select(x => x.ErrorMessage);
+
+                    // Join the list to a single string.
+                    var fullErrorMessage = string.Join("; ", errorMessages);
+
+                    // Combine the original exception message with the new one.
+                    var exceptionMessage = string.Concat(ex.Message, " The validation errors are: ", fullErrorMessage);
+
+                    // Throw a new DbEntityValidationException with the improved exception message.
+                    throw new DbEntityValidationException(exceptionMessage, ex.EntityValidationErrors);
+                }
+
+                if (wsFotoYaAsociada.Dimension != null)
+                    wsFotoYaAsociada.Cells[wsFotoYaAsociada.Dimension.Address].AutoFitColumns();
+
+                if (wsArchivoError.Dimension != null)
+                    wsArchivoError.Cells[wsArchivoError.Dimension.Address].AutoFitColumns();
+
+                if (wsDocumentoError.Dimension != null)
+                    wsDocumentoError.Cells[wsDocumentoError.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = "erroresFotos.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
+        }
+
+        private void cargarWSErrorAsignarCapacitadosFotos(ref ExcelWorksheet ws, int rowActual, string error)
+        {
+            ws.Cells[rowActual, 1].Value = error;
+        }
+
         [HttpGet]
         public ActionResult ObtenerCargando()
         {
             return PartialView("_CargandoPartial");
+        }
+
+        private string ObtenerCINombreArchivo(string nombreArchivo)
+        {
+            return System.Text.RegularExpressions.Regex.Match(nombreArchivo, @"\d+").Value;
         }
 
     }
