@@ -52,7 +52,7 @@ namespace Cursos.Models
         {
             get
             {
-                return String.Format("{0}{1}{2}", this.Fecha.Year.ToString(), this.Fecha.Month.ToString(), this.Fecha.Year.ToString());
+                return String.Format("{0}{1}{2}", this.Fecha.Year.ToString(), this.Fecha.Month.ToString().PadLeft(2, '0'), this.Fecha.Day.ToString().PadLeft(2, '0'));
             }
         }
 
