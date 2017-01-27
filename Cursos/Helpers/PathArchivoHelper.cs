@@ -41,8 +41,9 @@ namespace Cursos.Helpers
 
         public string ObtenerNombreFotoCapacitado(int capacitadoId, string extesionArchivo)
         {
-            return string.Format("Foto_{0}{1}",
+            return string.Format("Foto_{0}_{1}{2}",
                                  capacitadoId.ToString().Trim(),
+                                 (new Random()).Next(1000, 9999).ToString().Trim(),
                                  extesionArchivo);
         }
 
