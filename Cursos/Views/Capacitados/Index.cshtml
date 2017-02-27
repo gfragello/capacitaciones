@@ -110,3 +110,15 @@
 Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
+
+@section Scripts {
+
+<script type="text/javascript">
+
+        $(document).ready(function () {
+            alert('Cargando notificación');
+            $("#dvNotificaciones").load('@(Url.Action("NotificacionesVencimientosAdvertencia", "NotificacionesVencimientos"))');
+        });
+</script>
+
+}

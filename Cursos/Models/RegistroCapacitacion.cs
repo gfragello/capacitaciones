@@ -48,6 +48,26 @@ namespace Cursos.Models
 
         public EstadosRegistroCapacitacion Estado { get; set; }
 
+        [NotMapped]
+        private DateTime FechaInicioNoficacionVencimiento
+        {
+            get
+            {
+                const double diasAnticipacionAviso = 30;
+                return this.FechaVencimiento.AddDays(diasAnticipacionAviso);
+            }
+        }
+
+        [NotMapped]
+        public bool NotificarRegistroPorVencer
+        {
+            get
+            {
+                //DateTime fechaInicioControlVencimientos = new DateTime(2016, 1, 15);
+                return this.FechaInicioNoficacionVencimiento >= DateTime.Now;
+            }
+        }
+
         /*
         public int EmpresaID { get; set; }
         public virtual Empresa Empresa { get; set; }        

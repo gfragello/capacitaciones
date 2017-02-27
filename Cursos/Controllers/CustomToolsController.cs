@@ -1311,5 +1311,29 @@ namespace Cursos.Controllers
             return System.Text.RegularExpressions.Regex.Match(nombreArchivo, @"\d+").Value;
         }
 
+        public ActionResult IniciarNotificacionesVencimientos()
+        {
+            return View("IniciarNotificacionesVencimientos");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IniciarNotificacionesVencimientos(FormCollection formCollection)
+        {
+            foreach (var r in db.RegistroCapacitacion)
+            {
+                NotificacionVencimiento n = new NotificacionVencimiento();
+                n.Fecha = DateTime.Now;
+                n.Estado = EstadoNotificacionVencimiento.NoNotificar;
+                n.RegistroCapacitacion = r;
+
+                db.NotificacionVencimientos.Add(n);
+            }
+
+            db.SaveChanges();
+
+            return View();
+        }
+
     }
 }

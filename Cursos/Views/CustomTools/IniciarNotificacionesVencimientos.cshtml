@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "IniciarNotificacionesVencimientos";
+}
+
+<h2>Iniciar Notificaciones Vencimientos</h2>
+<hr />
+
+@using (Html.BeginForm("IniciarNotificacionesVencimientos", "CustomTools", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <table>
+        <tr>
+            <td><input type="submit" name="Submit" value="Iniciar Notificaciones Vencimientos" /></td>
+        </tr>
+    </table>
+}
+
