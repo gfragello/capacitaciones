@@ -116,9 +116,9 @@ Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.P
 <script type="text/javascript">
 
         $(document).ready(function () {
-            alert('Cargando notificación');
             $("#dvNotificaciones").load('@(Url.Action("NotificacionesVencimientosAdvertencia", "NotificacionesVencimientos"))');
         });
+
 </script>
 
 }

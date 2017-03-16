@@ -60,5 +60,7 @@ namespace Cursos.Models
         public DbSet<PathArchivo> PathArchivos { get; set; }
 
         public DbSet<NotificacionVencimiento> NotificacionVencimientos { get; set; }
+
+        public DbSet<Configuracion> Configuracion { get; set; }
     }
 }

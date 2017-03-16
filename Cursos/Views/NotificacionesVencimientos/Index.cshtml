@@ -7,72 +7,143 @@
 <h4>Notificación de vencimientos</h4>
 
 <p style="vertical-align: middle;">
-    <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar todas las notificaciones pendientes</a>
+    <a href="#" onclick="enviarNotificaciones();"><span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar todas las notificaciones pendientes</a>
 </p>
+
+<div id="modalMensaje" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Enviando notificaciones</h4>
+            </div>
+            <div id="bodyMensaje" class="modal-body">
+                <p>Enviando mails con notificaciones. No cierre esta ventana.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 <hr />
 
-@foreach (var notificacionesEmpresa in Model.GroupBy(n => n.RegistroCapacitacion.Capacitado.EmpresaID))
+@if (Model.Count() > 0)
 {
-    string emailEmpresa = notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.Empresa.Email;
+    foreach (var notificacionesEmpresa in Model.GroupBy(n => n.RegistroCapacitacion.Capacitado.EmpresaID))
+    {
+        string emailEmpresa = notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.Empresa.Email;
 
-    <h4>
-        @notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.Empresa.NombreFantasia 
-        &nbsp;&nbsp;
-        @if (!string.IsNullOrEmpty(emailEmpresa))
+        <h4>
+            @notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.Empresa.NombreFantasia
+        </h4>
+
+        if (!string.IsNullOrEmpty(emailEmpresa))
         {
-            <a href="@Url.Action("Index")"><span class="glyphicon glyphicon-envelope" style="color: #017d49" /></a>
+            <span style="font-size: small">@emailEmpresa</span>
         }
         else
         {
-            <span class="glyphicon glyphicon-envelope" style="color: darkgrey" />
+            <span style="font-size: small"><span style="font-weight: bold">Atención!</span> La empresa no tiene mail definido</span>
         }
-    </h4>
 
-    if (!string.IsNullOrEmpty(emailEmpresa))
-    {
-        <span style="font-size: small">@emailEmpresa</span>
+        <br /><br />
+
+        <table class="table table-striped">
+
+            <tr>
+                <th style="width: 50%">
+                    Capacitado
+                </th>
+                <th style="width: 20%">
+                    Documento
+                </th>
+                <th style="width: 20%">
+                    Curso
+                </th>
+                <th style="width: 10%">
+                    Vencimiento
+                </th>
+            </tr>
+
+            @foreach (var item in notificacionesEmpresa)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RegistroCapacitacion.Capacitado.NombreCompleto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RegistroCapacitacion.Capacitado.DocumentoCompleto)
+                    </td>
+                    <td>
+                        <span class="label label-default" style="color: #333333; background-color: @item.RegistroCapacitacion.Jornada.Curso.ColorDeFondo">
+                            @Html.DisplayFor(modelItem => item.RegistroCapacitacion.Jornada.Curso.Descripcion)
+                        </span>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RegistroCapacitacion.FechaVencimiento)
+                    </td>
+                </tr>   
+            }
+        </table>
     }
-    else
-    {
-        <span style="font-size: small"><span style="font-weight: bold">Atención!</span> La empresa no tiene mail definido</span>
-    }
+}
+else
+{
+    <h3>No hay notificaciones pendientes.</h3>
+}
 
-    <br /><br />
+@section Scripts {
+    <script type="text/javascript">
 
-    <table class="table table-striped">
+        function enviarNotificaciones() {
+            if (confirm("¿Enviar la notificaciones de vencimiento?")) {
 
-        <tr>
-            <th style="width: 50%">
-                Capacitado
-            </th>
-            <th style="width: 20%">
-                Curso
-            </th>
-            <th style="width: 20%">
-                Vencimiento
-            </th>
-            <th style="width: 10%"></th>
-        </tr>
+                var counter = 1;
 
-    @foreach (var item in notificacionesEmpresa)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegistroCapacitacion.Capacitado.NombreCompleto)
-            </td>
-            <td>
-                <span class="label label-default" style="color: #333333; background-color: @item.RegistroCapacitacion.Jornada.Curso.ColorDeFondo">
-                    @Html.DisplayFor(modelItem => item.RegistroCapacitacion.Jornada.Curso.Descripcion)
-                </span>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RegistroCapacitacion.FechaVencimiento)
-            </td>
-            <td>
-                <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49" /></a>
-            </td>
-        </tr>
-    }
-    </table>
+                $('#modalMensaje').modal('show');
+
+                $.ajax({
+                    url: '/NotificacionesVencimientos/EmpresasIDNotificacionesPendientes',
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function (empresasID) {
+                        for (var i = 0; i < empresasID.length; i++) {
+                            var empresaID = empresasID[i];
+                            $.ajax({
+                                async: false,
+                                url: '/NotificacionesVencimientos/EnviarNotificacionesEmailEmpresa',
+                                type: "GET",
+                                dataType: "JSON",
+                                data: { empresaId: empresaID },
+                                success: function (enviado) {
+                                    if (enviado) {
+                                        //$("#mensajes").html("Enviando correo con notificaciones " + i.toString() + " de " + empresasID.length.toString());
+                                        //alert('enviado');
+                                    }
+                                    else
+                                    {
+                                        //ver que se hace en estos casos
+                                    }
+                                }
+                            });
+
+                            $("#bodyMensaje").html("Se enviaron " + counter.toString() + " notificaciones.");
+                            counter++;
+
+                        }
+                    }
+                });
+            }
+        }
+
+        $('#modalMensaje').on('hidden.bs.modal', function () {
+            location.reload();
+        })
+
+    </script>
 }

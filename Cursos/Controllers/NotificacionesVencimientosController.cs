@@ -9,6 +9,8 @@ using System.Web.Mvc;
 using Cursos.Models;
 using Cursos.Helpers;
 using Cursos.Models.Enums;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace Cursos.Controllers
 {
@@ -146,24 +148,164 @@ namespace Cursos.Controllers
             return Content("");
         }
 
+        public ActionResult EmpresasIDNotificacionesPendientes()
+        {
+            return Json(ObtenerEmpresasIDNotificacionesPendientes(), JsonRequestBehavior.AllowGet);
+        }
+
+        public List<int> ObtenerEmpresasIDNotificacionesPendientes()
+        {
+            List<int> empresasID = new List<int>();
+
+            foreach (var notificacionesEmpresa in ObtenerNotificacionesVencimiento(null).GroupBy(n => n.RegistroCapacitacion.Capacitado.EmpresaID))
+            {
+                empresasID.Add(notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.EmpresaID);
+            }
+
+            return empresasID;
+        }
+
         public ActionResult EnviarNotificacionesEmailEmpresa(int empresaId)
         {
             return Json(EnviarEmailsEmpresa(empresaId), JsonRequestBehavior.AllowGet);
         }
 
-        public int EnviarEmailsEmpresa(int empresaId)
+        private bool EnviarEmailsEmpresa(int empresaId)
         {
-            /*
-            var capacitado = db.Capacitados.Where(c => c.Documento == documento).FirstOrDefault();
+            var empresa = db.Empresas.Where(e => e.EmpresaID == empresaId).FirstOrDefault();
 
-            if (capacitado != null)
-                return capacitado.CapacitadoID;
-            else
-                return -1;
-            */
+            var message = new MailMessage();
 
-            return -1;
-         }
+            foreach (var emailEmpresa in empresa.Email.Split(','))
+            {
+                message.To.Add(new MailAddress(emailEmpresa));
+            }
+
+            foreach (var emailCC in ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionCC").Split(','))
+            {
+                message.CC.Add(new MailAddress(emailCC));
+            }
+            
+            message.From = new MailAddress("notificaciones@csl.uy");  // replace with valid value
+            message.Subject = string.Format("{0} - {1} {2} {3}",
+                                            ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionAsunto"),
+                                            empresa.NombreFantasia,
+                                            DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
+            message.Body = ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionCuerpo");
+            message.IsBodyHtml = true;
+
+            message.Body += AgregarTableCapacitados(ObtenerNotificacionesVencimiento(empresaId));
+
+            using (var smtp = new SmtpClient())
+            {
+                var credential = new NetworkCredential
+                {
+                    UserName = "notificaciones@csl.uy",
+                    Password = "n0tiFic@c1on3s"
+                    //UserName = "guillefra@gmail.com",  // replace with valid value
+                    //Password = "puppet250139"  // replace with valid value
+                };
+
+                /*
+                smtp.Credentials = credential;
+                smtp.Host = "smtp.gmail.com";
+                smtp.Port = 587;
+                smtp.EnableSsl = true;
+                */
+
+                smtp.Credentials = credential;
+                smtp.Host = "smtp.zoho.com";
+                smtp.Port = 587;
+                smtp.EnableSsl = true;
+
+                try
+                {
+                    smtp.Send(message);
+                    db.SaveChanges(); //se modificó el estado de las notificaciones a "Ënviada"
+
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        private string AgregarTableCapacitados(List<NotificacionVencimiento> notificaciones)
+        {
+            string html = IniciarTableCapacitados();
+
+            string backgroundColor = string.Empty;
+
+            foreach (var n in notificaciones)
+            {
+                if (backgroundColor != "white")
+                    backgroundColor = "white";
+                else
+                    backgroundColor = "#f9f9f9";
+
+                html += AgregarATableCapacitados(n, backgroundColor);
+
+                n.Estado = EstadoNotificacionVencimiento.Notificado;
+                n.Fecha = DateTime.Now;
+                db.Entry(n).State = EntityState.Modified;
+            }
+
+            html += CerrarTableCapacitados();
+
+            return html;
+        }
+
+        private string IniciarTableCapacitados()
+        {
+            string html = string.Empty;
+
+            html += "<table>";
+            html += "<tr style='background-color: #f9f9f9;'>";
+            html += "<th style='width: 50%; text-align:left'>";
+            html += "Nombre";
+            html += "</th>";
+            html += "<th style='width: 20%; text-align:left'>";
+            html += "Documento";
+            html += "</th>";
+            html += "<th style='width: 20%; text-align:left'>";
+            html += "Curso";
+            html += "</th>";
+            html += "<th style='width: 10%; text-align:left'>";
+            html += "Vencimiento";
+            html += "</th>";
+            html += "</tr>";
+
+            return html;
+        }
+
+        private string AgregarATableCapacitados(NotificacionVencimiento n, string backgroundColor)
+        {
+            string html = string.Empty;
+
+            html += string.Format("<tr style='background-color: {0}'>", backgroundColor);
+            html += "<td>";
+            html += n.RegistroCapacitacion.Capacitado.NombreCompleto;
+            html += "</td>";
+            html += "<td>";
+            html += n.RegistroCapacitacion.Capacitado.DocumentoCompleto;
+            html += "</td>";
+            html += "<td>";
+            html += n.RegistroCapacitacion.Jornada.Curso.Descripcion;
+            html += "</td>";
+            html += "<td>";
+            html += n.RegistroCapacitacion.FechaVencimiento.ToShortDateString();
+            html += "</td>";
+            html += "</tr> ";
+
+            return html;
+        }
+
+        private string CerrarTableCapacitados()
+        {
+            return "<table>";
+        }
 
         private List<NotificacionVencimiento> ObtenerNotificacionesVencimiento(int? empresaId)
         {
