@@ -8,6 +8,9 @@ using System.Web;
 using System.Web.Mvc;
 using Cursos.Models;
 using PagedList;
+using OfficeOpenXml;
+using System.Drawing;
+using System.IO;
 
 namespace Cursos.Controllers
 {
@@ -18,7 +21,7 @@ namespace Cursos.Controllers
 
         // GET: Empresas
         public ActionResult Index(string currentNombreFantasia, string nombreFantasia,
-                                  int? page)
+                                  int? page, bool? exportarExcel)
         {
             if (nombreFantasia != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
                 page = 1;
@@ -39,7 +42,12 @@ namespace Cursos.Controllers
 
             ViewBag.TotalEmpresas = empresas.Count();
 
-            return View(empresas.ToPagedList(pageNumber, pageSize));
+            bool exportar = exportarExcel != null ? (bool)exportarExcel : false;
+
+            if (!exportar)
+                return View(empresas.ToPagedList(pageNumber, pageSize));
+            else
+                return ExportDataExcel(empresas.ToList());
         }
 
         // GET: Empresas/Details/5
@@ -170,6 +178,67 @@ namespace Cursos.Controllers
             db.Empresas.Remove(empresa);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        private ActionResult ExportDataExcel(List<Empresa> empresas)
+        {
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("Empresas");
+
+                const int rowInicial = 1;
+                int i = rowInicial + 1;
+
+                ws.Cells[rowInicial, 1].Value = "Nombre de fantasía";
+                ws.Cells[rowInicial, 2].Value = "Domicilio";
+                ws.Cells[rowInicial, 3].Value = "Razón Social";
+                ws.Cells[rowInicial, 4].Value = "RUT";
+                ws.Cells[rowInicial, 5].Value = "Departamento";
+                ws.Cells[rowInicial, 6].Value = "Localidad";
+                ws.Cells[rowInicial, 7].Value = "Código Postal";
+                ws.Cells[rowInicial, 8].Value = "Email";
+
+                ws.Cells[rowInicial, 1, rowInicial, 8].Style.Font.Bold = true;
+
+                var bgColor = Color.White;
+
+                foreach (var e in empresas)
+                {
+                    ws.Cells[i, 1].Value = e.NombreFantasia;
+                    ws.Cells[i, 2].Value = e.Domicilio;
+                    ws.Cells[i, 3].Value = e.RazonSocial;
+                    ws.Cells[i, 4].Value = e.RUT;
+                    ws.Cells[i, 5].Value = e.Departamento.Nombre;
+                    ws.Cells[i, 6].Value = e.Localidad;
+                    ws.Cells[i, 7].Value = e.CodigoPostal;
+                    ws.Cells[i, 8].Value = e.Email;
+
+                    //se seleccionan las columnas con datos del capacitado para setear el background color.
+                    if (bgColor != Color.White)
+                    {
+                        ws.Cells[i - 1, 1, i - 1, 8].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i - 1, 1, i - 1, 8].Style.Fill.BackgroundColor.SetColor(bgColor);
+                    }
+
+                    //se pone un borde alrededor del renglón
+                    ws.Cells[i - 1, 1, i - 1, 8].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
+
+                    i++;
+                }
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = "empresas.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
         }
 
         protected override void Dispose(bool disposing)

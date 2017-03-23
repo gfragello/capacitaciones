@@ -328,6 +328,10 @@
     <Compile Include="Migrations\201703152150219_Configuración.Designer.cs">
       <DependentUpon>201703152150219_Configuración.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201703182018166_Configuracion_Mantenible.cs" />
+    <Compile Include="Migrations\201703182018166_Configuracion_Mantenible.Designer.cs">
+      <DependentUpon>201703182018166_Configuracion_Mantenible.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -649,6 +653,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703152150219_Configuración.resx">
       <DependentUpon>201703152150219_Configuración.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201703182018166_Configuracion_Mantenible.resx">
+      <DependentUpon>201703182018166_Configuracion_Mantenible.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

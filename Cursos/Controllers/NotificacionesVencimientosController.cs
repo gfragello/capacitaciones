@@ -200,28 +200,21 @@ namespace Cursos.Controllers
             {
                 var credential = new NetworkCredential
                 {
-                    UserName = "notificaciones@csl.uy",
-                    Password = "n0tiFic@c1on3s"
-                    //UserName = "guillefra@gmail.com",  // replace with valid value
-                    //Password = "puppet250139"  // replace with valid value
+                    UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario"),
+                    Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario")
+                    //UserName = "notificaciones@csl.uy",
+                    //Password = "n0tiFic@c1on3s"
                 };
 
-                /*
                 smtp.Credentials = credential;
-                smtp.Host = "smtp.gmail.com";
-                smtp.Port = 587;
-                smtp.EnableSsl = true;
-                */
-
-                smtp.Credentials = credential;
-                smtp.Host = "smtp.zoho.com";
-                smtp.Port = 587;
-                smtp.EnableSsl = true;
+                smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost");
+                smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort"));
+                smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL"));
 
                 try
                 {
                     smtp.Send(message);
-                    db.SaveChanges(); //se modificó el estado de las notificaciones a "Ënviada"
+                    db.SaveChanges(); //se modificó el estado de las notificaciones a "Enviada"
 
                     return true;
                 }

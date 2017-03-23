@@ -143,4 +143,4 @@
 <br />
 Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
 
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentCreadasOtrosUsuarios = ViewBag.CreadasOtrosUsuarios }))
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentCreadasOtrosUsuarios = ViewBag.CurrentCreadasOtrosUsuarios }))

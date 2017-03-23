@@ -14,5 +14,13 @@ namespace Cursos.Models
         public string Index { get; set; }
 
         public string Value { get; set; }
+
+        public string Label { get; set; }
+
+        public int Order { get; set; }
+
+        public string Seccion { get; set; }
+
+        public string SubSeccion { get; set; }
     }
 }

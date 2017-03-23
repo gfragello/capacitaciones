@@ -356,7 +356,6 @@ namespace Cursos.Controllers
 
         private ActionResult ExportDataExcel(List<Capacitado> capacitados, int? CursoID)
         {
-
             using (ExcelPackage package = new ExcelPackage())
             {
                 var ws = package.Workbook.Worksheets.Add("Capacitados");

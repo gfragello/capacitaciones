@@ -9,6 +9,8 @@
 
 <p>
     @Html.ActionLink("Crear Nueva", "Create")
+    &nbsp;&nbsp;
+    @Html.ActionLink("Exportar a Excel", "Index", new { currentNombreFantasia = ViewBag.CurrentNombreFantasia, exportarExcel = true })
 </p>
 
 <hr />
