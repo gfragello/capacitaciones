@@ -100,6 +100,9 @@
             @Html.DisplayNameFor(model => model.Capacitado.Nombre)
         </th>
         <th>
+            Empresa
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.JornadaID)
         </th>
         <th>
@@ -124,6 +127,9 @@
                 @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Jornada.JornadaIdentificacionCompleta)
             </td>
             <td>
@@ -133,9 +139,9 @@
                 @Html.DisplayFor(modelItem => item.NotaPrevia)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.RegistroCapacitacionID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.RegistroCapacitacionID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.RegistroCapacitacionID })
+                <a href="@Url.Action("Details", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>&nbsp;|
+                <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>&nbsp;|
+                <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
             </td>
         </tr>
     }

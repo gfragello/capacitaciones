@@ -44,7 +44,6 @@ namespace Cursos.Models
 
         [Display(Name = "Fecha Vencimiento")]
         [Required(ErrorMessage = "Debe ingresar la {0}")]
-        [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
         public DateTime FechaVencimiento { get; set; }
 
         public EstadosRegistroCapacitacion Estado { get; set; }
