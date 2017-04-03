@@ -8,6 +8,10 @@ using System.Web;
 using System.Web.Mvc;
 using Cursos.Models;
 using Cursos.Models.Enums;
+using PagedList;
+using OfficeOpenXml;
+using System.IO;
+using System.Drawing;
 
 namespace Cursos.Controllers
 {
@@ -17,9 +21,54 @@ namespace Cursos.Controllers
         private CursosDbContext db = new CursosDbContext();
 
         // GET: RegistrosCapacitacion
-        public ActionResult Index(int? cursoID, DateTime? fechaInicio, DateTime? fechaFin, int? notaDesde, int? notaHasta)
+        public ActionResult Index(int? currentCursoID, int? cursoID,
+                                  DateTime? currentFechaInicio, DateTime? fechaInicio,
+                                  DateTime? currentFechaFin, DateTime? fechaFin,
+                                  int? currentNotaDesde, int? notaDesde,
+                                  int? currentNotaHasta, int? notaHasta,
+                                  int? page, bool? exportarExcel)
         {
-            var registrosCapacitacion = db.RegistroCapacitacion.Include(r => r.Capacitado).Include(r => r.Jornada);
+            if (cursoID != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
+                page = 1;
+            else
+            {
+                if (currentCursoID == null)
+                    currentCursoID = -1;
+
+                cursoID = currentCursoID;
+            }
+
+            ViewBag.CurrentCursoID = cursoID;
+
+            if (fechaInicio != null) 
+                page = 1;
+            else
+                fechaInicio = currentFechaInicio;
+
+            ViewBag.CurrentFechaInicio = fechaInicio;
+
+            if (fechaFin != null)
+                page = 1;
+            else
+                fechaFin = currentFechaFin;
+
+            ViewBag.CurrentFechaFin = fechaFin;
+
+            if (notaDesde != null)
+                page = 1;
+            else
+                notaDesde = currentNotaDesde;
+
+            ViewBag.CurrentNotaDesde = notaDesde;
+
+            if (notaHasta != null) 
+                page = 1;
+            else
+                notaHasta = currentNotaHasta;
+
+            ViewBag.CurrentNotaHasta = notaHasta;
+
+            var registrosCapacitacion = db.RegistroCapacitacion.Include(r => r.Capacitado).Include(r => r.Jornada).AsQueryable();
 
             if (cursoID != null && cursoID != -1)
                 registrosCapacitacion = registrosCapacitacion.Where(r => r.Jornada.Curso.CursoID == cursoID);
@@ -55,8 +104,19 @@ namespace Cursos.Controllers
 
             registrosCapacitacion = registrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha);
 
-            return View(registrosCapacitacion.ToList());
+            int pageSize = 10;
+            int pageNumber = (page ?? 1);
+
+            ViewBag.TotalRegistrosCapacitacion = registrosCapacitacion.Count();
+
+            bool exportar = exportarExcel != null ? (bool)exportarExcel : false;
+
+            if (!exportar)
+                return View(registrosCapacitacion.ToPagedList(pageNumber, pageSize));
+            else
+                return ExportDataExcel(registrosCapacitacion.ToList(), cursoID, fechaInicio, fechaFin, notaDesde, notaHasta);
         }
+
 
         // GET: RegistrosCapacitacion/Details/5
         public ActionResult Details(int? id)
@@ -265,6 +325,121 @@ namespace Cursos.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private ActionResult ExportDataExcel(List<RegistroCapacitacion> registrosCapacitacion,
+                                            int? cursoID,
+                                            DateTime? fechaInicio,
+                                            DateTime? fechaFin,
+                                            int? notaDesde,
+                                            int? notaHasta)
+        {
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("Registros");
+
+                int i = 1;
+
+                if (cursoID != null)
+                {
+                    var c = db.Cursos.Find(cursoID);
+                    ws.Cells[i, 2].Value = string.Format("Curso: {0}", c.Descripcion);
+                    i++;
+                }
+
+                string filtroFechaAplicado = null;
+
+                if (fechaInicio != null && fechaFin != null)
+                {
+                    filtroFechaAplicado = string.Format("{0} al {1}", fechaInicio.Value.ToShortDateString(), fechaFin.Value.ToShortDateString());
+                }
+                else if (fechaInicio != null)
+                {
+                    filtroFechaAplicado = string.Format("Desde el {0}", fechaInicio.Value.ToShortDateString());
+                }
+                else if (fechaFin != null)
+                {
+                    filtroFechaAplicado = string.Format("Hasta el {0}", fechaFin.Value.ToShortDateString());
+                }
+
+                if (filtroFechaAplicado != null)
+                {
+                    ws.Cells[i, 2].Value = string.Format("Fecha: {0}", filtroFechaAplicado);
+                    i++;
+                }
+
+                string filtroNotaAplicado = null;
+
+                if (notaDesde != null && notaHasta != null)
+                {
+                    filtroNotaAplicado = string.Format("{0} a {1}", notaDesde.Value.ToString());
+                }
+                else if (notaDesde != null)
+                {
+                    filtroNotaAplicado = string.Format("Desde {0}", notaDesde.ToString());
+                }
+                else if (notaHasta != null)
+                {
+                    filtroNotaAplicado = string.Format("Hasta {0}", notaHasta.ToString());
+                }
+
+                if (filtroNotaAplicado != null)
+                {
+                    ws.Cells[i, 2].Value = string.Format("Nota: {0}", filtroNotaAplicado);
+                    i++;
+                }
+
+                int rowHeader = ++i;
+                i = rowHeader + 1;
+
+                const int colDocumento = 1;
+                const int colNombre = 2;
+                const int colEmpresa = 3;
+                const int colJornada = 4;
+                const int colNota = 5;
+
+                ws.Cells[rowHeader, colDocumento].Value = "Documento";
+                ws.Cells[rowHeader, colNombre].Value = "Nombre";
+                ws.Cells[rowHeader, colEmpresa].Value = "Empresa";
+                ws.Cells[rowHeader, colJornada].Value = "Jornada";
+                ws.Cells[rowHeader, colNota].Value = "Nota";
+
+                var bgColor = Color.White;
+
+                foreach (var r in registrosCapacitacion)
+                {
+                    ws.Cells[i, colDocumento].Value = r.Capacitado.DocumentoCompleto;
+                    ws.Cells[i, colNombre].Value = r.Capacitado.NombreCompleto;
+                    ws.Cells[i, colEmpresa].Value = r.Capacitado.Empresa.NombreFantasia;
+                    ws.Cells[i, colJornada].Value = r.Jornada.JornadaIdentificacionCompleta;
+                    ws.Cells[i, colNota].Value = r.Nota;
+
+                    //se seleccionan las columnas con datos del capacitado para setear el background color.
+                    if (bgColor != Color.White)
+                    {
+                        ws.Cells[i, colDocumento, i, colNota].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i, colDocumento, i, colNota].Style.Fill.BackgroundColor.SetColor(bgColor);
+                    }
+
+                    //se pone un borde alrededor del renglón
+                    ws.Cells[i, colDocumento, i, colNota].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
+
+                    i++;
+                }
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = "registros.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
         }
 
         public ActionResult ObtenerEstadoRegistroCapacitacion(int cursoId, int nota)

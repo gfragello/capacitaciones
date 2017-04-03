@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Cursos.Models.RegistroCapacitacion>
+﻿@model PagedList.IPagedList<Cursos.Models.RegistroCapacitacion>
+@using PagedList.Mvc;
 
 @{
     ViewBag.Title = "Registros de Capacitación";
@@ -6,11 +7,9 @@
 
 <h2>Registros de Capacitación</h2>
 
-<!--
 <p>
-    @Html.ActionLink("Crear Nuevo", "Create")
+    @Html.ActionLink("Exportar a Excel", "Index", new { currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentNotaDesde = ViewBag.CurrentNotaDesde, currentNotaHasta = ViewBag.CurrentNotaHasta, exportarExcel = true })
 </p>
--->
 
 <hr />
 
@@ -36,7 +35,7 @@
                             @Html.Label("Desde")
                         </div>
                         <div class="col-md-10">
-                            @Html.TextBox("fechaInicio", ViewBag.FechaInicio as string, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.TextBox("fechaInicio", ViewBag.CurrentFechaInicio as string, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
                     </div>
 
@@ -45,7 +44,7 @@
                             @Html.Label("Hasta"):
                         </div>
                         <div class="col-md-10">
-                            @Html.TextBox("fechaFin", ViewBag.FechaFin as string, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.TextBox("fechaFin", ViewBag.CurrentFechaFin as string, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
                     </div>
 
@@ -54,7 +53,7 @@
                             @Html.Label("Nota desde"):
                         </div>
                         <div class="col-md-10">
-                            @Html.TextBox("notaDesde", ViewBag.NotaDesde as string, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.TextBox("notaDesde", ViewBag.CurrentNotaDesde as string, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
                     </div>
 
@@ -63,7 +62,7 @@
                             @Html.Label("Nota hasta"):
                         </div>
                         <div class="col-md-10">
-                            @Html.TextBox("notaHasta", ViewBag.NotaHasta as string, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.TextBox("notaHasta", ViewBag.CurrentNotaHasta as string, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
                     </div>
 
@@ -89,28 +88,32 @@
 
 <br />
 
-@Html.Label(String.Format("Total de registros: {0}", Model.Count()))
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentNotaDesde = ViewBag.CurrentNotaDesde, currentNotaHasta = ViewBag.CurrentNotaHasta }))
+
+<label>@String.Format("Total de Registros de Capacitación: {0}", ViewBag.TotalRegistrosCapacitacion)</label>
 
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Capacitado.Documento)
+            Documento
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Capacitado.Nombre)
+            Nombre
         </th>
         <th>
             Empresa
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.JornadaID)
+            Jornada
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Nota)
+            Nota
         </th>
+        @*
         <th>
-            @Html.DisplayNameFor(model => model.NotaPrevia)
+            Nota Previa
         </th>
+        *@
         <th></th>
     </tr>
 
@@ -135,9 +138,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Nota)
             </td>
+            @*
             <td>
                 @Html.DisplayFor(modelItem => item.NotaPrevia)
             </td>
+            *@
             <td>
                 <a href="@Url.Action("Details", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>&nbsp;|
                 <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>&nbsp;|
@@ -147,3 +152,9 @@
     }
 
 </table>
+
+<br />
+
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentNotaDesde = ViewBag.CurrentNotaDesde, currentNotaHasta = ViewBag.CurrentNotaHasta }))

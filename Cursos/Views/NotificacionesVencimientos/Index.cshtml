@@ -103,7 +103,8 @@ else
         function enviarNotificaciones() {
             if (confirm("¿Enviar la notificaciones de vencimiento?")) {
 
-                var counter = 1;
+                var counterSuccess = 0;
+                var counterError = 0;
 
                 $('#modalMensaje').modal('show');
 
@@ -124,17 +125,25 @@ else
                                     if (enviado) {
                                         //$("#mensajes").html("Enviando correo con notificaciones " + i.toString() + " de " + empresasID.length.toString());
                                         //alert('enviado');
+                                        counterSuccess++;
                                     }
                                     else
                                     {
+                                        counterError++;
                                         //ver que se hace en estos casos
                                     }
                                 }
                             });
 
-                            $("#bodyMensaje").html("Se enviaron " + counter.toString() + " notificaciones.");
-                            counter++;
+                            var mensaje = "";
 
+                            if (counterSuccess > 0)
+                                mensaje = "Se enviaron " + counterSuccess.toString() + " notificaciones."
+
+                            if (counterError > 0)
+                                mensaje += "<br>No se pudo enviar " + counterError.toString() + " notificaciones.";
+
+                            $("#bodyMensaje").html(mensaje);
                         }
                     }
                 });
