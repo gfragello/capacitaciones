@@ -17,6 +17,7 @@ namespace Cursos.CustomBinders
             var displayFormat = bindingContext.ModelMetadata.DisplayFormatString;
             var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
 
+            /*
             if (!string.IsNullOrEmpty(displayFormat) && value != null)
             {
                 DateTime date;
@@ -34,6 +35,7 @@ namespace Cursos.CustomBinders
                     );
                 }
             }
+            */
 
             return base.BindModel(controllerContext, bindingContext);
         }
