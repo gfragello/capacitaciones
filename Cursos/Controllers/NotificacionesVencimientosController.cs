@@ -309,6 +309,8 @@ namespace Cursos.Controllers
 
         private List<NotificacionVencimiento> ObtenerNotificacionesVencimiento(int? empresaId)
         {
+            ActualizarNotificacionesVencimientos();
+
             int antelacionNotificacion = int.Parse(ConfiguracionHelper.GetInstance().GetValue("AntelacionNotificacion"));
 
             DateTime proximaFechaVencimientoNotificar = DateTime.Now.AddDays(antelacionNotificacion);
@@ -324,6 +326,31 @@ namespace Cursos.Controllers
                 notificacionVencimientos = notificacionVencimientos.Where(n => n.RegistroCapacitacion.Capacitado.EmpresaID == empresaId);
 
             return notificacionVencimientos.ToList();
+        }
+
+        //Las notificaciones asociadas a los registros no se crean al crear el registro
+        //Antes de listar en pantalla los vencimientos, se le asocian la notificaciones a los registros que no la tienen
+        private void ActualizarNotificacionesVencimientos()
+        {
+            var rcSinNotificacioneAsociadas = 
+            db.RegistroCapacitacion.Where(r => !db.NotificacionVencimientos.Any(n => n.RegistroCapacitacionID == r.RegistroCapacitacionID)).ToList();
+
+            if (rcSinNotificacioneAsociadas.Count > 0)
+            {
+                foreach (var r in rcSinNotificacioneAsociadas)
+                {
+                    var n = new NotificacionVencimiento
+                            {
+                                Estado = EstadoNotificacionVencimiento.NotificacionPendiente,
+                                RegistroCapacitacion = r,
+                                Fecha = DateTime.Now
+                            };
+
+                    db.NotificacionVencimientos.Add(n);
+                }
+
+                db.SaveChanges();
+            }
         }
 
         protected override void Dispose(bool disposing)

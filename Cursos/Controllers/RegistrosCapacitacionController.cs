@@ -343,8 +343,12 @@ namespace Cursos.Controllers
                 if (cursoID != null)
                 {
                     var c = db.Cursos.Find(cursoID);
-                    ws.Cells[i, 2].Value = string.Format("Curso: {0}", c.Descripcion);
-                    i++;
+
+                    if (c != null)
+                    {
+                        ws.Cells[i, 2].Value = string.Format("Curso: {0}", c.Descripcion);
+                        i++;
+                    }
                 }
 
                 string filtroFechaAplicado = null;
