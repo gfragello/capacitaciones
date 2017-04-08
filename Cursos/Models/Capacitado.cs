@@ -75,6 +75,41 @@ namespace Cursos.Models
         public int? PathArchivoID { get; set; }
         public virtual PathArchivo PathArchivo { get; set; }
 
+        [NotMapped]
+        public int Edad
+        {
+            get
+            {
+                return Fecha != null ? this.ObtenerEdadFecha(DateTime.Now) : 0;
+            }
+        }
+
+
+        public int ObtenerEdadFecha(DateTime HastaFecha)
+        {
+            if (this.Fecha != null)
+            {
+                DateTime zeroTime = new DateTime(1, 1, 1);
+
+                TimeSpan span = (DateTime)HastaFecha - (DateTime)this.Fecha;
+
+                // Because we start at year 1 for the Gregorian calendar, we must subtract a year here.
+                try
+                {
+                    //por la naturaleza del modelo de datos, es posible ingresar cualquier año
+                    //por lo que sería posible que el año de nacimiento sea igual al de la 
+                    //jornada dando por resulatado un error al hacer este cálculo
+                    return (zeroTime + span).Year - 1;
+                }
+                catch (Exception)
+                {
+                    return 0;
+                } 
+            }
+
+            return 0;
+        }
+
         public List<RegistroCapacitacion> RegistrosCapacitacion { get; set; }
 
         public List<RegistroCapacitacion> UltimoRegistroCapacitacionPorCurso(int? CursoID, bool soloEvaluados = true)

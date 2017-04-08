@@ -398,14 +398,22 @@ namespace Cursos.Controllers
 
                 const int colDocumento = 1;
                 const int colNombre = 2;
-                const int colEmpresa = 3;
-                const int colJornada = 4;
-                const int colNota = 5;
+                const int colApellido = 3;
+                const int colEdad = 4;
+                const int colEmpresa = 5;
+                const int colCurso = 6;
+                const int colJornada = 7;
+                const int colLugar = 8;
+                const int colNota = 9;
 
                 ws.Cells[rowHeader, colDocumento].Value = "Documento";
                 ws.Cells[rowHeader, colNombre].Value = "Nombre";
+                ws.Cells[rowHeader, colApellido].Value = "Apellido";
+                ws.Cells[rowHeader, colEdad].Value = "Edad";
                 ws.Cells[rowHeader, colEmpresa].Value = "Empresa";
+                ws.Cells[rowHeader, colCurso].Value = "Curso";
                 ws.Cells[rowHeader, colJornada].Value = "Jornada";
+                ws.Cells[rowHeader, colLugar].Value = "Lugar";
                 ws.Cells[rowHeader, colNota].Value = "Nota";
 
                 var bgColor = Color.White;
@@ -413,9 +421,13 @@ namespace Cursos.Controllers
                 foreach (var r in registrosCapacitacion)
                 {
                     ws.Cells[i, colDocumento].Value = r.Capacitado.DocumentoCompleto;
-                    ws.Cells[i, colNombre].Value = r.Capacitado.NombreCompleto;
+                    ws.Cells[i, colNombre].Value = r.Capacitado.Nombre;
+                    ws.Cells[i, colApellido].Value = r.Capacitado.Apellido;
+                    ws.Cells[i, colEdad].Value = r.Capacitado.ObtenerEdadFecha(r.Jornada.Fecha);
                     ws.Cells[i, colEmpresa].Value = r.Capacitado.Empresa.NombreFantasia;
-                    ws.Cells[i, colJornada].Value = r.Jornada.JornadaIdentificacionCompleta;
+                    ws.Cells[i, colCurso].Value = r.Jornada.Curso.Descripcion;
+                    ws.Cells[i, colJornada].Value = r.Jornada.FechaHora;
+                    ws.Cells[i, colLugar].Value = r.Jornada.Lugar.AbrevLugar;
                     ws.Cells[i, colNota].Value = r.Nota;
 
                     //se seleccionan las columnas con datos del capacitado para setear el background color.

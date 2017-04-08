@@ -48,6 +48,15 @@ namespace Cursos.Models
         }
 
         [NotMapped]
+        public string FechaHora
+        {
+            get
+            {
+                return String.Format("{0} {1}", this.Fecha.ToShortDateString(), this.Hora);
+            }
+        }
+
+        [NotMapped]
         public string FechaFormatoYYYYYMMDD
         {
             get

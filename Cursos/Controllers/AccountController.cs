@@ -15,6 +15,9 @@ using System.Collections.Generic;
 using Microsoft.AspNet.Identity.EntityFramework;
 using PagedList;
 using System.Data.Entity;
+using System.IO;
+using System.Drawing;
+using OfficeOpenXml;
 
 namespace Cursos.Controllers
 {
@@ -40,7 +43,7 @@ namespace Cursos.Controllers
         public ActionResult Index(string currentNombreUsuario, string nombreUsuario,
                                   int? currentEmpresaID, int? EmpresaID, 
                                   string currentRoleId, string RoleId,
-                                  int? page)
+                                  int? page, bool? exportarExcel)
         {
             if (nombreUsuario != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
                 page = 1;
@@ -108,7 +111,13 @@ namespace Cursos.Controllers
 
             ViewBag.TotalUsuarios = users.Count();
 
-            return View(users.ToPagedList(pageNumber, pageSize));
+            bool exportar = exportarExcel != null ? (bool)exportarExcel : false;
+
+            if (!exportar)
+                return View(users.ToPagedList(pageNumber, pageSize));
+            else
+                return ExportDataExcel(users.ToList());
+
         }
 
         // GET: Account/Edit/5
@@ -747,6 +756,59 @@ namespace Cursos.Controllers
             var eu = dbcursos.EmpresasUsuarios.Where(eus => eus.Usuario == usuario).FirstOrDefault();
             dbcursos.EmpresasUsuarios.Remove(eu);
             dbcursos.SaveChanges();
+        }
+
+        private ActionResult ExportDataExcel(List<ApplicationUser> usuarios)
+        {
+             using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("Usuarios");
+
+                int rowHeader = 1;
+                int i = rowHeader + 1;
+
+                const int colUsuario = 1;
+                const int colRol = 2;
+                const int colEmpresa = 3;
+
+                ws.Cells[rowHeader, colUsuario].Value = "Usuario";
+                ws.Cells[rowHeader, colRol].Value = "Rol";
+                ws.Cells[rowHeader, colEmpresa].Value = "Empresa";
+
+                var bgColor = Color.White;
+
+                foreach (var u in usuarios)
+                {
+                    ws.Cells[i, colUsuario].Value = u.Email;
+                    ws.Cells[i, colRol].Value = UsuarioHelper.GetInstance().ObtenerRoleName(u.Roles.ElementAt(0).RoleId);
+                    ws.Cells[i, colEmpresa].Value = UsuarioHelper.GetInstance().ObtenerNombreEmpresaAsociada(u.Email);
+
+                    //se seleccionan las columnas con datos del capacitado para setear el background color.
+                    if (bgColor != Color.White)
+                    {
+                        ws.Cells[i, colUsuario, i, colEmpresa].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i, colUsuario, i, colEmpresa].Style.Fill.BackgroundColor.SetColor(bgColor);
+                    }
+
+                    //se pone un borde alrededor del renglón
+                    ws.Cells[i, colUsuario, i, colEmpresa].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
+
+                    i++;
+                }
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = "usuarios.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
         }
     }
 }

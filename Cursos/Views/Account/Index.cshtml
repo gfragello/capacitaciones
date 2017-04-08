@@ -10,6 +10,8 @@
 
 <p>
     @Html.ActionLink("Registar Nuevo", "Register")
+    &nbsp;&nbsp;
+    @Html.ActionLink("Exportar a Excel", "Index", new { currentNombreUsuario = ViewBag.CurrentNombreUsuario, currentRoleId = ViewBag.CurrentRoleId, currentEmpresaID = ViewBag.CurrentEmpresaID, exportarExcel = true })
 </p>
 
 <hr />
