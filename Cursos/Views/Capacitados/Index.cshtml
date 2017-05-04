@@ -22,7 +22,6 @@
 <p>
     @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
     {
-        @*<a href="@Url.Action("Create") "><img src="@Url.Content("~/images/capacitados.png")" title="Nuevo Capacitado" /></a>*@
         @Html.ActionLink("Crear nuevo", "Create")
         @:&nbsp;&nbsp;
     }
@@ -110,15 +109,3 @@
 Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
-
-@section Scripts {
-
-<script type="text/javascript">
-
-        $(document).ready(function () {
-            $("#dvNotificaciones").load('@(Url.Action("NotificacionesVencimientosAdvertencia", "NotificacionesVencimientos"))');
-        });
-
-</script>
-
-}

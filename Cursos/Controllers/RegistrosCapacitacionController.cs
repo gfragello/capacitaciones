@@ -404,7 +404,8 @@ namespace Cursos.Controllers
                 const int colCurso = 6;
                 const int colJornada = 7;
                 const int colLugar = 8;
-                const int colNota = 9;
+                const int colInstructor = 9;
+                const int colNota = 10;
 
                 ws.Cells[rowHeader, colDocumento].Value = "Documento";
                 ws.Cells[rowHeader, colNombre].Value = "Nombre";
@@ -414,6 +415,7 @@ namespace Cursos.Controllers
                 ws.Cells[rowHeader, colCurso].Value = "Curso";
                 ws.Cells[rowHeader, colJornada].Value = "Jornada";
                 ws.Cells[rowHeader, colLugar].Value = "Lugar";
+                ws.Cells[rowHeader, colInstructor].Value = "Instructor";
                 ws.Cells[rowHeader, colNota].Value = "Nota";
 
                 var bgColor = Color.White;
@@ -428,6 +430,7 @@ namespace Cursos.Controllers
                     ws.Cells[i, colCurso].Value = r.Jornada.Curso.Descripcion;
                     ws.Cells[i, colJornada].Value = r.Jornada.FechaHora;
                     ws.Cells[i, colLugar].Value = r.Jornada.Lugar.AbrevLugar;
+                    ws.Cells[i, colInstructor].Value = r.Jornada.Instructor.NombreCompleto;
                     ws.Cells[i, colNota].Value = r.Nota;
 
                     //se seleccionan las columnas con datos del capacitado para setear el background color.
