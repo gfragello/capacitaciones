@@ -178,7 +178,7 @@ namespace Cursos.Controllers
                         nuevoRC.Capacitado = rc.Capacitado;
                         nuevoRC.Nota = 0;
                         nuevoRC.Aprobado = true;
-                        nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento(); 
+                        nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento(true); 
 
                         db.RegistroCapacitacion.Add(nuevoRC);
                     }

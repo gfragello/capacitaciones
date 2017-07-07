@@ -208,6 +208,7 @@
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
     <Compile Include="Helpers\EstadosRegistroCapacitacionHelper.cs" />
+    <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\NotificacionesVencimientosHelper.cs" />
     <Compile Include="Helpers\PathArchivoHelper.cs" />
     <Compile Include="Helpers\UsuarioHelper.cs" />
@@ -555,6 +556,7 @@
     <Folder Include="images\Actas\" />
     <Folder Include="images\FotosCapacitadosImportar\" />
     <Folder Include="images\FotosCapacitados\" />
+    <Folder Include="logs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

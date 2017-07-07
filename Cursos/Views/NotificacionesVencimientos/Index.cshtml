@@ -44,11 +44,12 @@
 
         if (!string.IsNullOrEmpty(emailEmpresa))
         {
-            <span style="font-size: small">@emailEmpresa</span>
+            <span style="font-size: small; vertical-align: text-bottom;">@emailEmpresa</span>
         }
         else
         {
             <span style="font-size: small"><span style="font-weight: bold">Atención!</span> La empresa no tiene mail definido</span>
+            <a href="javascript:if (confirm('¿Cancelar la notificaciones de esta empresa?')) cancelarNotificacionesEmpresa(@notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.Empresa.EmpresaID)" title="Cancelar estas notificaciones a la empresa"><span class="glyphicon glyphicon-remove" style="font-size: 25px; color: #ff6a00"></span></a>
         }
 
         <br /><br />
@@ -152,9 +153,26 @@ else
             }
         }
 
+        function cancelarNotificacionesEmpresa(empresasID)
+        {
+            $.ajax({
+                url: '/NotificacionesVencimientos/MarcarNotificacionesPendientesEmpresaNoNotificar',
+                type: "GET",
+                dataType: "JSON",
+                data: { EmpresaID: empresasID },
+                success: function (resultadoOK)
+                {
+                    if (resultadoOK)
+                    {
+                        location.reload();
+                    }
+                }
+            });
+        }
+
         $('#modalMensaje').on('hidden.bs.modal', function () {
-            location.reload();
-        })
+                    location.reload();
+                })
 
     </script>
 }

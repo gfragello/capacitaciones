@@ -292,24 +292,100 @@ namespace Cursos.Controllers
 
             DateTime proximaFechaVencimientoNotificar = DateTime.Now.AddDays(antelacionNotificacion);
 
+            MarcarRegistrosYaActualizados(proximaFechaVencimientoNotificar);
+
             var notificacionVencimientos = db.NotificacionVencimientos
-                                 .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
-                                 .Where(n => n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar)
-                                 .OrderBy(n => n.RegistroCapacitacion.Jornada.Curso.CursoID)
-                                 .OrderBy(n => n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia)
-                                 .Include(n => n.RegistroCapacitacion)
-                                 .Include(n => n.RegistroCapacitacion.Capacitado.RegistrosCapacitacion);
+                                             .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
+                                             .Where(n => n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar)
+                                             .OrderBy(n => n.RegistroCapacitacion.Jornada.Curso.CursoID)
+                                             .OrderBy(n => n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia)
+                                             .Include(n => n.RegistroCapacitacion);
 
-            if (notificacionVencimientos.Count() > 0)
+            if (empresaId != null)
+                notificacionVencimientos = notificacionVencimientos.Where(n => n.RegistroCapacitacion.Capacitado.EmpresaID == empresaId);
+
+            return notificacionVencimientos.ToList();
+        }
+
+        //Las notificaciones asociadas a los registros no se crean al crear el registro
+        //Antes de listar en pantalla los vencimientos, se le asocian la notificaciones a los registros que no la tienen
+        private void ActualizarNotificacionesVencimientos()
+        {
+            using (CursosDbContext db = new CursosDbContext())
             {
-                if (empresaId != null)
-                    notificacionVencimientos = notificacionVencimientos.Where(n => n.RegistroCapacitacion.Capacitado.EmpresaID == empresaId);
 
-                //se verifica que el capacitado no tenga jornadas posteriores a la 
-                foreach (var n in notificacionVencimientos)
+                var rcSinNotificacioneAsociadas =
+                db.RegistroCapacitacion.Where(r => !db.NotificacionVencimientos.Any(n => n.RegistroCapacitacionID == r.RegistroCapacitacionID)).ToList();
+
+                if (rcSinNotificacioneAsociadas.Count > 0)
                 {
-                    var capacitado = n.RegistroCapacitacion.Capacitado;
-                    var jornadaVencida = n.RegistroCapacitacion.Jornada;
+                    foreach (var r in rcSinNotificacioneAsociadas)
+                    {
+                        var n = new NotificacionVencimiento
+                        {
+                            Estado = EstadoNotificacionVencimiento.NotificacionPendiente,
+                            RegistroCapacitacion = r,
+                            Fecha = DateTime.Now
+                        };
+
+                        db.NotificacionVencimientos.Add(n);
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        public ActionResult MarcarNotificacionesPendientesEmpresaNoNotificar(int EmpresaID)
+        {
+            var notificacionesPendientesEmpresa = db.NotificacionVencimientos
+                                                    .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente &&
+                                                                n.RegistroCapacitacion.Capacitado.EmpresaID == EmpresaID).ToList();
+
+            if (notificacionesPendientesEmpresa.Count > 0)
+            {
+                foreach (var n in notificacionesPendientesEmpresa)
+                {
+                    n.Estado = EstadoNotificacionVencimiento.NoNotificar;
+                }
+
+                db.SaveChanges();
+            }
+
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        //se marcan para no enviar aquellos registros de cursos que los capacitados ya actualizaron
+        private void MarcarRegistrosYaActualizados(DateTime proximaFechaVencimientoNotificar)
+        {
+            List<int> notificacionVencimientosIds = null;
+            List<int> capacitadosIds = null;
+            List<int> jornadasVencidasId = null;
+
+            //se obtienen los Ids de las notificaciones que están por vencer
+            using (CursosDbContext db = new CursosDbContext())
+            {
+                var notificacionVencimientos = db.NotificacionVencimientos
+                                                 .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
+                                                 .Where(n => n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar);
+
+                notificacionVencimientosIds = notificacionVencimientos.Select(n => n.NotificacionVencimientoID).ToList();
+                capacitadosIds = notificacionVencimientos.Select(n => n.RegistroCapacitacion.Capacitado.CapacitadoID).ToList();
+                jornadasVencidasId = notificacionVencimientos.Select(n => n.RegistroCapacitacion.JornadaID).ToList();
+            }
+
+            int i = 0;
+
+            foreach (var jornadaVencidaId in jornadasVencidasId)
+            {
+                using (CursosDbContext db = new CursosDbContext())
+                {
+                    var jornadaVencida = db.Jornada.Find(jornadaVencidaId);
+                    //var capacitado = db.Capacitados.Find(capacitadosIds[i]);
+
+                    int currentCapacitadoId = capacitadosIds[i];
+                    var capacitado = db.Capacitados.Where(c => c.CapacitadoID == currentCapacitadoId)
+                                                   .Include(c => c.RegistrosCapacitacion).FirstOrDefault();
 
                     //se obtiene la última jornada asociada al curso de la jornada que se debería notificar como vencida
                     var ultimaJornadaCursoRegistrada =
@@ -318,41 +394,54 @@ namespace Cursos.Controllers
                     //si la última jornada que tomó el capacitado no coincide con la que se va a notificar
                     //es porque el capacitado ya tomó una jornada de actualización por lo que no es necesario notificar ese vencimiento
                     if (ultimaJornadaCursoRegistrada.JornadaID != jornadaVencida.JornadaID)
-                        n.Estado = EstadoNotificacionVencimiento.NoNotificar;
-                    else
-                        notificacionVencimientosRet.Add(n);
+                    {
+                        var notificacionVencimiento = db.NotificacionVencimientos.Find(notificacionVencimientosIds[i]);
+                        notificacionVencimiento.Estado = EstadoNotificacionVencimiento.NoNotificar;
+
+                        string mensajelog =
+                        string.Format("{0} - {1}. No se notificará el vecimiento de la jornada {2} porque el Capacitado ya tiene una jornada posterior correspondiente a ese curso.",
+                                      capacitado.DocumentoCompleto,
+                                      capacitado.NombreCompleto,
+                                      jornadaVencida.JornadaIdentificacionCompleta);
+
+                        LogHelper.GetInstance().WriteMessage("notificaciones", mensajelog);
+                        db.SaveChanges();
+                    }
                 }
 
-                if (notificacionVencimientos.Count() != notificacionVencimientosRet.Count())
-                    db.SaveChanges();
+                i++;
             }
-
-            return notificacionVencimientosRet;
-        }
-
-        //Las notificaciones asociadas a los registros no se crean al crear el registro
-        //Antes de listar en pantalla los vencimientos, se le asocian la notificaciones a los registros que no la tienen
-        private void ActualizarNotificacionesVencimientos()
-        {
-            var rcSinNotificacioneAsociadas = 
-            db.RegistroCapacitacion.Where(r => !db.NotificacionVencimientos.Any(n => n.RegistroCapacitacionID == r.RegistroCapacitacionID)).ToList();
-
-            if (rcSinNotificacioneAsociadas.Count > 0)
+            /*
+            using (CursosDbContext db = new CursosDbContext())
             {
-                foreach (var r in rcSinNotificacioneAsociadas)
+                var notificacionVencimientos = db.NotificacionVencimientos
+                                                 .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
+                                                 .Where(n => n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar)
+                                                 .Include(n => n.RegistroCapacitacion)
+                                                 .Include(n => n.RegistroCapacitacion.Capacitado.RegistrosCapacitacion);
+
+                if (notificacionVencimientos.Count() > 0)
                 {
-                    var n = new NotificacionVencimiento
-                            {
-                                Estado = EstadoNotificacionVencimiento.NotificacionPendiente,
-                                RegistroCapacitacion = r,
-                                Fecha = DateTime.Now
-                            };
+                    //se verifica que el capacitado no tenga jornadas posteriores a la 
+                    foreach (var n in notificacionVencimientos)
+                    {
+                        var capacitado = n.RegistroCapacitacion.Capacitado;
+                        var jornadaVencida = n.RegistroCapacitacion.Jornada;
 
-                    db.NotificacionVencimientos.Add(n);
+                        //se obtiene la última jornada asociada al curso de la jornada que se debería notificar como vencida
+                        var ultimaJornadaCursoRegistrada =
+                        capacitado.RegistrosCapacitacion.Where(r => r.Jornada.CursoId == jornadaVencida.CursoId).OrderByDescending(r => r.Jornada.Fecha).First();
+
+                        //si la última jornada que tomó el capacitado no coincide con la que se va a notificar
+                        //es porque el capacitado ya tomó una jornada de actualización por lo que no es necesario notificar ese vencimiento
+                        if (ultimaJornadaCursoRegistrada.JornadaID != jornadaVencida.JornadaID)
+                            n.Estado = EstadoNotificacionVencimiento.NoNotificar;
+                    }
+
+                    //db.SaveChanges();
                 }
-
-                db.SaveChanges();
             }
+            */
         }
 
         protected override void Dispose(bool disposing)

@@ -65,7 +65,7 @@ namespace Cursos.Models
             }
         }
 
-        public DateTime ObtenerFechaVencimiento()
+        public DateTime ObtenerFechaVencimiento(bool copiaJornada = false)
         {
             //TODO: hacer que esto sea configurable
             //que se pueda especificar en el curso que vence el último día del año
@@ -74,7 +74,12 @@ namespace Cursos.Models
             if (this.CursoId == 2)
                 return new DateTime(this.Fecha.Year, 12, 31);
             else
-                return new DateTime(this.Fecha.Year + this.Curso.Vigencia, this.Fecha.Month, this.Fecha.Day);
+            {                 
+                if (!copiaJornada)
+                    return new DateTime(this.Fecha.Year + this.Curso.Vigencia, this.Fecha.Month, this.Fecha.Day);
+                else
+                    return new DateTime(this.Fecha.Year + 3, this.Fecha.Month, this.Fecha.Day);
+            }
         }
     }
 }
