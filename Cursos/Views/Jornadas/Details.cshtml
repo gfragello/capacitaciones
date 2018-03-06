@@ -10,12 +10,34 @@
             <tr>
                 <td style="vertical-align: bottom; padding-right: 10px"><h4>Jornada</h4></td>
                 <td style="padding-right: 10px"><h3><span class="label label-default" style="color: #333333; background-color: @Model.Curso.ColorDeFondo">@Html.DisplayFor(model => model.Curso.Descripcion)</span></h3></td>
-                <td style="vertical-align: bottom; padding-right: 10px"><h4>@String.Format("{0} {1} - {2} - {3}", Model.Fecha.ToShortDateString(), Model.Hora.Trim(), Model.Lugar.NombreLugar, Model.Instructor.NombreCompleto)</h4></td>
+                <td style="vertical-align: bottom; padding-right: 10px"><h3>@String.Format("{0} {1} - {2} - {3}", Model.Fecha.ToShortDateString(), Model.Hora.Trim(), Model.Lugar.NombreLugar, Model.Instructor.NombreCompleto)</h3></td>
+            </tr>
+            <tr>
+                <td style="vertical-align: bottom; padding-right: 10px" colspan="3">
+                    <label style="font-size:small;color:#000000">@Model.CuposDisponiblesTexto</label>
+                </td>
             </tr>
         </table>
     </div>
 
     @Html.Partial("_DatosModificacionPartial", Model)
+
+    @{
+        string classAccionCuposDisponibles = string.Empty;
+        string textoAccionCuposDisponibles = string.Empty;
+    }
+
+    
+    @if (Model.CuposDisponibles) //si hay cupos disponibles se muestra la opción para deshabilitarlos
+    {
+        classAccionCuposDisponibles = "glyphicon glyphicon-stop";
+        textoAccionCuposDisponibles = "Deshabilitar Cupos";
+    }
+    else //si NO hay cupos disponibles se muestra la opción para habilitarlos
+    {
+        classAccionCuposDisponibles = "glyphicon glyphicon-play";
+        textoAccionCuposDisponibles = "Habilitar Cupos";
+    }
 
     <p style="vertical-align: middle;">
         <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
@@ -25,6 +47,8 @@
         <a href="@Url.Action("Create", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-paperclip" style="font-size: 25px; color: #017d49"></span>&nbsp;Copiar capacitados a otra jornada</a>
         &nbsp;&nbsp;&nbsp;
         <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })"><span class="glyphicon glyphicon-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Generar Acta</a>
+        &nbsp;&nbsp;&nbsp;
+        <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
     </p>
     
     <hr />

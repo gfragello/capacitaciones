@@ -17,6 +17,9 @@
         <th>
             @Html.DisplayNameFor(model => model.AbrevLugar)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DireccionHabitual)
+        </th>
         <th></th>
     </tr>
 
@@ -27,6 +30,9 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.AbrevLugar)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DireccionHabitual)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.LugarID }) |

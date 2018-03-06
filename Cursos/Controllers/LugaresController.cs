@@ -47,7 +47,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "LugarID,NombreLugar,AbrevLugar")] Lugar lugar)
+        public ActionResult Create([Bind(Include = "LugarID,NombreLugar,AbrevLugar,DireccionHabitual")] Lugar lugar)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "LugarID,NombreLugar,AbrevLugar")] Lugar lugar)
+        public ActionResult Edit([Bind(Include = "LugarID,NombreLugar,AbrevLugar,DireccionHabitual")] Lugar lugar)
         {
             if (ModelState.IsValid)
             {
@@ -121,6 +121,19 @@ namespace Cursos.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+        }
+
+        public ActionResult ObtenerDireccionHabitual(int LugarId)
+        {
+            string direccionHabitual = string.Empty;
+            //string enabled = Model.Capacitados.Count > 0 ? "disabled='disabled'" : String.Empty;
+
+            var lugar = db.Lugares.Where(l => l.LugarID == LugarId).FirstOrDefault();
+
+            if (lugar != null)
+                direccionHabitual = lugar.DireccionHabitual != null ? lugar.DireccionHabitual : string.Empty;
+
+            return Json(direccionHabitual, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

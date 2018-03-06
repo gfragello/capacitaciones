@@ -9,6 +9,8 @@
 
 <p>
     @Html.ActionLink("Crear Nueva", "Create")
+    &nbsp;&nbsp;
+    @Html.ActionLink("Próximas disponibles", "Disponibles")
 </p>
 
 <hr />
@@ -91,10 +93,16 @@
             Lugar
         </th>
         <th>
+            Dirección
+        </th>
+        <th>
             Fecha
         </th>
         <th>
             Hora
+        </th>
+        <th>
+            Disponibilidad
         </th>
         <th></th> <!--Columna con acciones sobre el elemento -->
     </tr>
@@ -112,10 +120,16 @@
                 @Html.DisplayFor(modelItem => item.Lugar.NombreLugar)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Direccion)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Fecha)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Hora)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CuposDisponiblesTexto)
             </td>
             <td>
                 <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>

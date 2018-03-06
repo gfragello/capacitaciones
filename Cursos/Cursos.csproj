@@ -333,6 +333,10 @@
     <Compile Include="Migrations\201703182018166_Configuracion_Mantenible.Designer.cs">
       <DependentUpon>201703182018166_Configuracion_Mantenible.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802252224182_JornadaDireccion_DisponiblidadCupo.cs" />
+    <Compile Include="Migrations\201802252224182_JornadaDireccion_DisponiblidadCupo.Designer.cs">
+      <DependentUpon>201802252224182_JornadaDireccion_DisponiblidadCupo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -550,6 +554,7 @@
     <Content Include="Views\NotificacionesVencimientos\Index.cshtml" />
     <Content Include="Views\CustomTools\IniciarNotificacionesVencimientos.cshtml" />
     <Content Include="Views\Configuracion\Index.cshtml" />
+    <Content Include="Views\Jornadas\Disponibles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -657,6 +662,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201703182018166_Configuracion_Mantenible.resx">
       <DependentUpon>201703182018166_Configuracion_Mantenible.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802252224182_JornadaDireccion_DisponiblidadCupo.resx">
+      <DependentUpon>201802252224182_JornadaDireccion_DisponiblidadCupo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

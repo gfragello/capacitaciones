@@ -25,11 +25,19 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Lugar.NombreLugar)
+            Lugar
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.Lugar.NombreLugar)
+        </dd>
+
+        <dt>
+            Dirección
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Direccion)
         </dd>
 
         <dt>
@@ -46,6 +54,14 @@
 
         <dd>
             @Html.DisplayFor(model => model.Hora)
+        </dd>
+
+        <dt>
+            Disponibilidad
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CuposDisponiblesTexto)
         </dd>
 
     </dl>

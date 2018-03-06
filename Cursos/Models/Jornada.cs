@@ -20,9 +20,13 @@ namespace Cursos.Models
         [RegularExpression(@"([01]?[0-9]|2[0-3]):[0-5][0-9]", ErrorMessage = "Hora no válida.")]
         public string Hora { get; set; }
 
+        [Required(ErrorMessage = "Debe seleccionar el lugar donde se desarrollará la jornada")]
         [Display(Name = "Lugar")]
         public int LugarID { get; set; }
         public virtual Lugar Lugar { get; set; }
+
+        [Display(Name = "Dirección")]
+        public string Direccion { get; set; }
 
         [Display(Name = "Curso")]
         public int CursoId { get; set; }
@@ -37,6 +41,22 @@ namespace Cursos.Models
         [Display(Name = "Acta")]
         public int? PathArchivoID { get; set; }
         public virtual PathArchivo PathArchivo { get; set; }
+
+        [Display(Name = "Cupos Disponibles")]
+        [Required(AllowEmptyStrings = false)]
+        public bool CuposDisponibles { get; set; }
+
+        [NotMapped]
+        public string CuposDisponiblesTexto
+        {
+            get
+            {
+                if (this.CuposDisponibles)
+                    return "Cupos disponibles";
+                else
+                    return "Sin cupos disponibles";
+            }
+        }
 
         [NotMapped]
         public string JornadaIdentificacionCompleta

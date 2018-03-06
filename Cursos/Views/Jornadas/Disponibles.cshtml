@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Cursos.Models.Jornada>
+
+@{
+    ViewBag.Title = "Jornadas Disponibles";
+}
+
+<h2>Próximas Jornadas Disponibles</h2>
+
+<hr />
+
+@using (Html.BeginForm())
+{                                }
+<table class="table table-striped">
+    <tr>
+        <th>
+            Fecha
+        </th>
+        <th>
+            Curso
+        </th>
+        <th>
+            Lugar
+        </th>
+        <th>
+            Dirección
+        </th>
+        <th>
+            Hora
+        </th>
+        <th>
+            Disponibilidad
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Curso.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lugar.NombreLugar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Direccion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hora)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CuposDisponiblesTexto)
+            </td>
+        </tr>
+    }
+
+</table>

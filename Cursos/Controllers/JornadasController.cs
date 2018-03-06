@@ -92,7 +92,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Jornadas/Details/5
-        public ActionResult Details(int? id, 
+        public ActionResult Details(int? id,
                                     bool? exportarExcel,
                                     bool? generarActa)
         {
@@ -116,7 +116,7 @@ namespace Cursos.Controllers
                 return GenerarActa(jornada);
 
             return View(jornada);
-                
+
         }
 
         // GET: Jornadas/Create - Si se especifica un valor en el parámtero id, se copiaran sus registros de 
@@ -148,7 +148,11 @@ namespace Cursos.Controllers
                 }
             }
 
-            return View();
+            Jornada j = new Jornada();
+            j.Fecha = DateTime.Now;
+            j.CuposDisponibles = true;
+
+            return View(j);
         }
 
         // POST: Jornadas/Create
@@ -156,7 +160,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,InstructorId,Hora")] Jornada jornada, int? JornadaTemplateId)
+        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,CuposDisponibles")] Jornada jornada, int? JornadaTemplateId)
         {
             if (ModelState.IsValid)
             {
@@ -178,7 +182,7 @@ namespace Cursos.Controllers
                         nuevoRC.Capacitado = rc.Capacitado;
                         nuevoRC.Nota = 0;
                         nuevoRC.Aprobado = true;
-                        nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento(true); 
+                        nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento(true);
 
                         db.RegistroCapacitacion.Add(nuevoRC);
                     }
@@ -237,7 +241,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,InstructorId,Hora")] Jornada jornada)
+        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,CuposDisponibles")] Jornada jornada)
         {
             if (ModelState.IsValid)
             {
@@ -282,6 +286,29 @@ namespace Cursos.Controllers
             db.Jornada.Remove(jornada);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult ToggleCuposDisponibles(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Jornada jornada = db.Jornada.Find(id);
+            if (jornada == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (jornada.PuedeModificarse())
+            {
+                jornada.CuposDisponibles = !jornada.CuposDisponibles;
+                db.SaveChanges();
+
+                return RedirectToAction("Details", new { id = id });
+            }
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
         protected override void Dispose(bool disposing)
@@ -342,7 +369,7 @@ namespace Cursos.Controllers
 
             if (jornada == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            
+
             return PartialView("_ListRegistrosCapacitacionPartial", jornada.RegistrosCapacitacion.ToList());
         }
 
@@ -357,8 +384,8 @@ namespace Cursos.Controllers
                 if (jornada == null)
                     return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
-                string nombreArchivo = String.Format("Acta_{0}{1}", 
-                                                     jornada.JornadaID.ToString(), 
+                string nombreArchivo = String.Format("Acta_{0}{1}",
+                                                     jornada.JornadaID.ToString(),
                                                      System.IO.Path.GetExtension(upload.FileName));
 
                 var pathActa = new PathArchivo
@@ -394,11 +421,11 @@ namespace Cursos.Controllers
             var pathActa = jornada.PathArchivo;
             jornada.PathArchivo = null;
 
-             string pathCompleto = Request.MapPath("~/Images/Actas/" + pathActa.NombreArchivo);
-             if (System.IO.File.Exists(pathCompleto))
-             {
+            string pathCompleto = Request.MapPath("~/Images/Actas/" + pathActa.NombreArchivo);
+            if (System.IO.File.Exists(pathCompleto))
+            {
                 System.IO.File.Delete(pathCompleto);
-             }
+            }
 
             db.PathArchivos.Remove(pathActa);
 
@@ -498,16 +525,16 @@ namespace Cursos.Controllers
 
             const int rowHeaderCapacitados = 3;
 
-            const int colOrdinal =         1;
-            const int colNombre =          2;
-            const int colApellido =        3;
-            const int colTipoDocumento =   4;
-            const int colDocumento =       5;
+            const int colOrdinal = 1;
+            const int colNombre = 2;
+            const int colApellido = 3;
+            const int colTipoDocumento = 4;
+            const int colDocumento = 5;
             const int colFechaNacimiento = 6;
-            const int colEmpresa =         7;
-            const int colFirma =           8;
-            const int colAprobado =        9;
-            const int colNota =           10;
+            const int colEmpresa = 7;
+            const int colFirma = 8;
+            const int colAprobado = 9;
+            const int colNota = 10;
 
             const int colRangoPuntajesDesde = 9;
             const int colRangoPuntajeHasta = 10;
@@ -764,5 +791,12 @@ namespace Cursos.Controllers
             shapeOpcion.Font.Bold = true;
         }
 
+        [AllowAnonymous]
+        public ActionResult Disponibles()
+        {
+            var jornadas = db.Jornada.Where(j => j.Fecha >= DateTime.Now).OrderBy(j => j.Fecha).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
+
+            return View(jornadas.ToList());
+        }   
     }
 }

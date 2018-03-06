@@ -21,6 +21,9 @@ namespace Cursos.Models
         [Display(Name = "Abreviación")]
         public string AbrevLugar { get; set; }
 
+        [Display(Name = "Dirección Habitual")]
+        public string DireccionHabitual { get; set; }
+
         public virtual List<Jornada> Jornadas { get; set; }
     }
 }
