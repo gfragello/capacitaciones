@@ -337,6 +337,10 @@
     <Compile Include="Migrations\201802252224182_JornadaDireccion_DisponiblidadCupo.Designer.cs">
       <DependentUpon>201802252224182_JornadaDireccion_DisponiblidadCupo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803102104026_Jornada_HoraFormatoNumerico.cs" />
+    <Compile Include="Migrations\201803102104026_Jornada_HoraFormatoNumerico.Designer.cs">
+      <DependentUpon>201803102104026_Jornada_HoraFormatoNumerico.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -665,6 +669,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802252224182_JornadaDireccion_DisponiblidadCupo.resx">
       <DependentUpon>201802252224182_JornadaDireccion_DisponiblidadCupo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803102104026_Jornada_HoraFormatoNumerico.resx">
+      <DependentUpon>201803102104026_Jornada_HoraFormatoNumerico.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

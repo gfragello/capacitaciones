@@ -9,6 +9,9 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
+    @*Cuando se ingresa desde jornadas.csl.uy no se muestra el menú superior para prevenir el inicio de sesiones desde jornadas.csl.uy*@
+    @*if (Request.Url.Host != "jornadas.csl.uy")
+    {*@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -93,6 +96,7 @@
             </div>
         </div>
     </div>
+    @*}*@
 
     <div id="dvNotificaciones"></div>
 

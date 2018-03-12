@@ -255,6 +255,10 @@ namespace Cursos.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            //si se intenta hacer cualquier acción desde jornadas.csl.uy, se redirige a la página de Jornadas Disponibles
+            if (Request.Url.Host == "jornadas.csl.uy")
+                return RedirectToAction("Disponibles", "Jornadas");
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }

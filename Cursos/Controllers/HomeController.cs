@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cursos.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,8 +11,15 @@ namespace Cursos.Controllers
     {
         public ActionResult Index()
         {
-            //el punto de inicio de la aplicación será el index de capacitados
-            return RedirectToAction("Index", "Capacitados");
+            string url = Request.Url.Host;
+
+            if (Request.Url.Host == "jornadas.csl.uy")
+                //si se entra por la URL jornadas.csl.uy se navega a las página de Jornadas Disponibles
+                return RedirectToAction("Disponibles", "Jornadas");
+            else
+                //el punto de inicio de la aplicación será el index de capacitados
+                return RedirectToAction("Index", "Capacitados");
+
             //return View();
         }
 

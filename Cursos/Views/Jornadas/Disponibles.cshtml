@@ -4,6 +4,20 @@
     ViewBag.Title = "Jornadas Disponibles";
 }
 
+@*Sólo se muestran los logos cuando se accede desde jornadas.csl.uy*@
+@if (Request.Url.Host == "jornadas.csl.uy")
+{
+<div class="row">
+    <div class="col-sm-6">
+        <img src="~/images/logos/CSL_logo_main_h_300.png" class="img-responsive" alt="UPM The Biofore Company">
+    </div>
+    <div class="col-sm-6">
+        <img src="~/images/logos/UPM_logo_main_h_300.png" class="img-responsive" alt="UPM The Biofore Company">
+    </div>
+</div>
+<hr />
+}
+
 <h2>Próximas Jornadas Disponibles</h2>
 
 <hr />
@@ -16,6 +30,9 @@
             Fecha
         </th>
         <th>
+            Hora
+        </th>
+        <th>
             Curso
         </th>
         <th>
@@ -23,9 +40,6 @@
         </th>
         <th>
             Dirección
-        </th>
-        <th>
-            Hora
         </th>
         <th>
             Disponibilidad
@@ -39,6 +53,9 @@
                 @Html.DisplayFor(modelItem => item.Fecha)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Hora)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Curso.Descripcion)
             </td>
             <td>
@@ -46,9 +63,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Direccion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hora)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CuposDisponiblesTexto)

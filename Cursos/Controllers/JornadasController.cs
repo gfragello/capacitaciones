@@ -188,6 +188,8 @@ namespace Cursos.Controllers
                     }
                 }
 
+                jornada.HoraFormatoNumerico = int.Parse(jornada.HoraSinSeparador);
+
                 db.Jornada.Add(jornada);
                 db.SaveChanges();
 
@@ -246,6 +248,8 @@ namespace Cursos.Controllers
             if (ModelState.IsValid)
             {
                 jornada.SetearAtributosControl();
+
+                jornada.HoraFormatoNumerico = int.Parse(jornada.HoraSinSeparador);
 
                 db.Entry(jornada).State = EntityState.Modified;
                 db.SaveChanges();
@@ -794,7 +798,7 @@ namespace Cursos.Controllers
         [AllowAnonymous]
         public ActionResult Disponibles()
         {
-            var jornadas = db.Jornada.Where(j => j.Fecha >= DateTime.Now).OrderBy(j => j.Fecha).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
+            var jornadas = db.Jornada.Where(j => j.Fecha >= DateTime.Now).OrderBy(j => j.Fecha).ThenBy(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
 
             return View(jornadas.ToList());
         }   

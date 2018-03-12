@@ -20,6 +20,20 @@ namespace Cursos.Models
         [RegularExpression(@"([01]?[0-9]|2[0-3]):[0-5][0-9]", ErrorMessage = "Hora no válida.")]
         public string Hora { get; set; }
 
+        [NotMapped]
+        public string HoraSinSeparador
+        {
+            get
+            {
+                string horaSinSeparador = this.Hora.Remove(this.Hora.IndexOf(':'));
+                horaSinSeparador += this.Hora.Substring(this.Hora.IndexOf(':') + 1, 2);
+
+                return horaSinSeparador;
+            }
+        }
+
+        public int HoraFormatoNumerico { get; set; }
+
         [Required(ErrorMessage = "Debe seleccionar el lugar donde se desarrollará la jornada")]
         [Display(Name = "Lugar")]
         public int LugarID { get; set; }
