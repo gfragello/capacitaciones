@@ -102,6 +102,9 @@
             Hora
         </th>
         <th>
+            Características
+        </th>
+        <th>
             Disponibilidad
         </th>
         <th></th> <!--Columna con acciones sobre el elemento -->
@@ -109,6 +112,9 @@
 
     @foreach (var item in Model)
     {
+        //si la jornada no tiene cupos disponibles se muestra el texto en colo rojo
+        string textColor = item.CuposDisponibles ? "black" : "red";
+
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Curso.Descripcion)
@@ -129,6 +135,9 @@
                 @Html.DisplayFor(modelItem => item.Hora)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Caracteristicas)
+            </td>
+            <td style="color: @textColor">
                 @Html.DisplayFor(modelItem => item.CuposDisponiblesTexto)
             </td>
             <td>

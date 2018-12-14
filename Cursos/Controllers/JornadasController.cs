@@ -160,7 +160,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,CuposDisponibles")] Jornada jornada, int? JornadaTemplateId)
+        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles")] Jornada jornada, int? JornadaTemplateId)
         {
             if (ModelState.IsValid)
             {
@@ -243,7 +243,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,CuposDisponibles")] Jornada jornada)
+        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles")] Jornada jornada)
         {
             if (ModelState.IsValid)
             {

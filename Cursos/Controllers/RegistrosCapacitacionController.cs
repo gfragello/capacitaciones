@@ -376,7 +376,7 @@ namespace Cursos.Controllers
 
                 if (notaDesde != null && notaHasta != null)
                 {
-                    filtroNotaAplicado = string.Format("{0} a {1}", notaDesde.Value.ToString());
+                    filtroNotaAplicado = string.Format("{0} a {1}", notaDesde.Value.ToString(), notaHasta.Value.ToString());
                 }
                 else if (notaDesde != null)
                 {
@@ -399,17 +399,19 @@ namespace Cursos.Controllers
                 const int colDocumento = 1;
                 const int colNombre = 2;
                 const int colApellido = 3;
-                const int colEdad = 4;
-                const int colEmpresa = 5;
-                const int colCurso = 6;
-                const int colJornada = 7;
-                const int colLugar = 8;
-                const int colInstructor = 9;
-                const int colNota = 10;
+                const int colFechaNacimiento = 4;
+                const int colEdad = 5;
+                const int colEmpresa = 6;
+                const int colCurso = 7;
+                const int colJornada = 8;
+                const int colLugar = 9;
+                const int colInstructor = 10;
+                const int colNota = 11;
 
                 ws.Cells[rowHeader, colDocumento].Value = "Documento";
                 ws.Cells[rowHeader, colNombre].Value = "Nombre";
                 ws.Cells[rowHeader, colApellido].Value = "Apellido";
+                ws.Cells[rowHeader, colFechaNacimiento].Value = "Fec. Nac.";
                 ws.Cells[rowHeader, colEdad].Value = "Edad";
                 ws.Cells[rowHeader, colEmpresa].Value = "Empresa";
                 ws.Cells[rowHeader, colCurso].Value = "Curso";
@@ -425,7 +427,8 @@ namespace Cursos.Controllers
                     ws.Cells[i, colDocumento].Value = r.Capacitado.DocumentoCompleto;
                     ws.Cells[i, colNombre].Value = r.Capacitado.Nombre;
                     ws.Cells[i, colApellido].Value = r.Capacitado.Apellido;
-                    ws.Cells[i, colEdad].Value = r.Capacitado.ObtenerEdadFecha(r.Jornada.Fecha);
+                    ws.Cells[i, colFechaNacimiento].Value = r.Capacitado.Fecha !=null ? r.Capacitado.Fecha.Value.ToShortDateString() : string.Empty;
+                    ws.Cells[i, colEdad].Value =  r.Capacitado.ObtenerEdadFecha(r.Jornada.Fecha);
                     ws.Cells[i, colEmpresa].Value = r.Capacitado.Empresa.NombreFantasia;
                     ws.Cells[i, colCurso].Value = r.Jornada.Curso.Descripcion;
                     ws.Cells[i, colJornada].Value = r.Jornada.FechaHora;

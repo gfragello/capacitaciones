@@ -50,6 +50,9 @@ namespace Cursos.Models
         public int InstructorId { get; set; }
         public virtual Instructor Instructor { get; set; }
 
+        [Display(Name = "Características")]
+        public string Caracteristicas { get; set; }
+
         public virtual List<RegistroCapacitacion> RegistrosCapacitacion { get; set; }
 
         [Display(Name = "Acta")]

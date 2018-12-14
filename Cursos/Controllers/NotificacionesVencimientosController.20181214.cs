@@ -304,6 +304,31 @@ namespace Cursos.Controllers
                                              .OrderBy(n => n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia)
                                              .Include(n => n.RegistroCapacitacion);
 
+            /*
+            var notificacionVencimientos = db.NotificacionVencimientos
+                                             .Where(n => (n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente && 
+                                                          n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar))
+                                             .OrderBy(n => n.RegistroCapacitacion.Jornada.Curso.CursoID)
+                                             .OrderBy(n => n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia)
+                                             .Include(n => n.RegistroCapacitacion);
+
+            List<NotificacionVencimiento> nvRet = new List<NotificacionVencimiento>();
+
+            foreach (var n in notificacionVencimientos)
+            {
+                if (n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente &&
+                    n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar)
+                {
+                    if (n.RegistroCapacitacion.CapacitadoID == 2964)
+                    {
+                        nvRet.Add(n);
+                    }
+
+                    nvRet.Add(n);
+                }
+            }
+            */
+
             if (empresaId != null)
                 notificacionVencimientos = notificacionVencimientos.Where(n => n.RegistroCapacitacion.Capacitado.EmpresaID == empresaId);
 
@@ -383,8 +408,18 @@ namespace Cursos.Controllers
             {
                 using (CursosDbContext db = new CursosDbContext())
                 {
-                    var jornadaVencida = db.Jornada.Find(jornadaVencidaId);
-                    //var capacitado = db.Capacitados.Find(capacitadosIds[i]);
+                    Jornada jornadaVencida = null;
+
+                    try
+                    {
+                        jornadaVencida = db.Jornada.Find(jornadaVencidaId);
+                        //var capacitado = db.Capacitados.Find(capacitadosIds[i]);
+                    }
+                    catch (Exception ex)
+                    {
+
+                        throw ex;
+                    }
 
                     int currentCapacitadoId = capacitadosIds[i];
                     var capacitado = db.Capacitados.Where(c => c.CapacitadoID == currentCapacitadoId)
