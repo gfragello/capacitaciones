@@ -292,7 +292,7 @@ namespace Cursos.Controllers
 
             DateTime proximaFechaVencimientoNotificar = DateTime.Now.AddDays(antelacionNotificacion);
 
-            MarcarRegistrosYaActualizados(proximaFechaVencimientoNotificar);
+            //MarcarRegistrosYaActualizados(proximaFechaVencimientoNotificar);
 
             //TODO 20181214 - Agregar un atributo en los cursos indicando si se notifican los vencimientos
             //No se notifican los vencimientos de las certificaciones correpondientes a cursos de refresh (CursoId != 2)
@@ -359,6 +359,7 @@ namespace Cursos.Controllers
         }
 
         //se marcan para no enviar aquellos registros de cursos que los capacitados ya actualizaron
+        //TODO - 20190315 - Revisar esta función. Se comenta su única invocación desde la función ObtenerNotificacionesVencimiento 
         private void MarcarRegistrosYaActualizados(DateTime proximaFechaVencimientoNotificar)
         {
             List<int> notificacionVencimientosIds = null;

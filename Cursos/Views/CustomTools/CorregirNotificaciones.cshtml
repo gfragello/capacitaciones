@@ -1,0 +1,18 @@
+﻿
+@{
+    ViewBag.Title = "Corregir Notificaciones";
+}
+
+<h2>CorregirNotificaciones</h2>
+<hr />
+
+@using (Html.BeginForm("CorregirNotificaciones", "CustomTools", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <table>
+        <tr>
+            <td colspan="2"><input type="submit" name="Submit" value="Corregir Notificaciones" /></td>
+        </tr>
+    </table>
+}

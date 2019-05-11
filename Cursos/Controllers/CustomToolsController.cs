@@ -1335,5 +1335,73 @@ namespace Cursos.Controllers
             return View();
         }
 
+        public ActionResult CorregirNotificaciones()
+        {
+            return View("CorregirNotificaciones");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CorregirNotificaciones(FormCollection formCollection)
+        {
+            var notificacionesPendientes = db.NotificacionVencimientos.Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente).OrderBy(n => n.RegistroCapacitacionID).ToList();
+
+            int rowInicial = 1;
+            int row = rowInicial + 1;
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("Notificaciones para cancelar");
+
+                ws.Cells[rowInicial, 1].Value = "Capacitado";
+                ws.Cells[rowInicial, 2].Value = "Documento";
+                ws.Cells[rowInicial, 3].Value = "Empresa";
+                ws.Cells[rowInicial, 4].Value = "Curso";
+                ws.Cells[rowInicial, 5].Value = "Jornada para cancelar notificación";
+                ws.Cells[rowInicial, 6].Value = "Fecha Jornada";
+                ws.Cells[rowInicial, 7].Value = "Notificacion Id para cancelar";
+                ws.Cells[rowInicial, 8].Value = "Jornada para notificar";
+                ws.Cells[rowInicial, 9].Value = "Fecha Jornada";
+
+                foreach (var n in notificacionesPendientes)
+                {
+                    var notificacionesProximasCapacitado =
+                        db.NotificacionVencimientos.Where(nvc => nvc.Estado == EstadoNotificacionVencimiento.NotificacionPendiente &&
+                                                                 nvc.RegistroCapacitacion.CapacitadoID == n.RegistroCapacitacion.CapacitadoID &&
+                                                                 nvc.RegistroCapacitacion.JornadaID != n.RegistroCapacitacion.JornadaID &&
+                                                                 nvc.RegistroCapacitacion.Jornada.CursoId == n.RegistroCapacitacion.Jornada.CursoId &&
+                                                                 nvc.RegistroCapacitacion.Jornada.Fecha > n.RegistroCapacitacion.Jornada.Fecha).OrderByDescending(nvc => nvc.RegistroCapacitacion.JornadaID).ToList();
+
+                    //el capacitado tiene cursada jornadas posteriores, por lo que no corresponde notificar el vencimiento de esta jornada
+                    if (notificacionesProximasCapacitado.Count() > 0)
+                    {
+                        var notificacionValida = notificacionesProximasCapacitado[0];
+
+                        ws.Cells[row, 1].Value = n.RegistroCapacitacion.Capacitado.NombreCompleto;
+                        ws.Cells[row, 2].Value = n.RegistroCapacitacion.Capacitado.DocumentoCompleto;
+                        ws.Cells[row, 3].Value = n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia;
+                        ws.Cells[row, 4].Value = n.RegistroCapacitacion.Jornada.Curso.Descripcion;
+                        ws.Cells[row, 5].Value = n.RegistroCapacitacion.JornadaID;
+                        ws.Cells[row, 6].Value = n.RegistroCapacitacion.Jornada.Fecha.ToShortDateString();
+                        ws.Cells[row, 7].Value = n.NotificacionVencimientoID;
+                        ws.Cells[row, 8].Value = notificacionValida.RegistroCapacitacion.JornadaID;
+                        ws.Cells[row, 9].Value = notificacionValida.RegistroCapacitacion.Jornada.Fecha.ToShortDateString();
+
+                        row++;
+                    }
+                }
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = "notificacionesCorrecciones.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
+        }
     }
 }

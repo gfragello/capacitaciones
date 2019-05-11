@@ -563,6 +563,7 @@
     <Content Include="Views\CustomTools\IniciarNotificacionesVencimientos.cshtml" />
     <Content Include="Views\Configuracion\Index.cshtml" />
     <Content Include="Views\Jornadas\Disponibles.cshtml" />
+    <Content Include="Views\CustomTools\CorregirNotificaciones.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
