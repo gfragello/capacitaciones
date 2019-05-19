@@ -26,6 +26,7 @@ namespace Cursos.Controllers
                                   DateTime? currentFechaInicio, DateTime? fechaInicio,
                                   DateTime? currentFechaFin, DateTime? fechaFin,
                                   bool? currentCreadasOtrosUsuarios, bool? creadasOtrosUsuarios,
+                                  bool? currentAutorizacionPendiente, bool? autorizacionPendiente, 
                                   int? page)
         {
             if (CursoID != null)
@@ -61,6 +62,13 @@ namespace Cursos.Controllers
 
             ViewBag.CurrentCreadasOtrosUsuarios = creadasOtrosUsuarios;
 
+            if (autorizacionPendiente != null)
+                page = 1;
+            else
+                autorizacionPendiente = currentAutorizacionPendiente;
+
+            ViewBag.CurrentAutorizacionPendiente = autorizacionPendiente;
+
             List<Curso> cursosDD = db.Cursos.OrderBy(c => c.Descripcion).ToList();
             cursosDD.Insert(0, new Curso { CursoID = -1, Descripcion = "Todos" });
             ViewBag.CursoID = new SelectList(cursosDD, "CursoID", "Descripcion", CursoID);
@@ -77,11 +85,15 @@ namespace Cursos.Controllers
                 jornadas = jornadas.Where(j => j.Fecha <= fechaFin.Value);
 
             bool motrarCreadasOtrosUsuarios = creadasOtrosUsuarios != null ? creadasOtrosUsuarios.Value : false;
+            bool mostrarAutorizacionPendiente = autorizacionPendiente != null ? autorizacionPendiente.Value : false;
 
             //si no se aplicó el filtro de ver las jornadas creadas por otro usuarios (está opción solo es válida para el rol Administrador)
             //o si el usuario tiene el rol AdministradorExterno, solo se mostrarán las jornadas creadas por el usuario
             if (!motrarCreadasOtrosUsuarios || User.IsInRole("AdministradorExterno"))
                 jornadas = jornadas.Where(j => j.UsuarioModificacion == User.Identity.Name);
+
+            if (mostrarAutorizacionPendiente)
+                jornadas = jornadas.Where(j => j.RequiereAutorizacion && !j.Autorizada);
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);

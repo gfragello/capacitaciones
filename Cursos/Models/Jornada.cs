@@ -78,11 +78,13 @@ namespace Cursos.Models
 
             if (requiereAutorizacion)
             {
+                this.Autorizada = false; //las jornadas que requieren autorización se inicializan como "No autorizadas"
                 this.UsuarioCreacion = HttpContext.Current.User.Identity.Name;
                 this.FechaCreacion = DateTime.Now;
             }
             else
             {
+                this.Autorizada = true; //las jornadas que NO requieren autorización se inicializan como "Autorizadas"
                 this.UsuarioCreacion = null;
                 this.FechaCreacion = null;
             }
@@ -149,17 +151,7 @@ namespace Cursos.Models
             }
         }
 
-        [NotMapped]
-        public bool Autorizada
-        {
-            get
-            {
-                if (this.RequiereAutorizacion)
-                    return this.UsuarioAutorizacion != null;
-
-                return true; //las jornadas que no requieren autorización se consideran autorizadas
-            }
-        }
+        public bool Autorizada { get; set; }
 
         [NotMapped]
         public string AutorizadaTexto
@@ -207,11 +199,13 @@ namespace Cursos.Models
         {
             if (!this.Autorizada)
             {
+                this.Autorizada = true;
                 this.UsuarioAutorizacion = HttpContext.Current.User.Identity.Name;
                 this.FechaAutorizacion = DateTime.Now;
             }
             else
             {
+                this.Autorizada = false;
                 this.UsuarioAutorizacion = null;
                 this.FechaAutorizacion = null;
             }

@@ -50,13 +50,25 @@
                         </div>
                     </div>
 
-                    <div class="form-group" style="width: 550px">
-                        <div class="col-md-5">
+                    <hr />
+
+                    <div class="form-group" style="width: 300px">
+                        <div class="col-md-10">
                             @Html.Label("Creadas otros usuarios:")
                         </div>
                         <div class="col-md-10">
                             @{bool creadasOtrosUsuarios = ViewBag.CurrentCreadasOtrosUsuarios != null ? ViewBag.CurrentCreadasOtrosUsuarios : false;}
                             @Html.CheckBox("creadasOtrosUsuarios", creadasOtrosUsuarios)
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="width: 300px">
+                        <div class="col-md-10">
+                            @Html.Label("Autorización pendiente:")
+                        </div>
+                        <div class="col-md-10">
+                            @{bool autorizacionPendiente = ViewBag.CurrentAutorizacionPendiente != null ? ViewBag.CurrentAutorizacionPendiente : false;}
+                            @Html.CheckBox("autorizacionPendiente", creadasOtrosUsuarios)
                         </div>
                     </div>
 

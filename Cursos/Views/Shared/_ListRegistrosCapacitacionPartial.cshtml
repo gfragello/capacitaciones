@@ -63,7 +63,10 @@ else
             @if (item.PuedeModificarse())
             {
                 <td>
-                    <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>&nbsp;|
+                    @if (item.Jornada.Autorizada)
+                    {
+                        <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
+                    }
                     <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
                 </td>
             }

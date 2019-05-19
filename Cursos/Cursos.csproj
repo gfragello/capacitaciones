@@ -357,6 +357,10 @@
     <Compile Include="Migrations\201905122101128_Jornadas_Autorizables_Ajuste_Fechas.Designer.cs">
       <DependentUpon>201905122101128_Jornadas_Autorizables_Ajuste_Fechas.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905191431527_Propiedad_JornadaAutorizada_Mapeada.cs" />
+    <Compile Include="Migrations\201905191431527_Propiedad_JornadaAutorizada_Mapeada.Designer.cs">
+      <DependentUpon>201905191431527_Propiedad_JornadaAutorizada_Mapeada.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -703,6 +707,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905122101128_Jornadas_Autorizables_Ajuste_Fechas.resx">
       <DependentUpon>201905122101128_Jornadas_Autorizables_Ajuste_Fechas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905191431527_Propiedad_JornadaAutorizada_Mapeada.resx">
+      <DependentUpon>201905191431527_Propiedad_JornadaAutorizada_Mapeada.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
