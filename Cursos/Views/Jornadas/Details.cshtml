@@ -14,6 +14,13 @@
             </tr>
             <tr>
                 <td style="vertical-align: bottom; padding-right: 10px" colspan="3">
+                    <label style="font-size:small;color:#000000">@Model.CreadaTexto</label>
+                    &nbsp;&nbsp;
+                    <label style="font-size:small;color:darkred">@Model.AutorizadaTexto</label>
+                </td>
+            </tr>
+            <tr>
+                <td style="vertical-align: bottom; padding-right: 10px" colspan="3">
                     <label style="font-size:small;color:#000000">@Model.CuposDisponiblesTexto</label>
                 </td>
             </tr>
@@ -25,6 +32,9 @@
     @{
         string classAccionCuposDisponibles = string.Empty;
         string textoAccionCuposDisponibles = string.Empty;
+
+        string classAccionJornadaAutorizadas = string.Empty;
+        string textoAccionJornadaAutorizadas = string.Empty;
     }
 
     
@@ -39,27 +49,46 @@
         textoAccionCuposDisponibles = "Habilitar Cupos";
     }
 
+    @if (!Model.Autorizada) //si la jornada no está autorizada se muestra la opción para eliminar la autorización
+    {
+        classAccionJornadaAutorizadas = "glyphicon glyphicon-ok-sign";
+        textoAccionJornadaAutorizadas = "Autorizar";
+    }
+    else
+    {
+        classAccionJornadaAutorizadas = "glyphicon glyphicon-remove-sign";
+        textoAccionJornadaAutorizadas = "No Autorizar";
+    }
+
     <p style="vertical-align: middle;">
         <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
         &nbsp;&nbsp;&nbsp;
-        <a href="@Url.Action("Details", new { id = Model.JornadaID, exportarExcel = true })"><span class="glyphicon glyphicon-share" style="font-size: 25px; color: #017d49"></span>&nbsp;Exportar a Excel</a>
-        &nbsp;&nbsp;&nbsp;
-        <a href="@Url.Action("Create", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-paperclip" style="font-size: 25px; color: #017d49"></span>&nbsp;Copiar capacitados a otra jornada</a>
-        &nbsp;&nbsp;&nbsp;
-        <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })"><span class="glyphicon glyphicon-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Generar Acta</a>
-        &nbsp;&nbsp;&nbsp;
-        <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
+        <a href="@Url.Action("ToggleAutorizada", new { id = Model.JornadaID })"><span class="@classAccionJornadaAutorizadas" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionJornadaAutorizadas</a>
+        &nbsp;&nbsp; &nbsp; &nbsp;
+        @if (Model.Autorizada == true)
+        {
+            <a href="@Url.Action("Details", new { id = Model.JornadaID, exportarExcel = true })"><span class="glyphicon glyphicon-share" style="font-size: 25px; color: #017d49"></span>&nbsp;Exportar a Excel</a>
+            @:&nbsp; &nbsp; &nbsp;
+            <a href="@Url.Action("Create", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-paperclip" style="font-size: 25px; color: #017d49"></span>&nbsp;Copiar capacitados a otra jornada</a>
+            @:&nbsp;&nbsp; &nbsp; &nbsp;
+            <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })"><span class="glyphicon glyphicon-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Generar Acta</a>
+            @:&nbsp;&nbsp; &nbsp; &nbsp;
+            <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
+        }
+        
     </p>
-    
+
     <hr />
 
  </div>
 
 @if (Model.PuedeModificarse())
 {
-    //si aún no se agregó el archivo del acta
-    if (Model.PathArchivo == null)
+    if (Model.Autorizada)
     {
+        //si aún no se agregó el archivo del acta
+        if (Model.PathArchivo == null)
+        {
         <div>
             <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
         </div>
@@ -83,11 +112,11 @@
             <br />
             <br />
         </div>
-    }
-    else //si ya se agregó el archivo del acta
-    {
-        using (Html.BeginForm("EliminarActa", "Jornadas", null, FormMethod.Post))
+        }
+        else //si ya se agregó el archivo del acta
         {
+            using (Html.BeginForm("EliminarActa", "Jornadas", null, FormMethod.Post))
+            {
             @Html.AntiForgeryToken()
 
             @Html.HiddenFor(model => model.JornadaID)
@@ -95,10 +124,10 @@
             <a href="~/images/Actas/@Model.PathArchivo.NombreArchivo" class="btn btn-default" target="_blank"><span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;Ver Acta</a>
             <input type="submit" value="Eliminar acta" class="btn btn-default" onclick="return confirm('¿Confirma eliminación del acta?')" />
             <br />
+            }
         }
+        <br />
     }
-
-    <br />
 
     <div>
         <button data-toggle="collapse" data-target="#demo" class="btn btn-default" onclick="toggleImgAgregarCapacitadoChevron();">Agregar Capacitado&nbsp;&nbsp;<span id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
@@ -134,7 +163,7 @@
 
 <h4>Registros de capacitación</h4>
 
-@if (Model.PuedeModificarse() && Model.Curso.EvaluacionConNota == false)
+@if (Model.Autorizada && Model.PuedeModificarse() && Model.Curso.EvaluacionConNota == false)
 {
     <button class="btn btn-default" onclick="marcarTodosAprobados();"><span class="glyphicon glyphicon-check"></span>&nbsp;Marcar todos como aprobados</button>
 

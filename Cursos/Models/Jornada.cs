@@ -63,6 +63,53 @@ namespace Cursos.Models
         [Required(AllowEmptyStrings = false)]
         public bool CuposDisponibles { get; set; }
 
+        //TODO - GF 20190512 - Determinar si estas propiedades pueden incluirse en ElementoAccesoControlado
+        public bool RequiereAutorizacion { get; set; }
+
+        public string UsuarioCreacion { get; private set; }
+        public DateTime? FechaCreacion { get; private set; }
+
+        public string UsuarioAutorizacion { get; private set; }
+        public DateTime? FechaAutorizacion { get; private set; }
+
+        public void IniciarAtributosAutorizacion(bool requiereAutorizacion)
+        {
+            this.RequiereAutorizacion = requiereAutorizacion;
+
+            if (requiereAutorizacion)
+            {
+                this.UsuarioCreacion = HttpContext.Current.User.Identity.Name;
+                this.FechaCreacion = DateTime.Now;
+            }
+            else
+            {
+                this.UsuarioCreacion = null;
+                this.FechaCreacion = null;
+            }
+
+            this.UsuarioAutorizacion = null;
+            this.FechaAutorizacion = null;
+        }
+
+        public bool OperacionesHabilitadas()
+        {
+            //si la jornada no requiere autorización, se permite trabajar sobre ella en cualquier caso
+            if (!this.RequiereAutorizacion)
+            {
+                return true;
+            }
+            else
+            {
+                //si requiere autorización pero ya fue habilitada por algún usuario
+                if (this.UsuarioAutorizacion != null)
+                    return true;
+            }
+
+            return false;
+        }
+
+        // /////////////////// ///////////////////// ////////////////////// ////////////////////////
+
         [NotMapped]
         public string CuposDisponiblesTexto
         {
@@ -102,6 +149,43 @@ namespace Cursos.Models
             }
         }
 
+        [NotMapped]
+        public bool Autorizada
+        {
+            get
+            {
+                if (this.RequiereAutorizacion)
+                    return this.UsuarioAutorizacion != null;
+
+                return true; //las jornadas que no requieren autorización se consideran autorizadas
+            }
+        }
+
+        [NotMapped]
+        public string AutorizadaTexto
+        {
+            get
+            {
+                if (this.Autorizada)
+                {
+                    return string.Format("Autorizada por {0} el {1}", this.UsuarioAutorizacion, this.FechaAutorizacion);
+                }
+                else
+                {
+                    return "Autorización pendiente";
+                }
+            }
+        }
+
+        [NotMapped]
+        public string CreadaTexto
+        {
+            get
+            {
+                return string.Format("Creada por {0} el {1}", this.UsuarioCreacion, this.FechaCreacion);
+            }
+        }
+
         public DateTime ObtenerFechaVencimiento(bool copiaJornada = false)
         {
             //TODO: hacer que esto sea configurable
@@ -116,6 +200,20 @@ namespace Cursos.Models
                     return new DateTime(this.Fecha.Year + this.Curso.Vigencia, this.Fecha.Month, this.Fecha.Day);
                 else
                     return new DateTime(this.Fecha.Year + 3, this.Fecha.Month, this.Fecha.Day);
+            }
+        }
+
+        public void ToggleAutorizada()
+        {
+            if (!this.Autorizada)
+            {
+                this.UsuarioAutorizacion = HttpContext.Current.User.Identity.Name;
+                this.FechaAutorizacion = DateTime.Now;
+            }
+            else
+            {
+                this.UsuarioAutorizacion = null;
+                this.FechaAutorizacion = null;
             }
         }
     }

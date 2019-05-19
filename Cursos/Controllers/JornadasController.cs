@@ -166,6 +166,9 @@ namespace Cursos.Controllers
             {
                 jornada.SetearAtributosControl();
 
+                Curso c = db.Cursos.Find(jornada.CursoId);
+                jornada.IniciarAtributosAutorizacion(c.RequiereAutorizacion);
+
                 if (JornadaTemplateId != null)
                 {
                     Jornada jornadaTemplate = db.Jornada.Find(JornadaTemplateId);
@@ -307,6 +310,29 @@ namespace Cursos.Controllers
             if (jornada.PuedeModificarse())
             {
                 jornada.CuposDisponibles = !jornada.CuposDisponibles;
+                db.SaveChanges();
+
+                return RedirectToAction("Details", new { id = id });
+            }
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+        }
+
+        public ActionResult ToggleAutorizada(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Jornada jornada = db.Jornada.Find(id);
+            if (jornada == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (jornada.PuedeModificarse())
+            {
+                jornada.ToggleAutorizada();
                 db.SaveChanges();
 
                 return RedirectToAction("Details", new { id = id });
@@ -798,7 +824,7 @@ namespace Cursos.Controllers
         [AllowAnonymous]
         public ActionResult Disponibles()
         {
-            var jornadas = db.Jornada.Where(j => j.Fecha >= DateTime.Now).OrderBy(j => j.Fecha).ThenBy(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
+            var jornadas = db.Jornada.Where(j => j.Fecha >= DateTime.Now && j.Autorizada).OrderBy(j => j.Fecha).ThenBy(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
 
             return View(jornadas.ToList());
         }   

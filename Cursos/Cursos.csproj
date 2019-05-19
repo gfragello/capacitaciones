@@ -345,6 +345,18 @@
     <Compile Include="Migrations\201803122029074_Jornada_Caracteristicas.Designer.cs">
       <DependentUpon>201803122029074_Jornada_Caracteristicas.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905121445588_Incio_Desarrollo_2019.cs" />
+    <Compile Include="Migrations\201905121445588_Incio_Desarrollo_2019.Designer.cs">
+      <DependentUpon>201905121445588_Incio_Desarrollo_2019.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905122035145_Jornadas_Autorizables.cs" />
+    <Compile Include="Migrations\201905122035145_Jornadas_Autorizables.Designer.cs">
+      <DependentUpon>201905122035145_Jornadas_Autorizables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905122101128_Jornadas_Autorizables_Ajuste_Fechas.cs" />
+    <Compile Include="Migrations\201905122101128_Jornadas_Autorizables_Ajuste_Fechas.Designer.cs">
+      <DependentUpon>201905122101128_Jornadas_Autorizables_Ajuste_Fechas.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -443,6 +455,8 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ClassDiagram1.cd" />
+    <None Include="Properties\PublishProfiles\csl-certificaciones-desa - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
     <Content Include="Scripts\jquery-2.2.0.js" />
@@ -680,6 +694,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803122029074_Jornada_Caracteristicas.resx">
       <DependentUpon>201803122029074_Jornada_Caracteristicas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905121445588_Incio_Desarrollo_2019.resx">
+      <DependentUpon>201905121445588_Incio_Desarrollo_2019.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905122035145_Jornadas_Autorizables.resx">
+      <DependentUpon>201905122035145_Jornadas_Autorizables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905122101128_Jornadas_Autorizables_Ajuste_Fechas.resx">
+      <DependentUpon>201905122101128_Jornadas_Autorizables_Ajuste_Fechas.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

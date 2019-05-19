@@ -50,7 +50,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion")] Curso curso)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion")] Curso curso)
         {
             if (ModelState.IsValid)
             {

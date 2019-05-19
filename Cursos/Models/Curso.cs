@@ -30,7 +30,8 @@ namespace Cursos.Models
         [Required(ErrorMessage = "Debe ingresar el módulo del curso")]
         public string Modulo { get; set; }
 
-        [Display(Name = "Color de Fondo")]
+        [Required(ErrorMessage = "Debe ingresar el color asociado al curso")]
+        [Display(Name = "Color")]
         public string ColorDeFondo { get; set; }
 
         //TODO: agregar las siguientes propiedades en las pantallas de edición y creación de cursos
@@ -44,6 +45,9 @@ namespace Cursos.Models
 
         [Display(Name = "Puntaje Mínimo")]
         public int PuntajeMinimo { get; set; }
+
+        [Display(Name = "Requiere Autorización")]
+        public bool RequiereAutorizacion { get; set; }
 
         public virtual List<Jornada> Jornadas { get; set; }
     }
