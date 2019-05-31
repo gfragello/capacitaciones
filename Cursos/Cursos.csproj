@@ -206,6 +206,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
+    <Compile Include="Helpers\CSSHelper.cs" />
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
     <Compile Include="Helpers\EstadosRegistroCapacitacionHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
@@ -360,6 +361,14 @@
     <Compile Include="Migrations\201905191431527_Propiedad_JornadaAutorizada_Mapeada.cs" />
     <Compile Include="Migrations\201905191431527_Propiedad_JornadaAutorizada_Mapeada.Designer.cs">
       <DependentUpon>201905191431527_Propiedad_JornadaAutorizada_Mapeada.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905261816501_Nuevas_Propiedades_Cursos.cs" />
+    <Compile Include="Migrations\201905261816501_Nuevas_Propiedades_Cursos.Designer.cs">
+      <DependentUpon>201905261816501_Nuevas_Propiedades_Cursos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905301243168_Nuevas_Propiedades_Jornadas.cs" />
+    <Compile Include="Migrations\201905301243168_Nuevas_Propiedades_Jornadas.Designer.cs">
+      <DependentUpon>201905301243168_Nuevas_Propiedades_Jornadas.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -710,6 +719,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905191431527_Propiedad_JornadaAutorizada_Mapeada.resx">
       <DependentUpon>201905191431527_Propiedad_JornadaAutorizada_Mapeada.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905261816501_Nuevas_Propiedades_Cursos.resx">
+      <DependentUpon>201905261816501_Nuevas_Propiedades_Cursos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905301243168_Nuevas_Propiedades_Jornadas.resx">
+      <DependentUpon>201905301243168_Nuevas_Propiedades_Jornadas.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

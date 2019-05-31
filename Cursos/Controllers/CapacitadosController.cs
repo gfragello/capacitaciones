@@ -161,12 +161,27 @@ namespace Cursos.Controllers
             return View(capacitado);
         }
 
-        // GET: Capacitados/Create
+        // GET: Capacitados/Create 
+        //Si se especifica un valor en el parametro documentoTemplate, se muestra el valor pre cargado en la pantalla
+        //Si se especifica un valor de jornadaId, luego de crear el usuario se lo agrega automáticamente a la jornada
         [Authorize(Roles = "Administrador,AdministradorExterno")]
-        public ActionResult Create()
+        public ActionResult Create(int? jornadaId)
         {
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion");
+
+            ViewBag.JornadaId = jornadaId;
+
+            Jornada j = null;
+
+            if (jornadaId != null)
+                j = db.Jornada.Find(jornadaId);
+
+            if (j != null)
+                ViewBag.JornadaIdentificacionCompleta = j.JornadaIdentificacionCompleta;
+            else
+                ViewBag.JornadaIdentificacionCompleta = string.Empty;
+
             return View();
         }
 
@@ -175,7 +190,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload)
+        public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload, int? jornadaId)
         {
             if (ModelState.IsValid)
             {
@@ -201,6 +216,28 @@ namespace Cursos.Controllers
 
                     db.Entry(capacitado).State = EntityState.Modified;
                     db.SaveChanges();
+                }
+
+                if (jornadaId != null)
+                {
+                    Jornada j = db.Jornada.Find(jornadaId);
+
+                    if (j == null)
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                    var nuevoRC = new RegistroCapacitacion();
+                    nuevoRC.SetearAtributosControl();
+
+                    nuevoRC.Jornada = j;
+                    nuevoRC.Capacitado = capacitado;
+                    nuevoRC.Nota = 0;
+                    nuevoRC.Aprobado = true;
+                    nuevoRC.FechaVencimiento = j.ObtenerFechaVencimiento(true);
+
+                    db.RegistroCapacitacion.Add(nuevoRC);
+                    db.SaveChanges();
+
+                    return RedirectToAction("Details", "Jornadas", new { id = jornadaId });
                 }
 
                 return RedirectToAction("Details", "Capacitados", new { id = capacitado.CapacitadoID });

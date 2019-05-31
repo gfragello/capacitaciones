@@ -172,7 +172,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles")] Jornada jornada, int? JornadaTemplateId)
+        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion")] Jornada jornada, int? JornadaTemplateId)
         {
             if (ModelState.IsValid)
             {
@@ -831,6 +831,23 @@ namespace Cursos.Controllers
             shapeOpcion.Fill.Color = Color.White;
             shapeOpcion.Font.Color = Color.Black;
             shapeOpcion.Font.Bold = true;
+        }
+
+        public ActionResult ObtenerDatosDisponibilidadCupos(int JornadaId)
+        {
+            //Posición 0 - jornada.CantidadCuposDisponiblesTexto
+            //Posición 1 - jornada.QuedanCuposDisponibles
+            string[] datosDisponiblidadCupos = new string[2];
+
+            var jornada = db.Jornada.Where(j => j.JornadaID == JornadaId).FirstOrDefault();
+
+            if (jornada != null)
+            {
+                datosDisponiblidadCupos[0] = jornada.CantidadCuposDisponiblesTexto;
+                datosDisponiblidadCupos[1] = jornada.QuedanCuposDisponibles.ToString();
+            }
+
+            return Json(datosDisponiblidadCupos, JsonRequestBehavior.AllowGet);
         }
 
         [AllowAnonymous]

@@ -63,6 +63,27 @@ namespace Cursos.Models
         [Required(AllowEmptyStrings = false)]
         public bool CuposDisponibles { get; set; }
 
+        [Display(Name = "Tiene mínimo de asistentes")]
+        public bool TieneMinimoAsistentes { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar la {0}")]
+        [Display(Name = "Cantidad mínima de asistentes")]
+        public int MinimoAsistentes { get; set; }
+
+        [Display(Name = "Tiene máximo de asistentes")]
+        public bool TieneMaximoAsistentes { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar la {0}")]
+        [Display(Name = "Cantidad máxima de asistentes")]
+        public int MaximoAsistentes { get; set; }
+
+        [Display(Name = "Tiene Cierre Incripción")]
+        public bool TieneCierreIncripcion { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar las {0}")]
+        [Display(Name = "Horas previas para el cierre de incripción")]
+        public int HorasCierreInscripcion { get; set; }
+
         //TODO - GF 20190512 - Determinar si estas propiedades pueden incluirse en ElementoAccesoControlado
         public bool RequiereAutorizacion { get; set; }
 
@@ -121,6 +142,44 @@ namespace Cursos.Models
                     return "Cupos disponibles";
                 else
                     return "Sin cupos disponibles";
+            }
+        }
+
+        /// ////////////////////////////////
+
+        [NotMapped]
+        public int CantidadCuposDisponibles
+        {
+            get
+            {
+                if (this.TieneMaximoAsistentes)
+                    return this.MaximoAsistentes - this.RegistrosCapacitacion.Count();
+
+                return 0;
+            }
+        }
+
+        [NotMapped]
+        public string CantidadCuposDisponiblesTexto
+        {
+            get
+            {
+                if (this.TieneMaximoAsistentes)
+                    return string.Format("{0} cupos disponibles", this.CantidadCuposDisponibles.ToString());
+
+                return string.Empty;
+            }
+        }
+
+        public bool QuedanCuposDisponibles
+        {
+            get
+            {
+                if (this.TieneMaximoAsistentes)
+                    if (this.CantidadCuposDisponibles == 0)
+                        return false;
+
+                return true;
             }
         }
 

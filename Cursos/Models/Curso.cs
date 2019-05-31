@@ -34,8 +34,6 @@ namespace Cursos.Models
         [Display(Name = "Color")]
         public string ColorDeFondo { get; set; }
 
-        //TODO: agregar las siguientes propiedades en las pantallas de edición y creación de cursos
-
         [Required(AllowEmptyStrings = false)]
         [Display(Name = "Evaluación con nota")]
         public bool EvaluacionConNota { get; set; }
@@ -48,6 +46,27 @@ namespace Cursos.Models
 
         [Display(Name = "Requiere Autorización")]
         public bool RequiereAutorizacion { get; set; }
+
+        [Display(Name = "Tiene mínimo de asistentes")]
+        public bool TieneMinimoAsistentes { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar la {0}")]
+        [Display(Name = "Cantidad mínima de asistentes")]
+        public int MinimoAsistentes { get; set; }
+
+        [Display(Name = "Tiene máximo de asistentes")]
+        public bool TieneMaximoAsistentes { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar la {0}")]
+        [Display(Name = "Cantidad máxima de asistentes")]
+        public int MaximoAsistentes { get; set; }
+
+        [Display(Name = "Tiene Cierre Incripción")]
+        public bool TieneCierreIncripcion { get; set; }
+
+        [Required(ErrorMessage = "Debe ingresar las {0}")]
+        [Display(Name = "Horas previas para el cierre de incripción")]
+        public int HorasCierreInscripcion { get; set; }
 
         public virtual List<Jornada> Jornadas { get; set; }
     }
