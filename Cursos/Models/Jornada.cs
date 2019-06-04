@@ -165,9 +165,19 @@ namespace Cursos.Models
             get
             {
                 if (this.TieneMaximoAsistentes)
-                    return string.Format("{0} cupos disponibles", this.CantidadCuposDisponibles.ToString());
+                {
+                    if (this.QuedanCuposDisponibles)
+                    {
+                        if (CantidadCuposDisponibles == 1)
+                            return "1 cupo disponible";
+                        else
+                            return string.Format("{0} cupos disponibles", this.CantidadCuposDisponibles.ToString());
+                    }
+                    else
+                        return "Sin cupos disponibles";
+                }
 
-                return string.Empty;
+                return "La jornada no tiene un cupo definido";
             }
         }
 
@@ -180,6 +190,15 @@ namespace Cursos.Models
                         return false;
 
                 return true;
+            }
+        }
+
+        [NotMapped]
+        public DateTime FechaCierreInscripcion
+        {
+            get
+            {
+                return this.Fecha.AddHours(this.HorasCierreInscripcion * -1);
             }
         }
 
@@ -236,6 +255,35 @@ namespace Cursos.Models
                 return string.Format("Creada por {0} el {1}", this.UsuarioCreacion, this.FechaCreacion);
             }
         }
+
+        public string TotalInscriptosTexto
+        {
+            get
+            {
+                if (this.RegistrosCapacitacion.Count() > 0)
+                    return string.Format("Total de Inscriptos: {0}", this.RegistrosCapacitacion.Count().ToString());
+                else
+                    return "Sin incriptos";
+            }
+        }
+
+        public string CierreIncripcionTexto
+        {
+            get
+            {
+                if (this.TieneCierreIncripcion)
+                {
+                    if (this.FechaCierreInscripcion >= DateTime.Now)
+                        return string.Format("Cierre de inscripciones: {0} {1}", this.FechaCierreInscripcion.ToShortDateString(), this.FechaCierreInscripcion.ToShortTimeString());
+                    else
+                        return "Incripciones cerradas";
+                }
+                else
+                    return "La jornada no tiene definido un plazo de cierre de inscripciones";
+            }
+        }
+
+
 
         public DateTime ObtenerFechaVencimiento(bool copiaJornada = false)
         {

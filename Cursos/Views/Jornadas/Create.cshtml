@@ -32,7 +32,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.CursoId, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("CursoId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("CursoId", null, "Seleccione el curso...", htmlAttributes: new { @class = "form-control", @onchange = "cargarDatosPlantillaJornada();" })
                 @Html.ValidationMessageFor(model => model.CursoId, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -230,6 +230,52 @@
             //se setea 0 como valor por defecto para prevenir que los validadores lo indiquen como un error
             $("#HorasCierreInscripcion").val("0");
         }
+    }
+
+    function cargarDatosPlantillaJornada() {
+        var cursoId = $('#CursoId').val();
+        $.ajax({
+            url: '/Cursos/ObtenerDatosPlantillaJornada',
+            type: "GET",
+            dataType: "JSON",
+            data: { CursoId: cursoId },
+            success: function (datosPlantillaJornada)
+            {
+                $("#TieneMinimoAsistentes").prop("checked", datosPlantillaJornada.TieneMinimoAsistentes);
+
+                if (datosPlantillaJornada.TieneMinimoAsistentes) {
+                    $("#grpMinimoAsistentes").show();
+                    $("#MinimoAsistentes").val(datosPlantillaJornada.MinimoAsistentes);
+                }
+                else
+                {
+                    $("#grpMinimoAsistentes").hide();
+                    $("#MinimoAsistentes").val("0");
+                }
+
+                $("#TieneMaximoAsistentes").prop("checked", datosPlantillaJornada.TieneMaximoAsistentes);
+
+                if (datosPlantillaJornada.TieneMaximoAsistentes) {
+                    $("#grpMaximoAsistentes").show();
+                    $("#MaximoAsistentes").val(datosPlantillaJornada.MaximoAsistentes);
+                }
+                else {
+                    $("#grpMaximoAsistentes").hide();
+                    $("#MaximoAsistentes").val("0");
+                }
+
+                $("#TieneCierreIncripcion").prop("checked", datosPlantillaJornada.TieneCierreIncripcion);
+
+                if (datosPlantillaJornada.TieneCierreIncripcion) {
+                    $("#grpHorasCierreInscripcion").show();
+                    $("#HorasCierreInscripcion").val(datosPlantillaJornada.HorasCierreInscripcion);
+                }
+                else {
+                    $("#grpHorasCierreInscripcion").hide();
+                    $("#HorasCierreInscripcion").val("0");
+                }
+            }
+        });
     }
 
 </script>

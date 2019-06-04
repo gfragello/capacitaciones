@@ -119,6 +119,28 @@ namespace Cursos.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult ObtenerDatosPlantillaJornada(int CursoId)
+        {
+            var curso = db.Cursos.Where(c => c.CursoID == CursoId).FirstOrDefault();
+
+            if (curso != null)
+            {
+                var datosPlantillaJornada = new
+                {
+                    TieneMinimoAsistentes = curso.TieneMinimoAsistentes,
+                    MinimoAsistentes = curso.MinimoAsistentes,
+                    TieneMaximoAsistentes = curso.TieneMaximoAsistentes,
+                    MaximoAsistentes = curso.MaximoAsistentes,
+                    TieneCierreIncripcion = curso.TieneCierreIncripcion,
+                    HorasCierreInscripcion = curso.HorasCierreInscripcion
+                };
+
+                return Json(datosPlantillaJornada, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(null, JsonRequestBehavior.AllowGet);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -23,27 +23,31 @@
                     </td>
                 </tr>
             }
+
             <tr>
                 <td style="vertical-align: bottom; padding-right: 10px" colspan="3">
                     <table>
                         <tr>
-                            <td style="padding-right: 10px">
-                                @if (Model.TieneMaximoAsistentes)
-                                {
-                                    if (Model.QuedanCuposDisponibles)
-                                    {
-                                        <h4><span id="spanCantidadCuposDisponibles" class="label label-success">@Model.CantidadCuposDisponiblesTexto</span></h4>
-                                    }
-                                    else
-                                    {
-                                        <h4><span id="spanCantidadCuposDisponibles" class="label label-danger">Sin cupos disponibles</span></h4>
-                                    }
-                                }
+                            <td id="tdCantidadInscriptos" style="padding-right: 10px">
+                                @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelTotalInscriptos(Model))
                             </td>
+                            @if (Model.TieneMaximoAsistentes)
+                            { 
+                                <td id="tdCantidadCuposDisponibles" style="padding-right: 10px">
+                                    @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelTotalCuposDisponibles(Model))
+                                </td>
+                            }
+                            @if (Model.TieneCierreIncripcion)
+                            {
+                                <td id="tdCantidadCuposDisponibles" style="padding-right: 10px">
+                                    @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCierreInscripcion(Model))
+                                </td>
+                            }
                         </tr>
-                    </table>	
+                    </table>
                 </td>
             </tr>
+     
             @*
             <tr>
                 <td style="vertical-align: bottom; padding-right: 10px" colspan="3">
@@ -206,18 +210,6 @@
     <br />
 }
 
-@if (Model.TieneMaximoAsistentes)
-{
-    if (Model.QuedanCuposDisponibles)
-    {
-        <h4><span id="spanCantidadCuposDisponibles" class="label label-success">@Model.CantidadCuposDisponiblesTexto</span></h4>
-    }
-    else
-    {
-        <h4><span id="spanCantidadCuposDisponibles" class="label label-danger">Sin cupos disponibles</span></h4>
-    }
-}
-
 <div id="dvRegistrosCapacitacion">
     @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
 </div>
@@ -311,7 +303,10 @@
                 data: { JornadaId: jornadaId},
                 success: function (datosDisponiblidadCupos)
                 {
-                    $("#spanCantidadCuposDisponibles").text(datosDisponiblidadCupos[0]);
+                    //alert(datosDisponiblidadCupos[3]);
+                    $("#tdCantidadInscriptos").html(datosDisponiblidadCupos[3]);
+                    //alert($("#tdCantidadInscriptos").innerHTML)
+                    $("#tdCantidadCuposDisponibles").html(datosDisponiblidadCupos[2]);
                     
                     if (datosDisponiblidadCupos[1] == "True")
                     {

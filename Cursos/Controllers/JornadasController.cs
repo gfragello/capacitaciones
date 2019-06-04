@@ -13,6 +13,7 @@ using System.Drawing;
 using PagedList;
 using System.Threading.Tasks;
 using Cursos.Models.Enums;
+using Cursos.Helpers;
 
 namespace Cursos.Controllers
 {
@@ -837,7 +838,9 @@ namespace Cursos.Controllers
         {
             //Posición 0 - jornada.CantidadCuposDisponiblesTexto
             //Posición 1 - jornada.QuedanCuposDisponibles
-            string[] datosDisponiblidadCupos = new string[2];
+            //Posición 2 - Label Total Cupos Disponibles
+            //Posición 3 - Label Total Inscriptos
+            string[] datosDisponiblidadCupos = new string[4];
 
             var jornada = db.Jornada.Where(j => j.JornadaID == JornadaId).FirstOrDefault();
 
@@ -845,6 +848,8 @@ namespace Cursos.Controllers
             {
                 datosDisponiblidadCupos[0] = jornada.CantidadCuposDisponiblesTexto;
                 datosDisponiblidadCupos[1] = jornada.QuedanCuposDisponibles.ToString();
+                datosDisponiblidadCupos[2] = JornadaHelper.GetInstance().ObtenerLabelTotalCuposDisponibles(jornada);
+                datosDisponiblidadCupos[3] = JornadaHelper.GetInstance().ObtenerLabelTotalInscriptos(jornada);
             }
 
             return Json(datosDisponiblidadCupos, JsonRequestBehavior.AllowGet);
