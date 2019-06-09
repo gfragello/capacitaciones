@@ -44,5 +44,20 @@ namespace Cursos.Helpers
             else
                 return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", cierreInscripcionTexto);
         }
+
+        public string ObtenerLabelMinimoAsistentes(Jornada j)
+        {
+            string minimoAsistentesTexto = j.MinimoAsistentesTexto;
+
+            if (j.TieneMinimoAsistentes)
+            {
+                if (j.TotalInscriptos >= j.MinimoAsistentes)
+                    return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", minimoAsistentesTexto);
+                else
+                    return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h4>", minimoAsistentesTexto);
+            }
+            else
+                return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", minimoAsistentesTexto);
+        }
     }
 }

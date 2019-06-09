@@ -431,7 +431,7 @@ namespace Cursos.Controllers
                     ws.Cells[i, colEdad].Value =  r.Capacitado.ObtenerEdadFecha(r.Jornada.Fecha);
                     ws.Cells[i, colEmpresa].Value = r.Capacitado.Empresa.NombreFantasia;
                     ws.Cells[i, colCurso].Value = r.Jornada.Curso.Descripcion;
-                    ws.Cells[i, colJornada].Value = r.Jornada.FechaHora;
+                    ws.Cells[i, colJornada].Value = r.Jornada.FechaHoraTexto;
                     ws.Cells[i, colLugar].Value = r.Jornada.Lugar.AbrevLugar;
                     ws.Cells[i, colInstructor].Value = r.Jornada.Instructor.NombreCompleto;
                     ws.Cells[i, colNota].Value = r.Nota;

@@ -43,6 +43,12 @@
                                     @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCierreInscripcion(Model))
                                 </td>
                             }
+                            @if (Model.TieneMinimoAsistentes)
+                            {
+                                <td id="tdCantidadCuposDisponibles" style="padding-right: 10px">
+                                    @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelMinimoAsistentes(Model))
+                                </td>
+                            }
                         </tr>
                     </table>
                 </td>
@@ -303,12 +309,10 @@
                 data: { JornadaId: jornadaId},
                 success: function (datosDisponiblidadCupos)
                 {
-                    //alert(datosDisponiblidadCupos[3]);
-                    $("#tdCantidadInscriptos").html(datosDisponiblidadCupos[3]);
-                    //alert($("#tdCantidadInscriptos").innerHTML)
-                    $("#tdCantidadCuposDisponibles").html(datosDisponiblidadCupos[2]);
+                    $("#tdCantidadInscriptos").html(datosDisponiblidadCupos.LabelTotalInscriptos);
+                    $("#tdCantidadCuposDisponibles").html(datosDisponiblidadCupos.LabelTotalCuposDisponibles);
                     
-                    if (datosDisponiblidadCupos[1] == "True")
+                    if (datosDisponiblidadCupos.QuedanCuposDisponibles)
                     {
                         //alert("Aún quedan cupos disponibles");
                         $("#dvBotonAgregarCapacitado").show();

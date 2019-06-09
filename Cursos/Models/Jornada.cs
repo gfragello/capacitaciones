@@ -34,6 +34,18 @@ namespace Cursos.Models
 
         public int HoraFormatoNumerico { get; set; }
 
+        [NotMapped]
+        public DateTime FechaHora
+        {
+            get
+            {
+                int hora = int.Parse(this.Hora.Substring(0, 2));
+                int minuto = int.Parse(this.Hora.Substring(3, 2));
+
+                return new DateTime(this.Fecha.Year, this.Fecha.Month, this.Fecha.Day, hora, minuto, 0);
+            }
+        }
+
         [Required(ErrorMessage = "Debe seleccionar el lugar donde se desarrollará la jornada")]
         [Display(Name = "Lugar")]
         public int LugarID { get; set; }
@@ -153,7 +165,7 @@ namespace Cursos.Models
             get
             {
                 if (this.TieneMaximoAsistentes)
-                    return this.MaximoAsistentes - this.RegistrosCapacitacion.Count();
+                    return this.MaximoAsistentes - this.TotalInscriptos;
 
                 return 0;
             }
@@ -168,10 +180,7 @@ namespace Cursos.Models
                 {
                     if (this.QuedanCuposDisponibles)
                     {
-                        if (CantidadCuposDisponibles == 1)
-                            return "1 cupo disponible";
-                        else
-                            return string.Format("{0} cupos disponibles", this.CantidadCuposDisponibles.ToString());
+                        return string.Format("Cupos disponibles: {0}", this.CantidadCuposDisponibles.ToString());
                     }
                     else
                         return "Sin cupos disponibles";
@@ -198,7 +207,7 @@ namespace Cursos.Models
         {
             get
             {
-                return this.Fecha.AddHours(this.HorasCierreInscripcion * -1);
+                return this.FechaHora.AddHours(this.HorasCierreInscripcion * -1);
             }
         }
 
@@ -212,7 +221,7 @@ namespace Cursos.Models
         }
 
         [NotMapped]
-        public string FechaHora
+        public string FechaHoraTexto
         {
             get
             {
@@ -256,11 +265,19 @@ namespace Cursos.Models
             }
         }
 
+        public int TotalInscriptos
+        {
+            get
+            {
+                return this.RegistrosCapacitacion != null ? this.RegistrosCapacitacion.Count() : 0;
+            }
+        }
+
         public string TotalInscriptosTexto
         {
             get
             {
-                if (this.RegistrosCapacitacion.Count() > 0)
+                if (this.TotalInscriptos > 0)
                     return string.Format("Total de Inscriptos: {0}", this.RegistrosCapacitacion.Count().ToString());
                 else
                     return "Sin incriptos";
@@ -283,7 +300,16 @@ namespace Cursos.Models
             }
         }
 
-
+        public string MinimoAsistentesTexto
+        {
+            get
+            {
+                if (this.TieneMinimoAsistentes)
+                    return string.Format("Requiere un mínimo de {0} asistentes", this.MinimoAsistentes.ToString());
+                else
+                    return "La jornada no tiene definido un mínimo de asistentes";
+            }
+        }
 
         public DateTime ObtenerFechaVencimiento(bool copiaJornada = false)
         {

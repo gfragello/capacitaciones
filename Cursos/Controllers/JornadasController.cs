@@ -259,7 +259,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles")] Jornada jornada)
+        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,Autorizada")] Jornada jornada)
         {
             if (ModelState.IsValid)
             {
@@ -836,23 +836,21 @@ namespace Cursos.Controllers
 
         public ActionResult ObtenerDatosDisponibilidadCupos(int JornadaId)
         {
-            //Posición 0 - jornada.CantidadCuposDisponiblesTexto
-            //Posición 1 - jornada.QuedanCuposDisponibles
-            //Posición 2 - Label Total Cupos Disponibles
-            //Posición 3 - Label Total Inscriptos
-            string[] datosDisponiblidadCupos = new string[4];
-
             var jornada = db.Jornada.Where(j => j.JornadaID == JornadaId).FirstOrDefault();
 
             if (jornada != null)
             {
-                datosDisponiblidadCupos[0] = jornada.CantidadCuposDisponiblesTexto;
-                datosDisponiblidadCupos[1] = jornada.QuedanCuposDisponibles.ToString();
-                datosDisponiblidadCupos[2] = JornadaHelper.GetInstance().ObtenerLabelTotalCuposDisponibles(jornada);
-                datosDisponiblidadCupos[3] = JornadaHelper.GetInstance().ObtenerLabelTotalInscriptos(jornada);
+                var datosDisponibilidadCupos = new
+                {
+                    QuedanCuposDisponibles = jornada.QuedanCuposDisponibles,
+                    LabelTotalCuposDisponibles = JornadaHelper.GetInstance().ObtenerLabelTotalCuposDisponibles(jornada),
+                    LabelTotalInscriptos = JornadaHelper.GetInstance().ObtenerLabelTotalInscriptos(jornada)
+                };
+
+                return Json(datosDisponibilidadCupos, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(datosDisponiblidadCupos, JsonRequestBehavior.AllowGet);
+            return Json(null, JsonRequestBehavior.AllowGet);
         }
 
         [AllowAnonymous]
