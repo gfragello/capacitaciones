@@ -69,9 +69,57 @@ namespace Cursos.Models
             }
         }
 
-        /*
-        public int EmpresaID { get; set; }
-        public virtual Empresa Empresa { get; set; }        
-        */
+        [NotMapped]
+        public bool FueCalificado
+        {
+            get
+            {
+                return this.Estado == EstadosRegistroCapacitacion.Aprobado || this.Estado == EstadosRegistroCapacitacion.NoAprobado;
+            }
+        }
+
+
+        public bool Calificar(int nota)
+        {
+            EstadosRegistroCapacitacion estadoFinal = EstadosRegistroCapacitacion.Aprobado;
+
+            if (this.Jornada.Curso.EvaluacionConNota)
+            {
+                if (this.Jornada.Curso.PuntajeMaximo > 0 && nota > this.Jornada.Curso.PuntajeMaximo)
+                    return false;
+
+                if (this.Jornada.Curso.PuntajeMinimo > 0 && nota < this.Jornada.Curso.PuntajeMinimo)
+                    estadoFinal = EstadosRegistroCapacitacion.NoAprobado;
+
+                this.Nota = nota;
+                this.Estado = estadoFinal;
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public bool Calificar(bool aprobado)
+        {
+            if (!this.Jornada.Curso.EvaluacionConNota)
+            {
+                if (aprobado)
+                    this.Estado = EstadosRegistroCapacitacion.Aprobado;
+                else
+                    this.Estado = EstadosRegistroCapacitacion.NoAprobado;
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void BorrarCalificacion()
+        {
+            this.Nota = 0;
+            this.NotaPrevia = 0;
+            this.Estado = EstadosRegistroCapacitacion.Inscripto;
+        }
     }
 }

@@ -12,6 +12,7 @@ using PagedList;
 using OfficeOpenXml;
 using System.IO;
 using System.Drawing;
+using Cursos.Helpers;
 
 namespace Cursos.Controllers
 {
@@ -477,6 +478,86 @@ namespace Cursos.Controllers
                 estadoRet = EstadosRegistroCapacitacion.NoAprobado;
 
             return Json((int)estadoRet, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult CalificarRegistroNota(int registroCapacitacionId, int nota)
+        {
+            var datosActualizarNotaError = new
+            {
+                NotaActualizada = false,
+                LabelEstado = string.Empty
+            };
+
+            var registroCapacitacion = db.RegistroCapacitacion.Find(registroCapacitacionId);
+
+            if (registroCapacitacion == null)
+                return Json(datosActualizarNotaError, JsonRequestBehavior.AllowGet);
+
+            if (registroCapacitacion.Calificar(nota))
+                db.SaveChanges();
+            else
+                return Json(datosActualizarNotaError, JsonRequestBehavior.AllowGet);
+
+            var datosActualizarNotaSuccess = new
+            {
+                NotaActualizada = true,
+                LabelEstado = RegistroCapacitacionHelper.GetInstance().ObtenerLabelEstado(registroCapacitacion)
+            };
+
+            return Json(datosActualizarNotaSuccess, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult CalificarRegistro(int registroCapacitacionId, bool aprobado)
+        {
+            var datosActualizarCalificacionError = new
+            {
+                CalificacionActualizada = false,
+                LabelEstado = string.Empty
+            };
+
+            var registroCapacitacion = db.RegistroCapacitacion.Find(registroCapacitacionId);
+
+            if (registroCapacitacion == null)
+                return Json(datosActualizarCalificacionError, JsonRequestBehavior.AllowGet);
+
+            if (registroCapacitacion.Calificar(aprobado))
+                db.SaveChanges();
+            else
+                return Json(datosActualizarCalificacionError, JsonRequestBehavior.AllowGet);
+
+            var datosActualizarCalificacionSuccess = new
+            {
+                CalificacionActualizada = true,
+                LabelEstado = RegistroCapacitacionHelper.GetInstance().ObtenerLabelEstado(registroCapacitacion)
+            };
+
+            return Json(datosActualizarCalificacionSuccess, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult BorrarCalificacionRegistro(int registroCapacitacionId)
+        {
+            var datosActualizarCalificacionError = new
+            {
+                CalificacionActualizada = false,
+                LabelEstado = string.Empty
+            };
+
+            var registroCapacitacion = db.RegistroCapacitacion.Find(registroCapacitacionId);
+
+            if (registroCapacitacion == null)
+                return Json(datosActualizarCalificacionError, JsonRequestBehavior.AllowGet);
+
+            registroCapacitacion.BorrarCalificacion();
+            db.SaveChanges();
+
+
+            var datosActualizarCalificacionSuccess = new
+            {
+                CalificacionActualizada = true,
+                LabelEstado = RegistroCapacitacionHelper.GetInstance().ObtenerLabelEstado(registroCapacitacion)
+            };
+
+            return Json(datosActualizarCalificacionSuccess, JsonRequestBehavior.AllowGet);
         }
     }
 }

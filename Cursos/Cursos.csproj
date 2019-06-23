@@ -213,6 +213,7 @@
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\NotificacionesVencimientosHelper.cs" />
     <Compile Include="Helpers\PathArchivoHelper.cs" />
+    <Compile Include="Helpers\RegistroCapacitacionHelper.cs" />
     <Compile Include="Helpers\UsuarioHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Migrations\201602211431159_InitialCreate.cs" />
@@ -592,6 +593,7 @@
     <Content Include="Views\Configuracion\Index.cshtml" />
     <Content Include="Views\Jornadas\Disponibles.cshtml" />
     <Content Include="Views\CustomTools\CorregirNotificaciones.cshtml" />
+    <Content Include="Views\Jornadas\IngresarCalificaciones.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

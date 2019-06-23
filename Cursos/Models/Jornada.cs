@@ -300,6 +300,18 @@ namespace Cursos.Models
             }
         }
 
+        public bool InscripcionesAbiertas
+        {
+            get
+            {
+                if (this.TieneCierreIncripcion)
+                    return this.FechaCierreInscripcion >= DateTime.Now;
+
+                return true;
+            }
+        }
+
+
         public string MinimoAsistentesTexto
         {
             get

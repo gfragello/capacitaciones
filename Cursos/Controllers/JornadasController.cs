@@ -354,6 +354,26 @@ namespace Cursos.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
         }
 
+        public ActionResult IngresarCalificaciones(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Jornada jornada = db.Jornada.Find(id);
+            if (jornada == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (jornada.PuedeModificarse())
+            {
+                return View(jornada);
+            }
+            else
+                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

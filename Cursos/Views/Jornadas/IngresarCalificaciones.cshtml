@@ -1,0 +1,242 @@
+﻿@model Cursos.Models.Jornada
+@using Cursos.Helpers;
+@using Cursos.Models.Enums;
+
+@{
+    ViewBag.Title = "Jornada - Ingresar calificaciones";
+}
+
+<h4>@Model.JornadaIdentificacionCompleta</h4>
+
+<h4>Ingreso de calificaciones</h4>
+
+<p style="vertical-align: middle;">
+    <a href="@Url.Action("Details", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
+</p>
+
+@if (Model.Curso.EvaluacionConNota)
+{ 
+    <label>@string.Format("Nota mímima para aprobar: {0}", Model.Curso.PuntajeMinimo)</label>
+    @:&nbsp;&nbsp;
+    <label>@string.Format("Nota máxima: {0}", Model.Curso.PuntajeMaximo)</label>
+}
+else
+{ 
+    <button class="btn btn-default" onclick="marcarTodosAprobados();"><span class="glyphicon glyphicon-check"></span>&nbsp;Marcar todos como aprobados</button>
+}
+
+<br />
+<br />
+
+<table class="table table-striped">
+
+    <tr>
+        <th>
+            Documento
+        </th>
+        <th>
+            Nombre
+        </th>
+        <th>
+            @if (Model.Curso.EvaluacionConNota)
+            {
+                @:Nota
+            }
+            else
+            {
+                @:&nbsp;
+            }
+        </th>
+            @if (Model.Curso.EvaluacionConNota)
+            {
+                <th>
+                    Nota previa
+                </th>
+            }
+        <th>
+            Estado
+        </th>
+        <th></th> <!--Columna con acciones sobre el elemento -->
+    </tr>
+
+    @foreach (var item in Model.RegistrosCapacitacion)
+    {
+        //string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(item.Estado);
+
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+            </td>
+            @if (Model.Curso.EvaluacionConNota)
+            {
+                <td>
+                    @{ 
+                        string txtNotaValorAnteriorId = string.Format("txtNotaValorAnterior_{0}", item.RegistroCapacitacionID.ToString().Trim());
+                    }
+                    <input id="@string.Format("txtNota_{0}", item.RegistroCapacitacionID.ToString().Trim())" type="text" value="@item.Nota" size="4" onblur="registrarCalificacionNota(@item.RegistroCapacitacionID, this.value, document.getElementById('@txtNotaValorAnteriorId').value);" />
+                    <input id="@txtNotaValorAnteriorId" type="hidden" value="@item.Nota" />
+                </td>
+            }
+            else
+            {
+                <td>
+                    <a href="javascript:registrarCalificacion(@item.RegistroCapacitacionID, true)"><span class="glyphicon glyphicon-ok-circle" style="font-size: 25px; color: #017d49"></span></a>
+                    <a href="javascript:registrarCalificacion(@item.RegistroCapacitacionID, false)"><span class="glyphicon glyphicon-remove-circle" style="font-size: 25px; color: darkred"></span></a>
+                </td>
+            }
+            @if (Model.Curso.EvaluacionConNota)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.NotaPrevia)
+                </td>
+            }
+            <td id="@string.Format("tdEstado_{0}", item.RegistroCapacitacionID.ToString().Trim())">
+                @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerLabelEstado(item))
+            </td>
+
+            @{ 
+                string estiloVisible = CSSHelper.GetInstance().ObtenerEstiloVisible(item.FueCalificado);
+            }
+
+            <td style="text-align:left">
+                <div style="@estiloVisible" id="@string.Format("dvEliminarCalificacion_{0}", item.RegistroCapacitacionID.ToString().Trim())">
+                    <a href="javascript:borrarRegistrarCalificacion(@item.RegistroCapacitacionID);"><img src="@Url.Content("~/images/borrar_16x16.png")" title="Eliminar calificación" /></a>
+                </div>
+            </td>
+        </tr>
+    }
+
+</table>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function registrarCalificacionNota(registroCapacitacionId, nota, notaValorAnterior)
+        {
+            //console.log('Grabando datos de ' + registroCapacitacionId);
+            //console.log('Nota: ' + nota);
+
+            if (nota != notaValorAnterior)
+            {
+                console.log("Actualizando datos...");
+
+                $.ajax({
+                    url: '/RegistrosCapacitacion/CalificarRegistroNota',
+                    type: "GET",
+                    dataType: "JSON",
+                    data:
+                    {
+                        registroCapacitacionId: registroCapacitacionId,
+                        nota: nota
+                    },
+                    success: function (datosActualizarNota)
+                    {
+                        if (datosActualizarNota.NotaActualizada)
+                        {
+                            $("#tdEstado_" + registroCapacitacionId.toString()).html(datosActualizarNota.LabelEstado);
+                            $("#txtNotaValorAnterior_" + registroCapacitacionId.toString()).val(nota);
+                            $("#dvEliminarCalificacion_" + registroCapacitacionId.toString()).show();
+                        }
+                        else
+                        {
+                            alert("No se pudo actualizar la nota. Verifique si el valor es correcto.");
+                            $("#txtNota_" + registroCapacitacionId.toString()).val(notaValorAnterior);
+                            $("#txtNota_" + registroCapacitacionId.toString()).focus();
+                        }
+                    }
+                });
+            }
+            else
+            {
+                console.log("No se actualizarán los datos");
+            }
+        }
+
+        function registrarCalificacion(registroCapacitacionId, aprobado)
+        {
+            $.ajax({
+                url: '/RegistrosCapacitacion/CalificarRegistro',
+                type: "GET",
+                dataType: "JSON",
+                data:
+                {
+                    registroCapacitacionId: registroCapacitacionId,
+                    aprobado: aprobado
+                },
+                success: function (datosActualizarCalificacion) {
+                    if (datosActualizarCalificacion.CalificacionActualizada)
+                    {
+                        $("#tdEstado_" + registroCapacitacionId.toString()).html(datosActualizarCalificacion.LabelEstado);
+                        $("#dvEliminarCalificacion_" + registroCapacitacionId.toString()).show();
+                    }
+                    else
+                    {
+                        alert("Error en el registo de la calificación.");
+                    }
+                }
+            });
+        }
+
+        function marcarTodosAprobados()
+        {
+            if (confirm("¿Marcar todos los registros como aprobados?"))
+            {
+                var jornadaId = @Model.JornadaID;
+                $.ajax({
+                    url: '/Jornadas/SetearRegistroCapacitacionEstado',
+                    type: "GET",
+                    dataType: "JSON",
+                    data: { jornadaId: jornadaId,
+                            estado: 1 },
+                    success: function (resultadoOK)
+                    {
+                        if (resultadoOK)
+                        {
+                            $("[id^=tdEstado_]").html('@Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerLabelEstado(EstadosRegistroCapacitacion.Aprobado))');
+                            $("[id^=dvEliminarCalificacion_]").show();
+                        }
+                    }
+                });
+            }
+        }
+
+        function borrarRegistrarCalificacion(registroCapacitacionId)
+        {
+            if (confirm("¿Confirma eliminación de la calificación?"))
+            {
+                $.ajax({
+                    url: '/RegistrosCapacitacion/BorrarCalificacionRegistro',
+                    type: "GET",
+                    dataType: "JSON",
+                    data:
+                    {
+                        registroCapacitacionId: registroCapacitacionId
+                    },
+                    success: function (datosActualizarCalificacion) {
+                        if (datosActualizarCalificacion.CalificacionActualizada)
+                        {
+                            $("#tdEstado_" + registroCapacitacionId.toString()).html(datosActualizarCalificacion.LabelEstado);
+
+                            //si está mostrando la nota en pantalla es porque se trata de una jornada con calificación con nota
+                            if($("#txtNota_" + registroCapacitacionId.toString()).val())
+                            {
+                                $("#txtNota_" + registroCapacitacionId.toString()).val(0);
+                                $("#txtNotaValorAnterior_" + registroCapacitacionId.toString()).val(0);
+                            }
+
+                            $("#dvEliminarCalificacion_" + registroCapacitacionId.toString()).hide();
+                        }
+                        else
+                        {
+                            alert("Error en el registo de la calificación.");
+                        }
+                    }
+                });
+            }
+        }
+
+    </script>
+}

@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Cursos.Models.Jornada>
+@using Cursos.Helpers;
 
 @{
     ViewBag.Title = "Jornadas Disponibles";
@@ -45,7 +46,10 @@
             Características
         </th>
         <th>
-            Disponibilidad
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
         </th>
     </tr>
 
@@ -74,7 +78,24 @@
                 @Html.DisplayFor(modelItem => item.Caracteristicas)
             </td>
             <td style="font-weight: bold;">
-                @Html.DisplayFor(modelItem => item.CuposDisponiblesTexto)
+                @if (item.TieneMaximoAsistentes)
+                {
+                    @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelTotalCuposDisponibles(item))
+                }
+                else
+                {
+                    @:&nbsp;
+                }
+            </td>
+            <td style="font-weight: bold;">
+                @if (item.TieneCierreIncripcion)
+                {
+                    @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCierreInscripcion(item))
+                }
+                else
+                {
+                    @:&nbsp;
+                }
             </td>
         </tr>
     }
