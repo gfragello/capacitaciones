@@ -70,6 +70,40 @@ namespace Cursos.Models
         }
 
         [NotMapped]
+        public TipoEliminacionEnum TipoEliminacionPermitida
+        {
+            get
+            {
+                bool puedeEliminar = false;
+
+                if (HttpContext.Current.User.IsInRole("Administrador"))
+                {
+                    puedeEliminar = true;
+                }
+                else if (HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+                {
+                    if (this.UsuarioModificacion == HttpContext.Current.User.Identity.Name && this.Estado == EstadosRegistroCapacitacion.Inscripto)
+                        puedeEliminar = true;
+                }
+
+                if (puedeEliminar)
+                {
+                    if (this.Estado == EstadosRegistroCapacitacion.Inscripto)
+                    {
+                        return TipoEliminacionEnum.EliminacionSimple;
+                    }
+                    else
+                    {
+                        return TipoEliminacionEnum.EliminacionConRevision;
+                    }
+                }
+
+                return TipoEliminacionEnum.NoEliminar;
+            }
+        }
+
+
+        [NotMapped]
         public bool FueCalificado
         {
             get

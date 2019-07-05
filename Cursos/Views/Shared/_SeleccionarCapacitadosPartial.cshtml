@@ -36,7 +36,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Empresa.NombreFantasia)
                 </td>
-                <td>
+                <td id="tdSeleccionarCapacitado">
                     @*Si el capacitado aún no había sido agregado a la Jornada actual*@
                     @if (registroCapacitacionEnJornadaActual == null)
                     { 

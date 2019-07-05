@@ -14,10 +14,11 @@ using PagedList;
 using System.Threading.Tasks;
 using Cursos.Models.Enums;
 using Cursos.Helpers;
+using System.Net.Mail;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
     public class JornadasController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -105,6 +106,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Jornadas/Details/5
+        //[Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
         public ActionResult Details(int? id,
                                     bool? exportarExcel,
                                     bool? generarActa)
@@ -404,6 +406,10 @@ namespace Cursos.Controllers
             db.RegistroCapacitacion.Add(registroCapacitacion);
 
             db.SaveChanges();
+
+            //si la incripción fue registrada por un usuario con perfil para inscripciones externas, se notifica por email
+            if (System.Web.HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+                NotificacionesEMailHelper.GetInstance().EnviarEmailsNotificacionInscripcionExterna(registroCapacitacion, false);
 
             return Json(true, JsonRequestBehavior.AllowGet);
         }

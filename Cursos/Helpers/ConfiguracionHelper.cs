@@ -15,11 +15,11 @@ namespace Cursos.Helpers
             return _instance;
         }
 
-        public string GetValue(string Index)
+        public string GetValue(string Index, string Seccion)
         {
             using (CursosDbContext db = new CursosDbContext())
             {
-                var conf = db.Configuracion.Where(c => c.Index == Index).FirstOrDefault();
+                var conf = db.Configuracion.Where(c => c.Index == Index && c.Seccion == Seccion).FirstOrDefault();
 
                 if (conf != null)
                     return conf.Value;

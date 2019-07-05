@@ -64,7 +64,11 @@
         </table>
     </div>
 
-    @Html.Partial("_DatosModificacionPartial", Model)
+    @*No se muestran los datos de auditoría para los usuarios de inscripción externa*@
+    @if (!HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+    { 
+        @Html.Partial("_DatosModificacionPartial", Model)
+    }
 
     @{
         string classAccionCuposDisponibles = string.Empty;
@@ -117,6 +121,8 @@
                 <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })"><span class="glyphicon glyphicon-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Generar Acta</a>
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
                 <a href="@Url.Action("IngresarCalificaciones", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-list-alt" style="font-size: 25px; color: #017d49"></span>&nbsp;Ingresar calificaciones</a>
+                @:&nbsp;&nbsp; &nbsp; &nbsp;
+                <a href="#"><span class="glyphicon glyphicon-transfer" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar datos OVAL</a>
                 @*:&nbsp;&nbsp; &nbsp; &nbsp;
                 <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
                 *@
@@ -128,41 +134,39 @@
 
  </div>
 
-@if (Model.PuedeModificarse())
+@if (Model.PuedeAgregarActaUsuarioActual)
 {
-    if (Model.Autorizada)
+    //si aún no se agregó el archivo del acta
+    if (Model.PathArchivo == null)
     {
-        //si aún no se agregó el archivo del acta
-        if (Model.PathArchivo == null)
+    <div>
+        <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+    </div>
+
+    <div id="divAgregarActa" class="collapse well" style="background-color: whitesmoke">
+        @using (Html.BeginForm("AgregarActa", "Jornadas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
-        <div>
-            <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
-        </div>
+            @Html.AntiForgeryToken()
 
-        <div id="divAgregarActa" class="collapse well" style="background-color: whitesmoke">
-            @using (Html.BeginForm("AgregarActa", "Jornadas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
-            {
-                @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.JornadaID)
 
-                @Html.HiddenFor(model => model.JornadaID)
-
-                <div class="form-group">
-                    <div class="col-md-4">
-                        <input type="file" id="Acta" name="upload" class="btn btn-default" />
-                    </div>
-                    <div class="col-md-8">
-                        <input type="submit" value="Agregar" class="btn btn-default" />
-                    </div>
+            <div class="form-group">
+                <div class="col-md-4">
+                    <input type="file" id="Acta" name="upload" class="btn btn-default" />
                 </div>
-            }
-            <br />
-            <br />
-        </div>
+                <div class="col-md-8">
+                    <input type="submit" value="Agregar" class="btn btn-default" />
+                </div>
+            </div>
         }
-        else //si ya se agregó el archivo del acta
+        <br />
+        <br />
+    </div>
+    }
+    else //si ya se agregó el archivo del acta
+    {
+        using (Html.BeginForm("EliminarActa", "Jornadas", null, FormMethod.Post))
         {
-            using (Html.BeginForm("EliminarActa", "Jornadas", null, FormMethod.Post))
-            {
             @Html.AntiForgeryToken()
 
             @Html.HiddenFor(model => model.JornadaID)
@@ -170,51 +174,50 @@
             <a href="~/images/Actas/@Model.PathArchivo.NombreArchivo" class="btn btn-default" target="_blank"><span class="glyphicon glyphicon-file"></span>&nbsp;&nbsp;Ver Acta</a>
             <input type="submit" value="Eliminar acta" class="btn btn-default" onclick="return confirm('¿Confirma eliminación del acta?')" />
             <br />
-            }
         }
-        <br />
-    }
-
-    string estilo = CSSHelper.GetInstance().ObtenerEstiloVisible(Model.QuedanCuposDisponibles);
-
-    if (Model.InscripcionesAbiertas)
-    { 
-        <div id="dvBotonAgregarCapacitado" style="@estilo;">
-            <button data-toggle="collapse" data-target="#demo" class="btn btn-default" onclick="toggleImgAgregarCapacitadoChevron();">Agregar Capacitado&nbsp;&nbsp;<span id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
-        </div>
-
-        <div id="demo" class="collapse well" style="@estilo;background-color: whitesmoke">
-            <table>
-                <tr>
-                    <td>
-                        <div class="form-inline" style="margin:5px 3px;">
-                            <div class="form-group">
-                                <div class="col-md-5">
-                                    @Html.Label("Documento"):
-                                </div>
-                                <div class="col-md-10">
-                                    @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
-                                    &nbsp;&nbsp;&nbsp;
-                                    <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span>&nbsp;Buscar</button>
-                                    &nbsp;&nbsp;&nbsp;
-                                    <button class="btn btn-default" onclick="crearCapacitado();"><span class="glyphicon glyphicon-user"></span>&nbsp;Crear nuevo</button>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-            <br />
-            <div id="dvSeleccionarCapacitados">
-                @Html.Partial("_SeleccionarCapacitadosPartial", new List<Cursos.Models.Capacitado>())
-            </div>
-        </div>
-
-        <br />
     }
 }
 
-<h4>Registros de capacitación</h4>
+<br />
+
+@{
+    string estilo = CSSHelper.GetInstance().ObtenerEstiloVisible(Model.PuedeAgregarInscripcionesUsuarioActual);
+}
+
+<div id="dvBotonAgregarCapacitado" style="@estilo;">
+    <button data-toggle="collapse" data-target="#demo" class="btn btn-default" onclick="toggleImgAgregarCapacitadoChevron();">Agregar Capacitado&nbsp;&nbsp;<span id="imgAgregarCapacitadoChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+</div>
+
+<div id="demo" class="collapse well" style="@estilo;background-color: whitesmoke">
+    <table>
+        <tr>
+            <td>
+                <div class="form-inline" style="margin:5px 3px;">
+                    <div class="form-group">
+                        <div class="col-md-5">
+                            @Html.Label("Documento"):
+                        </div>
+                        <div class="col-md-10">
+                            @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
+                            &nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span>&nbsp;Buscar</button>
+                            &nbsp;&nbsp;&nbsp;
+                            <button class="btn btn-default" onclick="crearCapacitado();"><span class="glyphicon glyphicon-user"></span>&nbsp;Crear nuevo</button>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <div id="dvSeleccionarCapacitados">
+        @Html.Partial("_SeleccionarCapacitadosPartial", new List<Cursos.Models.Capacitado>())
+    </div>
+</div>
+
+<br />
+
+<h4>Inscriptos a la jornada</h4>
 
 <div id="dvRegistrosCapacitacion">
     @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
@@ -257,6 +260,8 @@
 
         function seleccionarCapacitado(capacitadoId)
         {
+            $("#tdSeleccionarCapacitado").load('@(Url.Action("ObtenerCargandoMini", "CustomTools"))');
+
             var jornadaId = @Model.JornadaID;
             $.ajax({
                 url: '/Jornadas/AgregarRegistroCapacitacion',
@@ -269,7 +274,7 @@
                             if (resultadoOK)
                             {
                                 $("#dvRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
-                                buscarCapacitados();
+                                //buscarCapacitados();
                                 actualizarDisponibilidadJornada();
                                 //$("#spanCantidadCuposDisponibles").text("Se agregó otro capacitado");
                             }
@@ -289,18 +294,43 @@
                 {
                     $("#tdCantidadInscriptos").html(datosDisponiblidadCupos.LabelTotalInscriptos);
                     $("#tdCantidadCuposDisponibles").html(datosDisponiblidadCupos.LabelTotalCuposDisponibles);
-                    
+
                     if (datosDisponiblidadCupos.QuedanCuposDisponibles)
                     {
+                        if ($("#documento").val() != "")
+                            buscarCapacitados();
+
                         //alert("Aún quedan cupos disponibles");
                         $("#dvBotonAgregarCapacitado").show();
                         $("#demo").show();
                     }
                     else
                     {
-                        //alert("Ya no quedan cupos disponibles");
+                        //se ocultan las opciones para agregar nuevos incriptos
                         $("#dvBotonAgregarCapacitado").hide();
                         $("#demo").hide();
+
+                        //se vacía el contenido del DIV que incluye los resultados de búsqueda y el cuadro de texto de búsqueda por documento
+                        $("#documento").val("");
+                        $("#dvSeleccionarCapacitados").html("");
+                    }
+                }
+            });
+        }
+
+        function eliminarRegistroCapacitacion(registroCapacitacionId)
+        {
+            $.ajax({
+                url: '/RegistrosCapacitacion/EliminarRegistroCapacitacion',
+                type: "GET",
+                dataType: "JSON",
+                data: { registroCapacitacionId: registroCapacitacionId },
+                success: function (resultadoOK)
+                {
+                    if (resultadoOK)
+                    {
+                        $("#dvRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+                        actualizarDisponibilidadJornada();
                     }
                 }
             });

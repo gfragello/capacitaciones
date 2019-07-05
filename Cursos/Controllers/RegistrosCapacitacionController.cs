@@ -16,7 +16,7 @@ using Cursos.Helpers;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
     public class RegistrosCapacitacionController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -558,6 +558,15 @@ namespace Cursos.Controllers
             };
 
             return Json(datosActualizarCalificacionSuccess, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult EliminarRegistroCapacitacion(int registroCapacitacionId)
+        {
+            RegistroCapacitacion registroCapacitacion = db.RegistroCapacitacion.Find(registroCapacitacionId);
+            db.RegistroCapacitacion.Remove(registroCapacitacion);
+            db.SaveChanges();
+
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
     }
 }

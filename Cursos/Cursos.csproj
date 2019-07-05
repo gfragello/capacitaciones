@@ -211,6 +211,7 @@
     <Compile Include="Helpers\EstadosRegistroCapacitacionHelper.cs" />
     <Compile Include="Helpers\JornadaHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
+    <Compile Include="Helpers\NotificacionesEMailHelper.cs" />
     <Compile Include="Helpers\NotificacionesVencimientosHelper.cs" />
     <Compile Include="Helpers\PathArchivoHelper.cs" />
     <Compile Include="Helpers\RegistroCapacitacionHelper.cs" />
@@ -385,6 +386,7 @@
     <Compile Include="Models\EmpresaUsuario.cs" />
     <Compile Include="Models\Enums\EstadoNotificacionVencimiento.cs" />
     <Compile Include="Models\Enums\EstadosRegistroCapacitacion.cs" />
+    <Compile Include="Models\Enums\TipoEliminacionEnum.cs" />
     <Compile Include="Models\Enums\TiposArchivo.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Instructor.cs" />
@@ -594,6 +596,7 @@
     <Content Include="Views\Jornadas\Disponibles.cshtml" />
     <Content Include="Views\CustomTools\CorregirNotificaciones.cshtml" />
     <Content Include="Views\Jornadas\IngresarCalificaciones.cshtml" />
+    <Content Include="Views\Shared\_CargandoMiniPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

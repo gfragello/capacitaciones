@@ -158,17 +158,17 @@ namespace Cursos.Controllers
                     message.To.Add(new MailAddress(emailEmpresa));
                 }
 
-                foreach (var emailCC in ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionCC").Split(','))
+                foreach (var emailCC in ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionCC", "Notificaciones").Split(','))
                 {
                     message.CC.Add(new MailAddress(emailCC));
                 }
             
                 message.From = new MailAddress("notificaciones@csl.uy");  // replace with valid value
                 message.Subject = string.Format("{0} - {1} {2} {3}",
-                                                ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionAsunto"),
+                                                ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionAsunto", "Notificaciones"),
                                                 empresa.NombreFantasia,
                                                 DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
-                message.Body = ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionCuerpo");
+                message.Body = ConfiguracionHelper.GetInstance().GetValue("EmailNotificacionCuerpo", "Notificaciones");
                 message.IsBodyHtml = true;
 
                 message.Body += AgregarTableCapacitados(ObtenerNotificacionesVencimiento(empresaId));
@@ -177,16 +177,16 @@ namespace Cursos.Controllers
                 {
                     var credential = new NetworkCredential
                     {
-                        UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario"),
-                        Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario")
+                        UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Notificaciones"),
+                        Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario", "Notificaciones")
                         //UserName = "notificaciones@csl.uy",
                         //Password = "n0tiFic@c1on3s"
                     };
 
                     smtp.Credentials = credential;
-                    smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost");
-                    smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort"));
-                    smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL"));
+                    smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost", "Notificaciones");
+                    smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort", "Notificaciones"));
+                    smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL", "Notificaciones"));
 
                     try
                     {
@@ -288,7 +288,7 @@ namespace Cursos.Controllers
 
             ActualizarNotificacionesVencimientos();
 
-            int antelacionNotificacion = int.Parse(ConfiguracionHelper.GetInstance().GetValue("AntelacionNotificacion"));
+            int antelacionNotificacion = int.Parse(ConfiguracionHelper.GetInstance().GetValue("AntelacionNotificacion", "Notificaciones"));
 
             DateTime proximaFechaVencimientoNotificar = DateTime.Now.AddDays(antelacionNotificacion);
 

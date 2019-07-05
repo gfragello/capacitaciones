@@ -13,7 +13,7 @@ namespace Cursos.Controllers
         {
             string url = Request.Url.Host;
 
-            if (Request.Url.Host == "jornadas.csl.uy")
+            if (Request.Url.Host == "jornadas.csl.uy" || System.Web.HttpContext.Current.User.IsInRole("IncripcionesExternas"))
                 //si se entra por la URL jornadas.csl.uy se navega a las página de Jornadas Disponibles
                 return RedirectToAction("Disponibles", "Jornadas");
             else

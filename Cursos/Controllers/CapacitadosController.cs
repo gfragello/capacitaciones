@@ -16,7 +16,7 @@ using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,IncripcionesExternas")]
     public class CapacitadosController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -164,7 +164,7 @@ namespace Cursos.Controllers
         // GET: Capacitados/Create 
         //Si se especifica un valor en el parametro documentoTemplate, se muestra el valor pre cargado en la pantalla
         //Si se especifica un valor de jornadaId, luego de crear el usuario se lo agrega automáticamente a la jornada
-        [Authorize(Roles = "Administrador,AdministradorExterno")]
+        [Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
         public ActionResult Create(int? jornadaId)
         {
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
@@ -218,12 +218,16 @@ namespace Cursos.Controllers
                     db.SaveChanges();
                 }
 
+                //si durante la cración se recibe un id de jornada, el capacitado es agregado a esa jornada
                 if (jornadaId != null)
                 {
                     Jornada j = db.Jornada.Find(jornadaId);
 
                     if (j == null)
                         return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                    //se vuelve a cargar el capacitado para leer entidades asociadas
+                    capacitado = db.Capacitados.Where(c => c.CapacitadoID == capacitado.CapacitadoID).Include(c => c.TipoDocumento).FirstOrDefault();
 
                     var nuevoRC = new RegistroCapacitacion();
                     nuevoRC.SetearAtributosControl();
@@ -236,6 +240,10 @@ namespace Cursos.Controllers
 
                     db.RegistroCapacitacion.Add(nuevoRC);
                     db.SaveChanges();
+
+                    //si la incripción fue registrada por un usuario con perfil para inscripciones externas, se notifica por email
+                    if (System.Web.HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+                        NotificacionesEMailHelper.GetInstance().EnviarEmailsNotificacionInscripcionExterna(nuevoRC, true);
 
                     return RedirectToAction("Details", "Jornadas", new { id = jornadaId });
                 }

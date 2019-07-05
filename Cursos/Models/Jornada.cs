@@ -323,6 +323,32 @@ namespace Cursos.Models
             }
         }
 
+        public bool PuedeRecibirIncripciones
+        {
+            get
+            {
+                return this.InscripcionesAbiertas && this.QuedanCuposDisponibles;
+            }
+        }
+
+        //verifica si la jornada está en condiciones de recibir el acta y si el usuario actual está autorizado para hacerlo
+        public bool PuedeAgregarActaUsuarioActual
+        {
+            get
+            {
+                return this.PuedeModificarse() && this.Autorizada;
+            }
+        }
+
+        //verifica si la jornada está en condiciones de recibir incripciones y si el usuario actual está autorizado para hacerlo
+        public bool PuedeAgregarInscripcionesUsuarioActual
+        {
+            get
+            {
+                return this.PuedeRecibirIncripciones && (this.PuedeModificarse() || HttpContext.Current.User.IsInRole("IncripcionesExternas"));
+            }
+        }
+
         public DateTime ObtenerFechaVencimiento(bool copiaJornada = false)
         {
             //TODO: hacer que esto sea configurable
@@ -332,7 +358,7 @@ namespace Cursos.Models
             if (this.CursoId == 2)
                 return new DateTime(this.Fecha.Year, 12, 31);
             else
-            {                 
+            {
                 if (!copiaJornada)
                     return new DateTime(this.Fecha.Year + this.Curso.Vigencia, this.Fecha.Month, this.Fecha.Day);
                 else

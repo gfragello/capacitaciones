@@ -47,20 +47,23 @@
             <td>
                 <span class="label @labelClass">@item.Estado</span>
             </td>
-            @if (item.PuedeModificarse())
-            {
-                <td>
-                    @if (item.Jornada.Autorizada)
-                    {
-                        <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
-                    }
-                    <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
-                </td>
-            }
-            else
-            {
-                <td>&nbsp;</td>
-            }
+            <td>
+                @if (item.Jornada.PuedeModificarse())
+                {
+                    <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
+                }
+                @switch (item.TipoEliminacionPermitida)
+                {
+                    case TipoEliminacionEnum.EliminacionSimple:
+                        <a href="javascript:if (confirm('¿Confirma eliminación del inscripto?')) eliminarRegistroCapacitacion(@item.RegistroCapacitacionID);"><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                        break;
+
+                    case TipoEliminacionEnum.EliminacionConRevision:
+                        <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                        break;
+                }
+                &nbsp;
+            </td>
         </tr>
     }
 

@@ -14,7 +14,7 @@ using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador")]
+    [Authorize(Roles = "Administrador,IncripcionesExternas")]
     public class CustomToolsController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -1304,6 +1304,12 @@ namespace Cursos.Controllers
         public ActionResult ObtenerCargando()
         {
             return PartialView("_CargandoPartial");
+        }
+
+        [HttpGet]
+        public ActionResult ObtenerCargandoMini()
+        {
+            return PartialView("_CargandoMiniPartial");
         }
 
         private string ObtenerCINombreArchivo(string nombreArchivo)

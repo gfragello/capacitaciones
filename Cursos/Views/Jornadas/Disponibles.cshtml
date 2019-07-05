@@ -51,6 +51,9 @@
         <th>
             &nbsp;
         </th>
+        <th>
+            &nbsp;
+        </th>
     </tr>
 
     @foreach (var item in Model)
@@ -96,6 +99,17 @@
                 {
                     @:&nbsp;
                 }
+            </td>
+            <td>
+                @{
+                    string textoLink = "Ver jornada";
+                }
+
+                @if (item.PuedeRecibirIncripciones)
+                {
+                    textoLink = "Registrar inscripción";
+                }
+                <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@textoLink</a>
             </td>
         </tr>
     }
