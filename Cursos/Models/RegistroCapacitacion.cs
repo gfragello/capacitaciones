@@ -49,6 +49,19 @@ namespace Cursos.Models
 
         public EstadosRegistroCapacitacion Estado { get; set; }
 
+        [Required]
+        [Display(Name = "Estado OVAL")]
+        public EstadosEnvioOVAL EnvioOVALEstado { get; set; }
+
+        [Display(Name = "Fecha último envio OVAL")]
+        public DateTime? EnvioOVALFechaHora { get; set; }
+
+        [Display(Name = "Usuario último envio OVAL")]
+        public string EnvioOVALUsuario { get; set; }
+
+        [Display(Name = "Mensaje último envio OVAL")]
+        public string EnvioOVALMensaje { get; set; }
+
         [NotMapped]
         private DateTime FechaInicioNoficacionVencimiento
         {
@@ -154,6 +167,15 @@ namespace Cursos.Models
             this.Nota = 0;
             this.NotaPrevia = 0;
             this.Estado = EstadosRegistroCapacitacion.Inscripto;
+        }
+
+        [NotMapped]
+        public bool ListoParaEnviarOVAL
+        {
+            get
+            {
+                return this.FueCalificado && (this.EnvioOVALEstado == EstadosEnvioOVAL.PendienteEnvio || this.EnvioOVALEstado == EstadosEnvioOVAL.Rechazado);
+            }
         }
     }
 }

@@ -9,6 +9,8 @@ namespace Cursos.Models
 {
     public class CursosDbContext : DbContext
     {
+        //comentar lo siguiente para trabajar en la base de datos local
+        //descomentar los siguiente para trabajar en la base de datos de producción
         /*
         public CursosDbContext() : base("DefaultConnection")
         {

@@ -76,8 +76,15 @@ else
                     @{ 
                         string txtNotaValorAnteriorId = string.Format("txtNotaValorAnterior_{0}", item.RegistroCapacitacionID.ToString().Trim());
                     }
-                    <input id="@string.Format("txtNota_{0}", item.RegistroCapacitacionID.ToString().Trim())" type="text" value="@item.Nota" size="4" onblur="registrarCalificacionNota(@item.RegistroCapacitacionID, this.value, document.getElementById('@txtNotaValorAnteriorId').value);" />
-                    <input id="@txtNotaValorAnteriorId" type="hidden" value="@item.Nota" />
+                    @if (item.EnvioOVALEstado == EstadosEnvioOVAL.Aceptado)
+                    {
+                        @Html.DisplayFor(modelItem => item.Nota)
+                    }
+                    else
+                    {
+                        <input id="@string.Format("txtNota_{0}", item.RegistroCapacitacionID.ToString().Trim())" type="text" value="@item.Nota" size="4" onblur="registrarCalificacionNota(@item.RegistroCapacitacionID, this.value, document.getElementById('@txtNotaValorAnteriorId').value);" />
+                        <input id="@txtNotaValorAnteriorId" type="hidden" value="@item.Nota" />
+                    }
                 </td>
             }
             else
@@ -102,9 +109,16 @@ else
             }
 
             <td style="text-align:left">
-                <div style="@estiloVisible" id="@string.Format("dvEliminarCalificacion_{0}", item.RegistroCapacitacionID.ToString().Trim())">
-                    <a href="javascript:borrarRegistrarCalificacion(@item.RegistroCapacitacionID);"><img src="@Url.Content("~/images/borrar_16x16.png")" title="Eliminar calificación" /></a>
-                </div>
+                @if (item.EnvioOVALEstado == EstadosEnvioOVAL.Aceptado)
+                {
+                    @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
+                }
+                else
+                {
+                    <div style="@estiloVisible" id="@string.Format("dvEliminarCalificacion_{0}", item.RegistroCapacitacionID.ToString().Trim())">
+                        <a href="javascript:borrarRegistrarCalificacion(@item.RegistroCapacitacionID);"><img src="@Url.Content("~/images/borrar_16x16.png")" title="Eliminar calificación" /></a>
+                    </div>
+                }
             </td>
         </tr>
     }

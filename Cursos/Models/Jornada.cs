@@ -105,6 +105,9 @@ namespace Cursos.Models
         public string UsuarioAutorizacion { get; private set; }
         public DateTime? FechaAutorizacion { get; private set; }
 
+        [Display(Name = "Permite inscripciones externas")]
+        public bool PermiteInscripcionesExternas { get; set; }
+
         public void IniciarAtributosAutorizacion(bool requiereAutorizacion)
         {
             this.RequiereAutorizacion = requiereAutorizacion;

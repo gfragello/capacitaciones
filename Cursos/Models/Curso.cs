@@ -68,6 +68,9 @@ namespace Cursos.Models
         [Display(Name = "Horas previas para el cierre de incripción")]
         public int HorasCierreInscripcion { get; set; }
 
+        [Display(Name = "Permite inscripciones externas")]
+        public bool PermiteInscripcionesExternas { get; set; }
+
         public virtual List<Jornada> Jornadas { get; set; }
     }
 }

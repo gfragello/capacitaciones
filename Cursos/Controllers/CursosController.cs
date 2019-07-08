@@ -50,7 +50,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas")] Curso curso)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas")] Curso curso)
         {
             if (ModelState.IsValid)
             {
@@ -132,7 +132,8 @@ namespace Cursos.Controllers
                     TieneMaximoAsistentes = curso.TieneMaximoAsistentes,
                     MaximoAsistentes = curso.MaximoAsistentes,
                     TieneCierreIncripcion = curso.TieneCierreIncripcion,
-                    HorasCierreInscripcion = curso.HorasCierreInscripcion
+                    HorasCierreInscripcion = curso.HorasCierreInscripcion,
+                    PermiteInscripcionesExternas = curso.PermiteInscripcionesExternas
                 };
 
                 return Json(datosPlantillaJornada, JsonRequestBehavior.AllowGet);

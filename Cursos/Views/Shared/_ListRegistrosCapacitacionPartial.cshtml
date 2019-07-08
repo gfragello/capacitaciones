@@ -17,10 +17,10 @@
             @Html.DisplayNameFor(model => model.Nota)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.NotaPrevia)
+            @Html.DisplayNameFor(model => model.Estado)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Estado)
+            @Html.DisplayNameFor(model => model.EnvioOVALEstado)
         </th>
         <th></th>
     </tr>
@@ -42,10 +42,10 @@
                 @Html.DisplayFor(modelItem => item.Nota)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.NotaPrevia)
-            </td>
-            <td>
                 <span class="label @labelClass">@item.Estado</span>
+            </td>    
+            <td style="text-align:center">
+                @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
             </td>
             <td>
                 @if (item.Jornada.PuedeModificarse())

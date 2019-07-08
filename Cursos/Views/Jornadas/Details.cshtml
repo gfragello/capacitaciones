@@ -5,6 +5,28 @@
     ViewBag.Title = "Jornada - Detalles";
 }
 
+<div id="modalMensaje" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Enviando notificaciones</h4>
+            </div>
+            <div id="bodyMensaje" class="modal-body" style="text-align: center;">
+                @Html.Partial("_CargandoPartial", Model)
+                <br />
+                <p>Enviando datos al sistema OVAL. No cierre esta ventana.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <div>
     <div style="background-color: whitesmoke; padding-left: 10px; padding-bottom: 10px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <table>
@@ -122,7 +144,7 @@
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
                 <a href="@Url.Action("IngresarCalificaciones", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-list-alt" style="font-size: 25px; color: #017d49"></span>&nbsp;Ingresar calificaciones</a>
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
-                <a href="#"><span class="glyphicon glyphicon-transfer" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar datos OVAL</a>
+                <a href="javascript:iniciarEnvioDatosOVAL();"><span class="glyphicon glyphicon-transfer" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar datos OVAL</a>
                 @*:&nbsp;&nbsp; &nbsp; &nbsp;
                 <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
                 *@
@@ -225,6 +247,17 @@
 
 @section Scripts {
     <script type="text/javascript">
+
+        //al abrir la ventana modal, se dispara la ejecución del envío de datos
+        $( "#modalMensaje" ).on('shown.bs.modal', function(){
+            //alert("Iniciando envío...");
+            enviarDatosOVAL();
+        });
+
+        //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
+        $('#modalMensaje').on('hidden.bs.modal', function () {
+            location.reload(true);
+        });
 
         function toggleImgAgregarActaChevron()
         {
@@ -334,6 +367,55 @@
                     }
                 }
             });
+        }
+
+        function iniciarEnvioDatosOVAL()
+        {
+            if (confirm("¿Enviar los datos al sistema OVAL?")) 
+            {
+                //al abrir la ventana modal, se dispara la ejecución del envío de datos
+                $('#modalMensaje').modal('show');
+            }
+        }
+
+        function enviarDatosOVAL() {
+
+            var jornadaId = @Model.JornadaID;
+
+            /*
+            $.ajax({
+                url: '/NotificacionesVencimientos/EmpresasIDNotificacionesPendientes',
+                type: "GET",
+                dataType: "JSON",
+                success: function (empresasID) {
+                    for (var i = 0; i < empresasID.length; i++) {
+                        var empresaID = empresasID[i];
+            */
+                        $.ajax({
+                            url: '/Jornadas/EnviarDatosOVAL',
+                            type: "GET",
+                            dataType: "JSON",
+                            data: { jornadaId: jornadaId },
+                            success: function (resultadoEnviarDatosOVAL) {
+                            
+                                var mensaje = "";
+
+                                if (resultadoEnviarDatosOVAL.totalAceptados > 0)
+                                    mensaje += "<div class='alert alert-success'><strong>Se recibieron correctamente " + resultadoEnviarDatosOVAL.totalAceptados.toString() + " registros.</strong></div>"
+
+                                    //mensaje += "<p>Se recibieron correctamente " + resultadoEnviarDatosOVAL.totalAceptados.toString() + " registros.</p>"
+
+                                if (resultadoEnviarDatosOVAL.totalRechazados > 0)
+                                    mensaje += "<div class='alert alert-warning'><strong>Se rechazaron " + resultadoEnviarDatosOVAL.totalRechazados.toString() + " registros.</strong></div>"
+
+                                    //mensaje += "<p>Se rechazaron " + resultadoEnviarDatosOVAL.totalRechazados.toString() + " registros.</p>";
+
+                                $("#bodyMensaje").html(mensaje);
+                            }
+                        });
+                    //}
+                //}
+            //});
         }
 
     </script>

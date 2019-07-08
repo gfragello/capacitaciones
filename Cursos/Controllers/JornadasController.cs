@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Cursos.Models.Enums;
 using Cursos.Helpers;
 using System.Net.Mail;
+using Cursos.Helpers.EnvioOVAL;
 
 namespace Cursos.Controllers
 {
@@ -175,7 +176,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion")] Jornada jornada, int? JornadaTemplateId)
+        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas")] Jornada jornada, int? JornadaTemplateId)
         {
             if (ModelState.IsValid)
             {
@@ -261,7 +262,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,Autorizada")] Jornada jornada)
+        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,Autorizada,PermiteInscripcionesExternas")] Jornada jornada)
         {
             if (ModelState.IsValid)
             {
@@ -399,7 +400,8 @@ namespace Cursos.Controllers
                 Capacitado = capacitado,
                 Nota = 0,
                 Aprobado = true,
-                FechaVencimiento = jornada.ObtenerFechaVencimiento()
+                FechaVencimiento = jornada.ObtenerFechaVencimiento(),
+                EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio
             };
 
             registroCapacitacion.SetearAtributosControl();
@@ -874,6 +876,30 @@ namespace Cursos.Controllers
                 };
 
                 return Json(datosDisponibilidadCupos, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(null, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult EnviarDatosOVAL(int jornadaId)
+        {
+            var jornada = db.Jornada.Where(j => j.JornadaID == jornadaId).FirstOrDefault();
+
+            if (jornada != null)
+            {
+                int totalAceptados = 0;
+                int totalRechazados = 0;
+
+                if (EnvioOVALHelper.GetInstance().EnviarDatos(jornada.RegistrosCapacitacion, out totalAceptados, out totalRechazados))
+                {
+                    var resultadoEnviarDatosOVAL = new
+                    {
+                        totalAceptados = totalAceptados,
+                        totalRechazados = totalRechazados
+                    };
+
+                    return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
+                }
             }
 
             return Json(null, JsonRequestBehavior.AllowGet);

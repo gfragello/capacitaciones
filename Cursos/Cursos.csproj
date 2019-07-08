@@ -207,6 +207,7 @@
     </Compile>
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
     <Compile Include="Helpers\CSSHelper.cs" />
+    <Compile Include="Helpers\EnvioOVAL\EnvioOVALHelper.cs" />
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
     <Compile Include="Helpers\EstadosRegistroCapacitacionHelper.cs" />
     <Compile Include="Helpers\JornadaHelper.cs" />
@@ -373,6 +374,14 @@
     <Compile Include="Migrations\201905301243168_Nuevas_Propiedades_Jornadas.Designer.cs">
       <DependentUpon>201905301243168_Nuevas_Propiedades_Jornadas.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907060004533_Nuevas_Propiedades_EnvioOVAL.cs" />
+    <Compile Include="Migrations\201907060004533_Nuevas_Propiedades_EnvioOVAL.Designer.cs">
+      <DependentUpon>201907060004533_Nuevas_Propiedades_EnvioOVAL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.cs" />
+    <Compile Include="Migrations\201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.Designer.cs">
+      <DependentUpon>201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -384,6 +393,7 @@
     <Compile Include="Models\ElementoAccesoControlado.cs" />
     <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\EmpresaUsuario.cs" />
+    <Compile Include="Models\Enums\EstadosEnvioOVAL.cs" />
     <Compile Include="Models\Enums\EstadoNotificacionVencimiento.cs" />
     <Compile Include="Models\Enums\EstadosRegistroCapacitacion.cs" />
     <Compile Include="Models\Enums\TipoEliminacionEnum.cs" />
@@ -460,6 +470,8 @@
     <Content Include="images\logos\UPM_logo_main.png" />
     <Content Include="images\logos\UPM_logo_main_h.png" />
     <Content Include="images\logos\UPM_logo_main_h_300.png" />
+    <Content Include="images\OVALAceptado.png" />
+    <Content Include="images\OVALRechazado.png" />
     <Content Include="images\porVencer.png" />
     <Content Include="images\porVencer_20x20.png" />
     <Content Include="images\registroCapacitacion.png" />
@@ -731,6 +743,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905301243168_Nuevas_Propiedades_Jornadas.resx">
       <DependentUpon>201905301243168_Nuevas_Propiedades_Jornadas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907060004533_Nuevas_Propiedades_EnvioOVAL.resx">
+      <DependentUpon>201907060004533_Nuevas_Propiedades_EnvioOVAL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.resx">
+      <DependentUpon>201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

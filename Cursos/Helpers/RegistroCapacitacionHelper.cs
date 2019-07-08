@@ -23,7 +23,12 @@ namespace Cursos.Helpers
 
         public string ObtenerLabelEstado(EstadosRegistroCapacitacion estado)
         {
-            string estadoTexto = estado.ToString();
+            string estadoTexto = string.Empty;
+
+            if (estado == EstadosRegistroCapacitacion.NoAprobado)
+                estadoTexto = "No aprobado";
+            else
+                estadoTexto = estado.ToString();
 
             switch (estado)
             {
@@ -35,6 +40,32 @@ namespace Cursos.Helpers
 
                 default:
                     return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-info\">{0}</span></h4>", estadoTexto);
+            }
+        }
+
+        public string ObtenerImagenEnvioOVALEstado(RegistroCapacitacion r)
+        {
+            return ObtenerImagenEnvioOVALEstado(r.EnvioOVALEstado, r.EnvioOVALFechaHora, r.EnvioOVALMensaje, r.EnvioOVALUsuario);
+        }
+
+        private string ObtenerImagenEnvioOVALEstado(EstadosEnvioOVAL estado, DateTime? envioOVALFechaHora, string envioOVALMensaje, string envioOVALUsuario)
+        {
+            string srcImagen = string.Empty;
+
+            switch (estado)
+            {
+                case EstadosEnvioOVAL.Aceptado:
+
+                    srcImagen = VirtualPathUtility.ToAbsolute("~/images/OVALAceptado.png");
+                    return string.Format("<img src='{0}' title='Envío aceptado por sistema OVAL\n{1}\n{2}' />", srcImagen, envioOVALFechaHora.ToString(), envioOVALUsuario);
+
+                case EstadosEnvioOVAL.Rechazado:
+
+                    srcImagen = VirtualPathUtility.ToAbsolute("~/images/OVALRechazado.png");
+                    return string.Format("<img src='{0}' title='Envío rechazado por sistema OVAL\n{1}\n{2}\n{3}' />", srcImagen, envioOVALMensaje, envioOVALFechaHora.ToString(), envioOVALUsuario);
+
+                default:
+                    return "&nbsp;";
             }
         }
     }
