@@ -1,0 +1,30 @@
+﻿@model Cursos.Models.Capacitado
+
+<div style="text-align:center">
+
+    @*Se incluye este valor para que se incluya en el objeto model cuando se haga el submit del fomrulario*@
+    @*La carga de las fotos se realiza invocando por post el ActionResult*@
+    @Html.HiddenFor(model => model.CapacitadoID)
+
+    <p>@Html.DisplayFor(model => model.NombreCompleto)</p>
+    <p>@Html.DisplayFor(model => model.DocumentoCompleto)</p>
+    <p>@Html.DisplayFor(model => model.Empresa.NombreFantasia)</p>
+
+    @if (Model.PathArchivo != null)
+    {
+        <a href="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto">
+            <img src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
+        </a>
+    }
+    else
+    {
+        <div class="image-upload">
+            <label for="fotoCapacitado">
+                <img src="~/images/sinfoto_150x150.png" />
+            </label>
+
+            <input id="fotoCapacitado" type="file" style="display: none;" />
+        </div>
+    }
+
+</div>

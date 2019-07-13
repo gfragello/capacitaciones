@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Cursos.Models.RegistroCapacitacion>
+@using Cursos.Models.Enums;
+@using Cursos.Helpers;
+
+<table class="table table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Documento)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Nombre)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Capacitado.Empresa)
+        </th>
+        <th>
+            Foto
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(item.Estado);
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
+            </td>
+            <td>
+                <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) ">
+                @if (item.Capacitado.PathArchivo != null)
+                {
+                    <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
+                }
+                else
+                {
+                    <img src="~/images/sinfoto_150x150.png" />
+                }
+                </a>
+                @*@if (item.Capacitado.PathArchivo != null)
+                {
+                    <a href="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto">
+                        <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
+                    </a>
+                }
+                else
+                {
+                    <div class="image-upload">
+                        <label for="fotoCapacitado">
+                            <img src="~/images/sinfoto_150x150.png" />
+                        </label>
+
+                        <input id="fotoCapacitado" type="file" style="display: none;" />
+                    </div>
+                }*@
+            </td>
+        </tr>
+    }
+
+</table>

@@ -239,17 +239,37 @@
 
 <br />
 
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#tabRegistrosCapacitacion">Inscriptos a la jornada</a></li>
+    <li><a data-toggle="tab" href="#tabFotos">Fotos</a></li>
+</ul>
+
+<div class="tab-content">
+    <div id="tabRegistrosCapacitacion" class="tab-pane fade in active">
+        @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
+    </div>
+    <div id="tabFotos" class="tab-pane fade">
+        @Html.Partial("_ListRegistrosCapacitacionFotosPartial", Model.RegistrosCapacitacion)
+    </div>
+</div>
+
+<!--
 <h4>Inscriptos a la jornada</h4>
 
 <div id="dvRegistrosCapacitacion">
     @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
 </div>
+-->
 
 @section Scripts {
+
+    @*Se carga la librería que realiza la corrección de la orientación de la foto*@
+    @Scripts.Render("~/Scripts/load-image.all.min.js")
+
     <script type="text/javascript">
 
         //al abrir la ventana modal, se dispara la ejecución del envío de datos
-        $( "#modalMensaje" ).on('shown.bs.modal', function(){
+        $("#modalMensaje").on('shown.bs.modal', function(){
             //alert("Iniciando envío...");
             enviarDatosOVAL();
         });
@@ -258,6 +278,55 @@
         $('#modalMensaje').on('hidden.bs.modal', function () {
             location.reload(true);
         });
+
+        $("#fotoCapacitado").change(function (e) {
+            loadImage(
+                e.target.files[0],
+                function (img) {
+                    alert("Cargando foto!");
+
+                    //se define una variable de tipo FormData, porque los parámetros de entrada se van a pasar por post
+                    var formData = new FormData();
+                    formData.append('foto', img);
+
+                    $.ajax({
+                    url: '/Capacitados/CargarFotoCapacitado',
+                    type: "POST",
+                    dataType: "JSON",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                            success: function (resultadoOK)
+                             {
+                                if (resultadoOK)
+                                {
+                                    alert("Funcionó!")
+                                    /*
+                                    //buscarCapacitados();
+                                    actualizarDisponibilidadJornada();
+                                    //$("#spanCantidadCuposDisponibles").text("Se agregó otro capacitado");
+                                    */
+                                }
+                                else
+                                {
+                                    alert("ERROR - NO Funcionó!")
+                                }
+                             }
+                           });
+
+                    document.body.appendChild(img); //se agrgega en el body del documento para visualizar,
+                },
+                {orientation: 6} // Options
+            );
+        });
+
+        //al seleccionar un archivo, se sube al servidor
+        /*
+        $("#fotoCapacitado").change(function ()
+        {
+            alert("Archivo seleccionado");
+        });
+        */
 
         function toggleImgAgregarActaChevron()
         {
@@ -306,7 +375,7 @@
                          {
                             if (resultadoOK)
                             {
-                                $("#dvRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+                                $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
                                 //buscarCapacitados();
                                 actualizarDisponibilidadJornada();
                                 //$("#spanCantidadCuposDisponibles").text("Se agregó otro capacitado");
@@ -362,7 +431,7 @@
                 {
                     if (resultadoOK)
                     {
-                        $("#dvRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+                        $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
                         actualizarDisponibilidadJornada();
                     }
                 }
@@ -371,7 +440,7 @@
 
         function iniciarEnvioDatosOVAL()
         {
-            if (confirm("¿Enviar los datos al sistema OVAL?")) 
+            if (confirm("¿Enviar los datos al sistema OVAL?"))
             {
                 //al abrir la ventana modal, se dispara la ejecución del envío de datos
                 $('#modalMensaje').modal('show');
@@ -397,7 +466,7 @@
                             dataType: "JSON",
                             data: { jornadaId: jornadaId },
                             success: function (resultadoEnviarDatosOVAL) {
-                            
+
                                 var mensaje = "";
 
                                 if (resultadoEnviarDatosOVAL.totalAceptados > 0)

@@ -1,0 +1,20 @@
+﻿@model Cursos.Models.Capacitado
+
+@{
+    ViewBag.Title = "Cargar Foto Capacitado";
+}
+
+<h2>Cargar Foto</h2>
+
+<div id="tabFotos">
+    @Html.Partial("_CapacitadoCargarFotoPartial", Model)
+</div>
+
+@section Scripts {
+
+    @*Se carga la librería que realiza la corrección de la orientación de la foto*@
+    @Scripts.Render("~/Scripts/load-image.all.min.js")
+
+    @Scripts.Render("~/Scripts/cargarfoto.js")
+
+}

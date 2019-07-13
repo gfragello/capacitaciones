@@ -1,0 +1,25 @@
+﻿@model Cursos.Models.Jornada
+
+@{
+    ViewBag.Title = "Jornada - Cargar Fotos";
+}
+
+<div style="background-color: whitesmoke; padding-left: 10px; padding-bottom: 10px; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+    <h3><span class="label label-default" style="color: #333333; background-color: @Model.Curso.ColorDeFondo">@Html.DisplayFor(model => model.Curso.Descripcion)</span></h3>
+    <h3>@String.Format("{0} {1} - {2} - {3}", Model.Fecha.ToShortDateString(), Model.Hora.Trim(), Model.Lugar.NombreLugar, Model.Instructor.NombreCompleto)</h3>
+</div>
+
+<h2>Inscriptos a la jornada</h2>
+
+<div id="tabFotos">
+    @Html.Partial("_ListRegistrosCapacitacionFotosPartial", Model.RegistrosCapacitacion)
+</div>
+
+@section Scripts {
+
+@*Se carga la librería que realiza la corrección de la orientación de la foto*@
+@Scripts.Render("~/Scripts/load-image.all.min.js")
+
+@Scripts.Render("~/Scripts/cargarfoto.js")
+
+}

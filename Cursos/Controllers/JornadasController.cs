@@ -505,6 +505,23 @@ namespace Cursos.Controllers
             return RedirectToAction("Details", new { id = jornada.JornadaID });
         }
 
+        // GET: Jornadas/Details/5
+        //[Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
+        public ActionResult CargarFotos(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Jornada jornada = db.Jornada.Where(j => j.JornadaID == id).Include(j => j.RegistrosCapacitacion).FirstOrDefault();
+            if (jornada == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(jornada);
+        }
+
         private ActionResult ExportDataExcel(Jornada j)
         {
             using (ExcelPackage package = new ExcelPackage())

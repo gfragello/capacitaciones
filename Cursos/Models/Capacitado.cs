@@ -6,6 +6,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Cursos.Models.Enums;
+using Cursos.Helpers;
+using System.IO;
+using System.Drawing;
 
 namespace Cursos.Models
 {
@@ -151,6 +154,39 @@ namespace Cursos.Models
                                                       r.Estado == EstadosRegistroCapacitacion.NoAprobado).ToList();
 
             return registrosCapacitacionEvaluados;
+        }
+
+        public bool CargarFoto(HttpPostedFileBase foto)
+        {
+            if (foto != null && foto.ContentLength > 0)
+            {
+
+                string nombreArchivo = PathArchivoHelper.GetInstance().ObtenerNombreFotoCapacitado(this.CapacitadoID,
+                                                                                                   System.IO.Path.GetExtension(foto.FileName));
+
+                string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(this.CapacitadoID);
+
+                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+
+                this.PathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
+                                                                                      carpetaArchivo,
+                                                                                      pathDirectorio,
+                                                                                      foto,
+                                                                                      TiposArchivo.FotoCapacitado);
+
+                var pathArchivoImagen = Path.Combine(pathDirectorio, nombreArchivo);
+
+                using (Image img = Image.FromFile(pathArchivoImagen))
+                {
+                    //rotate the picture by 90 degrees and re-save the picture as a Jpeg
+                    img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    img.Save(pathArchivoImagen, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
     }

@@ -488,6 +488,7 @@
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
+    <Content Include="Scripts\cargarfoto.js" />
     <Content Include="Scripts\jquery-2.2.0.js" />
     <Content Include="Scripts\jquery-2.2.0.min.js" />
     <Content Include="Scripts\jquery-2.2.0.min.map" />
@@ -499,6 +500,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\load-image.all.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -609,6 +611,10 @@
     <Content Include="Views\CustomTools\CorregirNotificaciones.cshtml" />
     <Content Include="Views\Jornadas\IngresarCalificaciones.cshtml" />
     <Content Include="Views\Shared\_CargandoMiniPartial.cshtml" />
+    <Content Include="Views\Shared\_ListRegistrosCapacitacionFotosPartial.cshtml" />
+    <Content Include="Views\Jornadas\CargarFotos.cshtml" />
+    <Content Include="Views\Shared\_CapacitadoCargarFotoPartial.cshtml" />
+    <Content Include="Views\Capacitados\CargarFoto.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

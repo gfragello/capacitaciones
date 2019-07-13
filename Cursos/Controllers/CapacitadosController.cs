@@ -362,6 +362,23 @@ namespace Cursos.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: Capacitados/CargarFoto/5
+        public ActionResult CargarFoto(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var capacitado = db.Capacitados.Where(c => c.CapacitadoID == (int)id).First();
+
+            if (capacitado == null)
+            {
+                return HttpNotFound();
+            }
+            return View(capacitado);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -522,6 +539,26 @@ namespace Cursos.Controllers
                 return capacitado.CapacitadoID;
             else
                 return -1;
+        }
+
+        //public ActionResult CargarFotoCapacitado(int capacitadoId, HttpPostedFileBase foto)
+        public ActionResult CargarFotoCapacitado(Capacitado model, int capacitadoId, HttpPostedFileBase foto)
+        {
+            var capacitado = db.Capacitados.Where(c => c.CapacitadoID == capacitadoId).FirstOrDefault();
+
+            if (capacitado != null)
+            {
+                if (capacitado.CargarFoto(foto))
+                {
+                    db.Entry(capacitado).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    return Json(true, JsonRequestBehavior.AllowGet);
+                }
+
+            }
+
+            return Json(false, JsonRequestBehavior.AllowGet);
         }
 
         //el parámetro jornadaIdExcluir indica que los capacitados que participaron de esas jornadas no pueden ser seleccionados
