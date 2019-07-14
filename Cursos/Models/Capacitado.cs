@@ -189,5 +189,33 @@ namespace Cursos.Models
             return false;
         }
 
+        public bool RotarFoto(string direccion)
+        {
+            if (this.PathArchivo != null)
+            {
+                string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(this.CapacitadoID);
+                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+
+                var pathArchivoImagen = Path.Combine(pathDirectorio, this.PathArchivo.NombreArchivo);
+
+                using (Image img = Image.FromFile(pathArchivoImagen))
+                {
+                    //rotate the picture by 90 degrees and re-save the picture as a Jpeg
+
+                    if (direccion == "i") //si se va a rotar a la izquierda
+                        img.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                    else if (direccion == "d")
+                        img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    else
+                        return false;
+
+                    img.Save(pathArchivoImagen, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
+
+                return true;
+            }
+            return false;
+        }
+
     }
 }

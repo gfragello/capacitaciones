@@ -541,7 +541,6 @@ namespace Cursos.Controllers
                 return -1;
         }
 
-        //public ActionResult CargarFotoCapacitado(int capacitadoId, HttpPostedFileBase foto)
         public ActionResult CargarFotoCapacitado(Capacitado model, int capacitadoId, HttpPostedFileBase foto)
         {
             var capacitado = db.Capacitados.Where(c => c.CapacitadoID == capacitadoId).FirstOrDefault();
@@ -557,6 +556,16 @@ namespace Cursos.Controllers
                 }
 
             }
+
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult RotarFotoCapacitado(int capacitadoId, string direccion)
+        {
+            var capacitado = db.Capacitados.Where(c => c.CapacitadoID == capacitadoId).FirstOrDefault();
+
+            if (capacitado != null)
+                return Json(capacitado.RotarFoto(direccion), JsonRequestBehavior.AllowGet);
 
             return Json(false, JsonRequestBehavior.AllowGet);
         }
