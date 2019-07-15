@@ -617,6 +617,7 @@
     <Content Include="Views\Jornadas\CargarFotos.cshtml" />
     <Content Include="Views\Shared\_CapacitadoCargarFotoPartial.cshtml" />
     <Content Include="Views\Capacitados\CargarFoto.cshtml" />
+    <Content Include="Views\Capacitados\IndexFotos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

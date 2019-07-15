@@ -179,7 +179,7 @@ namespace Cursos.Models
                 using (Image img = Image.FromFile(pathArchivoImagen))
                 {
                     //rotate the picture by 90 degrees and re-save the picture as a Jpeg
-                    img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    img.RotateFlip(RotateFlipType.Rotate270FlipNone);
                     img.Save(pathArchivoImagen, System.Drawing.Imaging.ImageFormat.Jpeg);
                 }
 
