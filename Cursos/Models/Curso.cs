@@ -71,6 +71,9 @@ namespace Cursos.Models
         [Display(Name = "Permite inscripciones externas")]
         public bool PermiteInscripcionesExternas { get; set; }
 
+        [Display(Name = "Permite envíos OVAL")]
+        public bool PermiteEnviosOVAL { get; set; }
+
         public virtual List<Jornada> Jornadas { get; set; }
     }
 }

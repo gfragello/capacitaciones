@@ -1,0 +1,52 @@
+﻿@model PagedList.IPagedList<Cursos.Models.RegistroCapacitacion>
+@using Cursos.Models.Enums;
+@using Cursos.Helpers;
+
+<table class="table table-striped">
+    <tr>
+        <th>
+            Documento
+        </th>
+        <th>
+            Nombre
+        </th>
+        <th>
+            Empresa
+        </th>
+        <th>
+            Estado último envío
+        </th>
+        <th>
+            Fecha último envío
+        </th>
+        <th>
+            Mensaje último envío
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(item.Estado);
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
+            </td>
+            <td style="text-align:center">
+                @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnvioOVALFechaHora)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnvioOVALMensaje)
+            </td>
+        </tr>
+    }
+
+</table>

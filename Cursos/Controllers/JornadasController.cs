@@ -176,7 +176,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas")] Jornada jornada, int? JornadaTemplateId)
+        public ActionResult Create([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL")] Jornada jornada, int? JornadaTemplateId)
         {
             if (ModelState.IsValid)
             {
@@ -262,7 +262,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,Autorizada,PermiteInscripcionesExternas")] Jornada jornada)
+        public ActionResult Edit([Bind(Include = "JornadaID,Fecha,CursoId,LugarID,Direccion,InstructorId,Hora,Caracteristicas,CuposDisponibles,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,Autorizada,PermiteInscripcionesExternas,PermiteEnviosOVAL")] Jornada jornada)
         {
             if (ModelState.IsValid)
             {
@@ -401,8 +401,12 @@ namespace Cursos.Controllers
                 Nota = 0,
                 Aprobado = true,
                 FechaVencimiento = jornada.ObtenerFechaVencimiento(),
-                EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio
             };
+
+            if (jornada.PermiteEnviosOVAL)
+                registroCapacitacion.EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio;
+            else
+                registroCapacitacion.EnvioOVALEstado = EstadosEnvioOVAL.NoEnviar;
 
             registroCapacitacion.SetearAtributosControl();
             db.RegistroCapacitacion.Add(registroCapacitacion);

@@ -108,6 +108,9 @@ namespace Cursos.Models
         [Display(Name = "Permite inscripciones externas")]
         public bool PermiteInscripcionesExternas { get; set; }
 
+        [Display(Name = "Permite envíos OVAL")]
+        public bool PermiteEnviosOVAL { get; set; }
+
         public void IniciarAtributosAutorizacion(bool requiereAutorizacion)
         {
             this.RequiereAutorizacion = requiereAutorizacion;

@@ -1,4 +1,5 @@
 ﻿@model Cursos.Models.Jornada
+@using PagedList;
 @using Cursos.Helpers;
 
 @{
@@ -144,11 +145,15 @@
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
                 <a href="@Url.Action("IngresarCalificaciones", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-list-alt" style="font-size: 25px; color: #017d49"></span>&nbsp;Ingresar calificaciones</a>
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
-                <a href="javascript:iniciarEnvioDatosOVAL();"><span class="glyphicon glyphicon-transfer" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar datos OVAL</a>
+                if (Model.PermiteEnviosOVAL)
+                {
+                    <a href="javascript:iniciarEnvioDatosOVAL();"><span class="glyphicon glyphicon-transfer" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar datos OVAL</a>
+                    @*:&nbsp;&nbsp; &nbsp; &nbsp;*@
+                }
                 @*:&nbsp;&nbsp; &nbsp; &nbsp;
                 <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
                 *@
-            }
+                }
         </p>
 
         <hr />
@@ -239,32 +244,43 @@
 
 <br />
 
-<ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#tabRegistrosCapacitacion">Inscriptos a la jornada</a></li>
-    <li><a data-toggle="tab" href="#tabFotos">Fotos</a></li>
-</ul>
+@*Los usuarios con perfil IncripcionesExternas solo tienen acceso al detalle de inscriptos a la jornada*@
+@if (HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+{
+    <h4>Inscriptos a la jornada</h4>
 
-<div class="tab-content">
-    <div id="tabRegistrosCapacitacion" class="tab-pane fade in active">
+    <div id="dvRegistrosCapacitacion">
         @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
     </div>
-    <div id="tabFotos" class="tab-pane fade">
-        @Html.Partial("_ListRegistrosCapacitacionFotosPartial", Model.RegistrosCapacitacion)
+}
+else
+{
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#tabRegistrosCapacitacion">Inscriptos a la jornada</a></li>
+        <li><a data-toggle="tab" href="#tabFotos">Fotos</a></li>
+        @if (Model.PermiteEnviosOVAL)
+        {
+            <li><a data-toggle="tab" href="#tabEnviosOVAL">Envíos OVAL</a></li>
+        }
+    </ul>
+
+    <div class="tab-content">
+        <div id="tabRegistrosCapacitacion" class="tab-pane fade in active">
+            @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
+        </div>
+        <div id="tabFotos" class="tab-pane fade">
+            @Html.Partial("_ListRegistrosCapacitacionFotosPartial", Model.RegistrosCapacitacion)
+        </div>
+        @if (Model.PermiteEnviosOVAL)
+        {
+            <div id="tabEnviosOVAL" class="tab-pane fade">
+                @Html.Partial("_ListRegistrosCapacitacionOvalPartial", Model.RegistrosCapacitacion.AsQueryable().ToPagedList(1, Model.RegistrosCapacitacion.Count()))
+            </div>
+        }
     </div>
-</div>
-
-<!--
-<h4>Inscriptos a la jornada</h4>
-
-<div id="dvRegistrosCapacitacion">
-    @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
-</div>
--->
+}
 
 @section Scripts {
-
-    @*Se carga la librería que realiza la corrección de la orientación de la foto*@
-    @Scripts.Render("~/Scripts/load-image.all.min.js")
 
     <script type="text/javascript">
 

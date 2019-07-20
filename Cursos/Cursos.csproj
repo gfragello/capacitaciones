@@ -382,6 +382,10 @@
     <Compile Include="Migrations\201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.Designer.cs">
       <DependentUpon>201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.cs" />
+    <Compile Include="Migrations\201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.Designer.cs">
+      <DependentUpon>201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -502,7 +506,6 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\load-image.all.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -618,6 +621,8 @@
     <Content Include="Views\Shared\_CapacitadoCargarFotoPartial.cshtml" />
     <Content Include="Views\Capacitados\CargarFoto.cshtml" />
     <Content Include="Views\Capacitados\IndexFotos.cshtml" />
+    <Content Include="Views\Shared\_ListRegistrosCapacitacionOVALPartial.cshtml" />
+    <Content Include="Views\RegistrosCapacitacion\IndexOVAL.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -758,6 +763,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.resx">
       <DependentUpon>201907060018064_Nuevas_Propiedades_PermisoInscripcionExterna.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.resx">
+      <DependentUpon>201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

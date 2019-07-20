@@ -118,6 +118,34 @@ namespace Cursos.Controllers
                 return ExportDataExcel(registrosCapacitacion.ToList(), cursoID, fechaInicio, fechaFin, notaDesde, notaHasta);
         }
 
+        // GET: RegistrosCapacitacion/IndexOVAL
+        public ActionResult IndexOVAL(int? page)
+        {
+            bool paginar;
+            int pageSize;
+            int pageNumber;
+
+            if (page == null)
+            {
+                paginar = false;
+                pageNumber = 1;
+            }
+            else
+            {
+                paginar = true;
+                pageNumber = page.Value;
+            }
+                
+            var registrosCapacitacion = db.RegistroCapacitacion.Where(r => r.EnvioOVALEstado != EstadosEnvioOVAL.NoEnviar);
+
+
+            if (paginar)
+                pageSize = 10;
+            else
+                pageSize = registrosCapacitacion.Count();
+
+            return View(registrosCapacitacion.ToPagedList(pageNumber, pageSize));
+        }
 
         // GET: RegistrosCapacitacion/Details/5
         public ActionResult Details(int? id)
