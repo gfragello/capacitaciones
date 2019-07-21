@@ -6,3 +6,12 @@
 }
 
 <h2>Panel de envíos OVAL</h2>
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+
+@Html.Partial("_ListRegistrosCapacitacionOvalPartial", Model)
+
+<br />
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))

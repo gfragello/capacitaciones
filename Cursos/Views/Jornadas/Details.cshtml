@@ -282,11 +282,12 @@ else
 
 @section Scripts {
 
+    @Scripts.Render("~/Scripts/enviarOval.js")
+
     <script type="text/javascript">
 
         //al abrir la ventana modal, se dispara la ejecución del envío de datos
         $("#modalMensaje").on('shown.bs.modal', function(){
-            //alert("Iniciando envío...");
             enviarDatosOVAL();
         });
 

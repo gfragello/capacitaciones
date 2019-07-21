@@ -45,15 +45,28 @@ namespace Cursos.Helpers
 
         public string ObtenerImagenEnvioOVALEstado(RegistroCapacitacion r)
         {
-            return ObtenerImagenEnvioOVALEstado(r.EnvioOVALEstado, r.EnvioOVALFechaHora, r.EnvioOVALMensaje, r.EnvioOVALUsuario);
+            return ObtenerImagenEnvioOVALEstado(r.EnvioOVALEstado, r.ListoParaEnviarOVAL, r.EnvioOVALFechaHora, r.EnvioOVALMensaje, r.EnvioOVALUsuario);
         }
 
-        private string ObtenerImagenEnvioOVALEstado(EstadosEnvioOVAL estado, DateTime? envioOVALFechaHora, string envioOVALMensaje, string envioOVALUsuario)
+        private string ObtenerImagenEnvioOVALEstado(EstadosEnvioOVAL estado , bool listoParaEnviar, DateTime? envioOVALFechaHora, string envioOVALMensaje, string envioOVALUsuario)
         {
             string srcImagen = string.Empty;
 
             switch (estado)
             {
+                case EstadosEnvioOVAL.PendienteEnvio:
+
+                    if (listoParaEnviar)
+                    {
+                        srcImagen = VirtualPathUtility.ToAbsolute("~/images/OVALPendiente.png");
+                        return string.Format("<img src='{0}' title='Pendiente de envío' />", srcImagen);
+                    }
+                    else
+                    {
+                        srcImagen = VirtualPathUtility.ToAbsolute("~/images/OVALPendienteNoListo.png");
+                        return string.Format("<img src='{0}' title='No está listo para enviarse' />", srcImagen);
+                    }
+
                 case EstadosEnvioOVAL.Aceptado:
 
                     srcImagen = VirtualPathUtility.ToAbsolute("~/images/OVALAceptado.png");

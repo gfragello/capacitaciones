@@ -911,7 +911,7 @@ namespace Cursos.Controllers
                 int totalAceptados = 0;
                 int totalRechazados = 0;
 
-                if (EnvioOVALHelper.GetInstance().EnviarDatos(jornada.RegistrosCapacitacion, out totalAceptados, out totalRechazados))
+                if (EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(jornada.RegistrosCapacitacion, out totalAceptados, out totalRechazados))
                 {
                     var resultadoEnviarDatosOVAL = new
                     {

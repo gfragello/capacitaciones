@@ -20,7 +20,12 @@ namespace Cursos.Helpers.EnvioOVAL
 
         private CursosDbContext db = new CursosDbContext();
 
-        public bool EnviarDatos(List<RegistroCapacitacion> registrosCapacitacion, out int totalAceptados, out int totalRechazados)
+        public bool EnviarDatosRegistro()
+        {
+            return false;
+        }
+
+        public bool EnviarDatosListaRegistros(List<RegistroCapacitacion> registrosCapacitacion, out int totalAceptados, out int totalRechazados)
         {
             totalAceptados = 0;
             totalRechazados = 0;

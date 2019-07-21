@@ -136,7 +136,7 @@ namespace Cursos.Controllers
                 pageNumber = page.Value;
             }
                 
-            var registrosCapacitacion = db.RegistroCapacitacion.Where(r => r.EnvioOVALEstado != EstadosEnvioOVAL.NoEnviar);
+            var registrosCapacitacion = db.RegistroCapacitacion.Where(r => r.EnvioOVALEstado != EstadosEnvioOVAL.NoEnviar).OrderByDescending(r => r.Jornada.Fecha);
 
 
             if (paginar)

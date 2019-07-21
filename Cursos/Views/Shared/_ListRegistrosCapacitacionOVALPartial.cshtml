@@ -22,6 +22,7 @@
         <th>
             Mensaje último envío
         </th>
+        <th>&nbsp;</th>
     </tr>
 
     @foreach (var item in Model)
@@ -45,6 +46,16 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.EnvioOVALMensaje)
+            </td>
+            <td>
+                @if (item.ListoParaEnviarOVAL)
+                {
+                    <span id="@string.Format("spanEnviarOVAL_{0}", item.RegistroCapacitacionID.ToString())" data-registrocapacitacionid="@item.RegistroCapacitacionID.ToString()" data-tipodeenviooval="RI" class="glyphicon glyphicon-transfer btnEnvioRegistroOVAL" style="font-size: 25px; color: #017d49; cursor: pointer;" title="Enviar registro a sistema OVAL"></span>
+                }
+                else
+                {
+                    @:&nbsp;
+                }
             </td>
         </tr>
     }

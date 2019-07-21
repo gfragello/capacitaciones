@@ -1,6 +1,7 @@
 ﻿/// <autosync enabled="true" />
 /// <reference path="bootstrap.js" />
 /// <reference path="cargarfoto.js" />
+/// <reference path="enviaroval.js" />
 /// <reference path="jquery.validate.date.js" />
 /// <reference path="jquery.validate.js" />
 /// <reference path="jquery.validate.unobtrusive.js" />
