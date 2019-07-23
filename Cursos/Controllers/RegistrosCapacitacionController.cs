@@ -13,6 +13,7 @@ using OfficeOpenXml;
 using System.IO;
 using System.Drawing;
 using Cursos.Helpers;
+using Cursos.Helpers.EnvioOVAL;
 
 namespace Cursos.Controllers
 {
@@ -595,6 +596,25 @@ namespace Cursos.Controllers
             db.SaveChanges();
 
             return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult EnviarDatosRegistroOVAL(int registroCapacitacionId)
+        {
+            int totalAceptados = 0;
+            int totalRechazados = 0;
+
+            if (EnvioOVALHelper.GetInstance().EnviarDatosRegistroOVAL(registroCapacitacionId, out totalAceptados, out totalRechazados))
+            {
+                var resultadoEnviarDatosOVAL = new
+                {
+                    totalAceptados = totalAceptados,
+                    totalRechazados = totalRechazados
+                };
+
+                return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(null, JsonRequestBehavior.AllowGet);
         }
     }
 }

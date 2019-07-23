@@ -1,5 +1,6 @@
 ﻿using Cursos.Models;
 using Cursos.Models.Enums;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -20,52 +21,90 @@ namespace Cursos.Helpers.EnvioOVAL
 
         private CursosDbContext db = new CursosDbContext();
 
-        public bool EnviarDatosRegistro()
+        public RespuestaOVAL EnviarDatosRegistro(RegistroCapacitacion r)
         {
-            return false;
+             var client = new RestClient(ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL"));
+            // client.Authenticator = new HttpBasicAuthenticator(username, password);
+
+            /*
+            var request = new RestRequest("resource/{id}", Method.POST);
+            request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
+            request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
+            */
+
+            var request = new RestRequest(method: Method.POST);
+            request.AddParameter("TipoDocumento", "CI");
+            request.AddParameter("NumeroDocumento", r.Capacitado.Documento);
+            request.AddParameter("TipoInduccion", "IND");
+            request.AddParameter("Aprobado", "true");
+            request.AddParameter("FechaInduccion", DateTime.Now);
+            request.AddParameter("Notas", "");
+
+            // execute the request
+            IRestResponse response = client.Execute(request);
+            var content = response.Content; // raw content as string
+
+            IRestResponse<RespuestaOVAL> respuesta = client.Execute<RespuestaOVAL>(request);
+
+            return (RespuestaOVAL)respuesta.Data;
         }
 
-        public bool EnviarDatosListaRegistros(List<RegistroCapacitacion> registrosCapacitacion, out int totalAceptados, out int totalRechazados)
+        public bool EnviarDatosListaRegistros(List<int> registrosCapacitacionIds, out int totalAceptados, out int totalRechazados)
         {
             totalAceptados = 0;
             totalRechazados = 0;
 
-            EstadosEnvioOVAL estado;
-
-            foreach (var rID in registrosCapacitacion)
+            foreach (var registroCapacitacionId in registrosCapacitacionIds)
             {
-                var r = db.RegistroCapacitacion.Where(rc => rc.RegistroCapacitacionID == rID.RegistroCapacitacionID).FirstOrDefault();
-
-                if (r.ListoParaEnviarOVAL)
-                {
-                    int primerDigito;
-
-                    if (int.TryParse(r.Capacitado.Documento.Substring(0, 1), out primerDigito))
-                        if (primerDigito % 2 == 0) //si es un número par, se considera incorrecto el envío
-                            estado = EstadosEnvioOVAL.Rechazado;
-                        else
-                            estado = EstadosEnvioOVAL.Aceptado;
-                    else //si el primer digito no es un número, se considera correcto el envío
-                        estado = EstadosEnvioOVAL.Aceptado;
-
-                    if (estado == EstadosEnvioOVAL.Aceptado) totalAceptados++;
-                    if (estado == EstadosEnvioOVAL.Rechazado) totalRechazados++;
-
-                    r.EnvioOVALEstado = estado;
-                    r.EnvioOVALFechaHora = DateTime.Now;
-                    r.EnvioOVALUsuario = HttpContext.Current.User.Identity.Name;
-
-                    if (estado == EstadosEnvioOVAL.Rechazado)
-                        r.EnvioOVALMensaje = "Se rechazó la rececpción del registro";
-
-                    db.Entry(r).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    Thread.Sleep(1000);
-                }
+                EnviarDatosRegistroOVAL(registroCapacitacionId, out totalAceptados, out totalRechazados);
             }
 
             return true;
+        }
+
+        public bool EnviarDatosRegistroOVAL(int registroCapacitacionId, out int totalAceptados, out int totalRechazados)
+        {
+            totalAceptados = 0;
+            totalRechazados = 0;
+
+            var registroCapacitacion = db.RegistroCapacitacion.Where(r => r.RegistroCapacitacionID == registroCapacitacionId).FirstOrDefault();
+
+            if (registroCapacitacion != null)
+            {
+                if (registroCapacitacion.ListoParaEnviarOVAL)
+                {
+
+                    EstadosEnvioOVAL estado;
+
+                    RespuestaOVAL respuesta = this.EnviarDatosRegistro(registroCapacitacion);
+
+                    //if (EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(registroCapacitacion, out totalAceptados, out totalRechazados))
+                    if (respuesta.Codigo == 0) //si el registro se recibio corrrectamente
+                    {
+                        estado = EstadosEnvioOVAL.Aceptado;
+                        totalAceptados++;
+                    }
+                    else
+                    {
+                        estado = EstadosEnvioOVAL.Rechazado;
+                        totalRechazados++;
+                    }
+
+                    registroCapacitacion.EnvioOVALEstado = estado;
+                    registroCapacitacion.EnvioOVALFechaHora = DateTime.Now;
+                    registroCapacitacion.EnvioOVALUsuario = HttpContext.Current.User.Identity.Name;
+
+                    if (estado == EstadosEnvioOVAL.Rechazado)
+                        registroCapacitacion.EnvioOVALMensaje = respuesta.Mensaje;
+
+                    db.Entry(registroCapacitacion).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
