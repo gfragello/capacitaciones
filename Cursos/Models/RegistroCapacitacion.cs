@@ -174,7 +174,19 @@ namespace Cursos.Models
         {
             get
             {
-                return this.FueCalificado && (this.EnvioOVALEstado == EstadosEnvioOVAL.PendienteEnvio || this.EnvioOVALEstado == EstadosEnvioOVAL.Rechazado);
+                return this.Capacitado.TipoDocumento.PermiteEnviosOVAL && this.FueCalificado && (this.EnvioOVALEstado == EstadosEnvioOVAL.PendienteEnvio || this.EnvioOVALEstado == EstadosEnvioOVAL.Rechazado);
+            }
+        }
+
+        [NotMapped]
+        public string MensajeNoListoParaEnviarOVAL
+        {
+            get
+            {
+                if (!this.Capacitado.TipoDocumento.PermiteEnviosOVAL) return string.Format("El tipo de documento {0} no permite envíos a OVAL", this.Capacitado.TipoDocumento.Descripcion);
+                if (!this.FueCalificado) return "El registro aún no fue calificado";
+
+                return string.Empty;
             }
         }
     }

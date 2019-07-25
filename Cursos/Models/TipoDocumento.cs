@@ -19,6 +19,12 @@ namespace Cursos.Models
         [MaxLength(4)]
         public string Abreviacion { get; set; }
 
+        [Display(Name = "Permite envíos OVAL")]
+        public bool PermiteEnviosOVAL { get; set; }
+
+        [Display(Name = "Tipo de Documento OVAL")]
+        public string TipoDocumentoOVAL { get; set; }
+
         public virtual List<Capacitado> Capacitados { get; set; }
     }
 }

@@ -17,6 +17,12 @@
         <th>
             @Html.DisplayNameFor(model => model.Abreviacion)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PermiteEnviosOVAL)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TipoDocumentoOVAL)
+        </th>
         <th></th>
     </tr>
 
@@ -27,6 +33,12 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Abreviacion)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PermiteEnviosOVAL)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TipoDocumentoOVAL)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.TipoDocumentoID }) |

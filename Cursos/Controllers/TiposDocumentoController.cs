@@ -47,7 +47,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TipoDocumentoID,Descripcion,Abreviacion")] TipoDocumento tipoDocumento)
+        public ActionResult Create([Bind(Include = "TipoDocumentoID,Descripcion,Abreviacion,PermiteEnviosOVAL,TipoDocumentoOVAL")] TipoDocumento tipoDocumento)
         {
             if (ModelState.IsValid)
             {
@@ -79,7 +79,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "TipoDocumentoID,Descripcion,Abreviacion")] TipoDocumento tipoDocumento)
+        public ActionResult Edit([Bind(Include = "TipoDocumentoID,Descripcion,Abreviacion,PermiteEnviosOVAL,TipoDocumentoOVAL")] TipoDocumento tipoDocumento)
         {
             if (ModelState.IsValid)
             {

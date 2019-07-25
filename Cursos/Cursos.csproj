@@ -404,6 +404,10 @@
     <Compile Include="Migrations\201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.Designer.cs">
       <DependentUpon>201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201907252021120_Tipo_Documento_OVAL.cs" />
+    <Compile Include="Migrations\201907252021120_Tipo_Documento_OVAL.Designer.cs">
+      <DependentUpon>201907252021120_Tipo_Documento_OVAL.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Capacitado.cs" />
@@ -789,6 +793,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.resx">
       <DependentUpon>201907181651362_Nueva_Propiedad_Jornada_Envio_OVAL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907252021120_Tipo_Documento_OVAL.resx">
+      <DependentUpon>201907252021120_Tipo_Documento_OVAL.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
