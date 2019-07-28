@@ -147,7 +147,7 @@
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
                 if (Model.PermiteEnviosOVAL)
                 {
-                    <a href="javascript:iniciarEnvioDatosOVAL();"><span class="glyphicon glyphicon-transfer" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar datos OVAL</a>
+                    <span class="glyphicon glyphicon-transfer btnEnvioRegistrosOVALJornada" data-jornadaid="@Model.JornadaID.ToString()" style="font-size: 25px; color: #017d49; cursor: pointer;"></span>
                     @*:&nbsp;&nbsp; &nbsp; &nbsp;*@
                 }
                 @*:&nbsp;&nbsp; &nbsp; &nbsp;
@@ -285,13 +285,6 @@ else
     @Scripts.Render("~/Scripts/enviarOval.js")
 
     <script type="text/javascript">
-
-        //al abrir la ventana modal, se dispara la ejecución del envío de datos
-        /*
-        $("#modalMensaje").on('shown.bs.modal', function(){
-            enviarDatosOVAL();
-        });
-        */
 
         //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
         $('#modalMensaje').on('hidden.bs.modal', function () {
@@ -455,55 +448,6 @@ else
                     }
                 }
             });
-        }
-
-        function iniciarEnvioDatosOVAL()
-        {
-            if (confirm("¿Enviar los datos al sistema OVAL?"))
-            {
-                //al abrir la ventana modal, se dispara la ejecución del envío de datos
-                $('#modalMensaje').modal('show');
-            }
-        }
-
-        function enviarDatosOVAL() {
-
-            var jornadaId = @Model.JornadaID;
-
-            /*
-            $.ajax({
-                url: '/NotificacionesVencimientos/EmpresasIDNotificacionesPendientes',
-                type: "GET",
-                dataType: "JSON",
-                success: function (empresasID) {
-                    for (var i = 0; i < empresasID.length; i++) {
-                        var empresaID = empresasID[i];
-            */
-                        $.ajax({
-                            url: '/Jornadas/EnviarDatosOVAL',
-                            type: "GET",
-                            dataType: "JSON",
-                            data: { jornadaId: jornadaId },
-                            success: function (resultadoEnviarDatosOVAL) {
-
-                                var mensaje = "";
-
-                                if (resultadoEnviarDatosOVAL.totalAceptados > 0)
-                                    mensaje += "<div class='alert alert-success'><strong>Se recibieron correctamente " + resultadoEnviarDatosOVAL.totalAceptados.toString() + " registros.</strong></div>"
-
-                                    //mensaje += "<p>Se recibieron correctamente " + resultadoEnviarDatosOVAL.totalAceptados.toString() + " registros.</p>"
-
-                                if (resultadoEnviarDatosOVAL.totalRechazados > 0)
-                                    mensaje += "<div class='alert alert-warning'><strong>Se rechazaron " + resultadoEnviarDatosOVAL.totalRechazados.toString() + " registros.</strong></div>"
-
-                                    //mensaje += "<p>Se rechazaron " + resultadoEnviarDatosOVAL.totalRechazados.toString() + " registros.</p>";
-
-                                $("#bodyMensaje").html(mensaje);
-                            }
-                        });
-                    //}
-                //}
-            //});
         }
 
     </script>

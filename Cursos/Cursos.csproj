@@ -410,6 +410,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ArchivoLog.cs" />
     <Compile Include="Models\Capacitado.cs" />
     <Compile Include="Models\CIValidator.cs" />
     <Compile Include="Models\Configuracion.cs" />
@@ -650,13 +651,16 @@
     <Content Include="Views\Capacitados\IndexFotos.cshtml" />
     <Content Include="Views\Shared\_ListRegistrosCapacitacionOVALPartial.cshtml" />
     <Content Include="Views\RegistrosCapacitacion\IndexOVAL.cshtml" />
+    <Content Include="Views\RegistrosCapacitacion\IndexLogs_enviosOVAL.cshtml" />
+    <Content Include="Views\Shared\_ListLogsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="images\Actas\" />
     <Folder Include="images\FotosCapacitadosImportar\" />
     <Folder Include="images\FotosCapacitados\" />
-    <Folder Include="logs\" />
+    <Folder Include="logs\enviosOVAL\" />
+    <Folder Include="logs\notificaciones\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

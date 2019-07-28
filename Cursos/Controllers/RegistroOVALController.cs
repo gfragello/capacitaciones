@@ -8,6 +8,11 @@ using System.Web.Http;
 
 namespace Cursos.Controllers
 {
+    /// <summary>
+    /// Mocking Rest Api publicada en la aplicación para probar el consumo de web services rest
+    /// </summary>
+    //TODO - Eliminar esta función y las referencias que se instalan
+    //TODO - Luego de eliminar esta clase, y las referencias a las librerías para publicar api rest services (son de Microsoft)
     public class RegistroOVALController : ApiController
     {
         public RespuestaOVAL ingresarRegistro(RegistroOVAL registro)

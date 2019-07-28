@@ -7,6 +7,12 @@
 
 <h2>Panel de envíos OVAL</h2>
 
+<p>
+    @Html.ActionLink("Ver logs", "IndexLogs_EnviosOVAL")
+</p>
+
+<hr />
+
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
 
 @Html.Partial("_ListRegistrosCapacitacionOvalPartial", Model)

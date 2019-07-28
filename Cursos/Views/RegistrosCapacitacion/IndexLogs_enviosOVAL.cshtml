@@ -1,0 +1,17 @@
+﻿@model PagedList.IPagedList<Cursos.Models.ArchivoLog>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Logs de envíos OVAL";
+}
+
+<h2>Logs de envíos OVAL</h2>
+
+@Html.PagedListPager(Model, page => Url.Action("IndexLogs_enviosOVAL", new { page }))
+
+@Html.Partial("_ListLogsPartial", Model)
+
+<br />
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("IndexLogs_enviosOVAL", new { page }))

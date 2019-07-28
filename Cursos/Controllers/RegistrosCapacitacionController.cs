@@ -148,6 +148,34 @@ namespace Cursos.Controllers
             return View(registrosCapacitacion.ToPagedList(pageNumber, pageSize));
         }
 
+        public ActionResult IndexLogs_enviosOVAL(int? page)
+        {
+            bool paginar;
+            int pageSize;
+            int pageNumber;
+
+            if (page == null)
+            {
+                paginar = false;
+                pageNumber = 1;
+            }
+            else
+            {
+                paginar = true;
+                pageNumber = page.Value;
+            }
+
+            //var registrosCapacitacion = db.RegistroCapacitacion.Where(r => r.EnvioOVALEstado != EstadosEnvioOVAL.NoEnviar).OrderByDescending(r => r.Jornada.Fecha);
+            var pathsArchivosLogsEnviosOVAL = LogHelper.GetInstance().GetModuleLogFiles("enviosOVAL");
+
+            if (paginar)
+                pageSize = 10;
+            else
+                pageSize = pathsArchivosLogsEnviosOVAL.Count();
+
+            return View(pathsArchivosLogsEnviosOVAL.ToPagedList(pageNumber, pageSize));
+        }
+
         // GET: RegistrosCapacitacion/Details/5
         public ActionResult Details(int? id)
         {
@@ -258,7 +286,9 @@ namespace Cursos.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            RegistroCapacitacion registroCapacitacion = db.RegistroCapacitacion.Find(id);
+
+            RegistroCapacitacion registroCapacitacion = db.RegistroCapacitacion.Where(r => r.RegistroCapacitacionID == id).Include(r => r.Capacitado).FirstOrDefault();
+
             if (registroCapacitacion == null)
             {
                 return HttpNotFound();
@@ -279,7 +309,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion, 
+        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento,EnvioOVALEstado")] RegistroCapacitacion registroCapacitacion, 
                                   string PreviousUrl)
         {
             if (ModelState.IsValid)
@@ -603,18 +633,15 @@ namespace Cursos.Controllers
             int totalAceptados = 0;
             int totalRechazados = 0;
 
-            if (EnvioOVALHelper.GetInstance().EnviarDatosRegistroOVAL(registroCapacitacionId, out totalAceptados, out totalRechazados))
+            EnvioOVALHelper.GetInstance().EnviarDatosRegistroOVAL(registroCapacitacionId, ref totalAceptados, ref totalRechazados);
+            
+            var resultadoEnviarDatosOVAL = new
             {
-                var resultadoEnviarDatosOVAL = new
-                {
-                    totalAceptados = totalAceptados,
-                    totalRechazados = totalRechazados
-                };
+                totalAceptados = totalAceptados,
+                totalRechazados = totalRechazados
+            };
 
-                return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
-            }
-
-            return Json(null, JsonRequestBehavior.AllowGet);
+            return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
         }
     }
 }

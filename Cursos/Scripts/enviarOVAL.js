@@ -2,10 +2,20 @@
 var registroCapacitacionId = "";
 var jornadaId = "";
 
+$(".btnEnvioRegistrosOVALJornada").click(function () {
+
+    tipoDeEnvioOVAL = "RJ";
+    jornadaId = $(this).data("jornadaid");
+
+    iniciarEnvioDatosOVAL();
+
+});
+
 $(".btnEnvioRegistroOVAL").click(function () {
 
+    tipoDeEnvioOVAL = "RI";
     registroCapacitacionId = $(this).data("registrocapacitacionid");
-    tipoDeEnvioOVAL = $(this).data("tipodeenviooval");
+    
 
     iniciarEnvioDatosOVAL();
 
@@ -45,20 +55,7 @@ $("#modalMensaje").on('shown.bs.modal', function () {
                 dataType: "JSON",
                 data: { jornadaId: jornadaId },
                 success: function (resultadoEnviarDatosOVAL) {
-
-                    var mensaje = "";
-
-                    if (resultadoEnviarDatosOVAL.totalAceptados > 0)
-                        mensaje += "<div class='alert alert-success'><strong>Se recibieron correctamente " + resultadoEnviarDatosOVAL.totalAceptados.toString() + " registros.</strong></div>"
-
-                    //mensaje += "<p>Se recibieron correctamente " + resultadoEnviarDatosOVAL.totalAceptados.toString() + " registros.</p>"
-
-                    if (resultadoEnviarDatosOVAL.totalRechazados > 0)
-                        mensaje += "<div class='alert alert-warning'><strong>Se rechazaron " + resultadoEnviarDatosOVAL.totalRechazados.toString() + " registros.</strong></div>"
-
-                    //mensaje += "<p>Se rechazaron " + resultadoEnviarDatosOVAL.totalRechazados.toString() + " registros.</p>";
-
-                    $("#bodyMensaje").html(mensaje);
+                    mostrarResultadoEnviarDatosOVAL(resultadoEnviarDatosOVAL);
                 }
             });
 

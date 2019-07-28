@@ -11,9 +11,6 @@
             Nombre
         </th>
         <th>
-            Empresa
-        </th>
-        <th>
             Estado último envío
         </th>
         <th>
@@ -35,9 +32,6 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
-            </td>
             <td style="text-align:center">
                 @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
             </td>
@@ -50,7 +44,7 @@
             <td>
                 @if (item.ListoParaEnviarOVAL)
                 {
-                    <span id="@string.Format("spanEnviarOVAL_{0}", item.RegistroCapacitacionID.ToString())" data-registrocapacitacionid="@item.RegistroCapacitacionID.ToString()" data-tipodeenviooval="RI" class="glyphicon glyphicon-transfer btnEnvioRegistroOVAL" style="font-size: 25px; color: #017d49; cursor: pointer;" title="Enviar registro a sistema OVAL"></span>
+                    <span id="@string.Format("spanEnviarOVAL_{0}", item.RegistroCapacitacionID.ToString())" data-registrocapacitacionid="@item.RegistroCapacitacionID.ToString()" class="glyphicon glyphicon-transfer btnEnvioRegistroOVAL" style="font-size: 25px; color: #017d49; cursor: pointer;" title="Enviar registro a sistema OVAL"></span>
                 }
                 else
                 {

@@ -23,50 +23,71 @@ namespace Cursos.Helpers.EnvioOVAL
 
         public RespuestaOVAL EnviarDatosRegistro(RegistroCapacitacion r)
         {
-             var client = new RestClient(ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL"));
-            // client.Authenticator = new HttpBasicAuthenticator(username, password);
+            const string module = "enviosOVAL";
 
-            /*
-            var request = new RestRequest("resource/{id}", Method.POST);
-            request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
-            request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
-            */
+            string mensajelog = string.Format("Iniciando envío de datos\r\n\t\t\t{0}\r\n\t\t\t{1}\r\n\t\t\t{2}\r\n\t\t\t{3}",
+                                               r.Capacitado.DocumentoCompleto,
+                                               r.Capacitado.NombreCompleto,
+                                               r.Jornada.JornadaIdentificacionCompleta,
+                                               r.Estado.ToString());
 
-            var request = new RestRequest(method: Method.POST);
-            request.AddParameter("TipoDocumento", "CI");
-            request.AddParameter("NumeroDocumento", r.Capacitado.Documento);
-            request.AddParameter("TipoInduccion", "IND");
-            request.AddParameter("Aprobado", "true");
-            request.AddParameter("FechaInduccion", DateTime.Now);
-            request.AddParameter("Notas", "");
+            LogHelper.GetInstance().WriteMessage(module, mensajelog);
 
-            // execute the request
-            IRestResponse response = client.Execute(request);
-            var content = response.Content; // raw content as string
+            try
+            {
+                var client = new RestClient(ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL"));
+                // client.Authenticator = new HttpBasicAuthenticator(username, password);
 
-            IRestResponse<RespuestaOVAL> respuesta = client.Execute<RespuestaOVAL>(request);
+                /*
+                var request = new RestRequest("resource/{id}", Method.POST);
+                request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
+                request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
+                */
 
-            return (RespuestaOVAL)respuesta.Data;
+                var request = new RestRequest(method: Method.POST);
+                request.AddParameter("TipoDocumento", "CI");
+                request.AddParameter("NumeroDocumento", r.Capacitado.Documento);
+                request.AddParameter("TipoInduccion", "IND");
+                request.AddParameter("Aprobado", "true");
+                request.AddParameter("FechaInduccion", DateTime.Now);
+                request.AddParameter("Notas", "");
+
+                LogHelper.GetInstance().WriteMessage(module, "Iniciando envío de datos");
+
+                // execute the request
+                IRestResponse response = client.Execute(request);
+                var content = response.Content; // raw content as string
+
+                mensajelog = string.Format("Envío de datos completado.\r\n\t\t\tRespuesta recibida:{0}", content);
+
+                LogHelper.GetInstance().WriteMessage(module, mensajelog);
+
+                IRestResponse<RespuestaOVAL> respuesta = client.Execute<RespuestaOVAL>(request);
+
+                return (RespuestaOVAL)respuesta.Data;
+            }
+            catch (Exception e)
+            {
+                mensajelog = string.Format("ERROR - {0}", e.Message);
+            }
+
+            return null;
         }
 
-        public bool EnviarDatosListaRegistros(List<int> registrosCapacitacionIds, out int totalAceptados, out int totalRechazados)
+        public bool EnviarDatosListaRegistros(List<int> registrosCapacitacionIds, ref int totalAceptados, ref int totalRechazados)
         {
-            totalAceptados = 0;
-            totalRechazados = 0;
-
             foreach (var registroCapacitacionId in registrosCapacitacionIds)
             {
-                EnviarDatosRegistroOVAL(registroCapacitacionId, out totalAceptados, out totalRechazados);
+                EnviarDatosRegistroOVAL(registroCapacitacionId, ref totalAceptados, ref totalRechazados);
             }
 
             return true;
         }
 
-        public bool EnviarDatosRegistroOVAL(int registroCapacitacionId, out int totalAceptados, out int totalRechazados)
+        public bool EnviarDatosRegistroOVAL(int registroCapacitacionId, ref int totalAceptados, ref int totalRechazados)
         {
-            totalAceptados = 0;
-            totalRechazados = 0;
-
+            //se inicializa nuevamente el db context para evitar que se lean datos cacheados
+            db = new CursosDbContext();
             var registroCapacitacion = db.RegistroCapacitacion.Where(r => r.RegistroCapacitacionID == registroCapacitacionId).FirstOrDefault();
 
             if (registroCapacitacion != null)

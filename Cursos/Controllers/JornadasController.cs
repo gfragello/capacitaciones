@@ -912,7 +912,7 @@ namespace Cursos.Controllers
                 int totalRechazados = 0;
 
                 //Categories.Select(c => c.Id).ToList()
-                if (EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(jornada.RegistrosCapacitacion.Select(r => r.RegistroCapacitacionID).ToList(), out totalAceptados, out totalRechazados))
+                if (EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(jornada.RegistrosCapacitacion.Select(r => r.RegistroCapacitacionID).ToList(), ref totalAceptados, ref totalRechazados))
                 {
                     var resultadoEnviarDatosOVAL = new
                     {

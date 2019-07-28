@@ -53,13 +53,13 @@ namespace Cursos.Models
         [Display(Name = "Estado OVAL")]
         public EstadosEnvioOVAL EnvioOVALEstado { get; set; }
 
-        [Display(Name = "Fecha último envio OVAL")]
+        [Display(Name = "Fecha último envio")]
         public DateTime? EnvioOVALFechaHora { get; set; }
 
-        [Display(Name = "Usuario último envio OVAL")]
+        [Display(Name = "Usuario último envio")]
         public string EnvioOVALUsuario { get; set; }
 
-        [Display(Name = "Mensaje último envio OVAL")]
+        [Display(Name = "Mensaje último envio")]
         public string EnvioOVALMensaje { get; set; }
 
         [NotMapped]
@@ -174,7 +174,7 @@ namespace Cursos.Models
         {
             get
             {
-                return this.Capacitado.TipoDocumento.PermiteEnviosOVAL && this.FueCalificado && (this.EnvioOVALEstado == EstadosEnvioOVAL.PendienteEnvio || this.EnvioOVALEstado == EstadosEnvioOVAL.Rechazado);
+                return (this.Capacitado != null ? this.Capacitado.TipoDocumento.PermiteEnviosOVAL : true) && this.FueCalificado && (this.EnvioOVALEstado == EstadosEnvioOVAL.PendienteEnvio || this.EnvioOVALEstado == EstadosEnvioOVAL.Rechazado);
             }
         }
 

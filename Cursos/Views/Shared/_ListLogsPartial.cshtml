@@ -1,0 +1,19 @@
+﻿@model PagedList.IPagedList<Cursos.Models.ArchivoLog>
+
+<table class="table table-striped">
+
+    <tr>
+        Logs disponibles
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                <a href="@Url.Content(item.Path)" target="_blank">@item.Nombre</a>
+                @*~/images/logos/CSL_logo_main_h_300.png*@
+            </td>
+        </tr>
+    }
+
+</table>
