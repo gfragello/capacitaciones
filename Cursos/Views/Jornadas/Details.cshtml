@@ -332,14 +332,6 @@ else
             );
         });
 
-        //al seleccionar un archivo, se sube al servidor
-        /*
-        $("#fotoCapacitado").change(function ()
-        {
-            alert("Archivo seleccionado");
-        });
-        */
-
         function toggleImgAgregarActaChevron()
         {
             $("#imgAgregarActaChevron").toggleClass("glyphicon-chevron-up");
@@ -387,10 +379,9 @@ else
                          {
                             if (resultadoOK)
                             {
-                                $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
-                                //buscarCapacitados();
+                                actualizarContenidoTabs();
+
                                 actualizarDisponibilidadJornada();
-                                //$("#spanCantidadCuposDisponibles").text("Se agregó otro capacitado");
                             }
                          }
             });
@@ -443,11 +434,21 @@ else
                 {
                     if (resultadoOK)
                     {
-                        $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+                        actualizarContenidoTabs()
                         actualizarDisponibilidadJornada();
                     }
                 }
             });
+        }
+
+        function actualizarContenidoTabs()
+        {
+            $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+            $("#tabFotos").load('@(Url.Action("ObtenerRegistrosCapacitacionFotos", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+
+            //se verifica y el tab de detalle de envíos OVAL está visible
+            if ($("#tabEnviosOVAL").length)
+                $("#tabEnviosOVAL").load('@(Url.Action("ObtenerRegistrosCapacitacionOVAL", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
         }
 
     </script>

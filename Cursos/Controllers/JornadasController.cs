@@ -448,6 +448,28 @@ namespace Cursos.Controllers
             return PartialView("_ListRegistrosCapacitacionPartial", jornada.RegistrosCapacitacion.ToList());
         }
 
+        [HttpGet]
+        public ActionResult ObtenerRegistrosCapacitacionFotos(int jornadaId)
+        {
+            var jornada = db.Jornada.Find(jornadaId);
+
+            if (jornada == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            return PartialView("_ListRegistrosCapacitacionFotosPartial", jornada.RegistrosCapacitacion.ToList());
+        }
+
+        [HttpGet]
+        public ActionResult ObtenerRegistrosCapacitacionOVAL(int jornadaId)
+        {
+            var jornada = db.Jornada.Find(jornadaId);
+
+            if (jornada == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            return PartialView("_ListRegistrosCapacitacionOvalPartial", jornada.RegistrosCapacitacion.AsQueryable().ToPagedList(1, jornada.RegistrosCapacitacion.Count()));
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AgregarActa(int? jornadaId, HttpPostedFileBase upload)

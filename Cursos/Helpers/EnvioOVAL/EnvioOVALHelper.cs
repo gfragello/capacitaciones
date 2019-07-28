@@ -94,9 +94,7 @@ namespace Cursos.Helpers.EnvioOVAL
             {
                 if (registroCapacitacion.ListoParaEnviarOVAL)
                 {
-
                     EstadosEnvioOVAL estado;
-
                     RespuestaOVAL respuesta = this.EnviarDatosRegistro(registroCapacitacion);
 
                     //if (EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(registroCapacitacion, out totalAceptados, out totalRechazados))
