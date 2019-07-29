@@ -143,7 +143,7 @@ namespace Cursos.Controllers
             if (paginar)
                 pageSize = 10;
             else
-                pageSize = registrosCapacitacion.Count();
+                pageSize = registrosCapacitacion.Count() > 0 ? registrosCapacitacion.Count() : 1;
 
             return View(registrosCapacitacion.ToPagedList(pageNumber, pageSize));
         }
@@ -165,13 +165,12 @@ namespace Cursos.Controllers
                 pageNumber = page.Value;
             }
 
-            //var registrosCapacitacion = db.RegistroCapacitacion.Where(r => r.EnvioOVALEstado != EstadosEnvioOVAL.NoEnviar).OrderByDescending(r => r.Jornada.Fecha);
             var pathsArchivosLogsEnviosOVAL = LogHelper.GetInstance().GetModuleLogFiles("enviosOVAL");
 
             if (paginar)
                 pageSize = 10;
             else
-                pageSize = pathsArchivosLogsEnviosOVAL.Count();
+                pageSize = pathsArchivosLogsEnviosOVAL.Count() > 0 ? pathsArchivosLogsEnviosOVAL.Count() : 1;
 
             return View(pathsArchivosLogsEnviosOVAL.ToPagedList(pageNumber, pageSize));
         }

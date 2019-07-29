@@ -274,7 +274,10 @@ else
         @if (Model.PermiteEnviosOVAL)
         {
             <div id="tabEnviosOVAL" class="tab-pane fade">
-                @Html.Partial("_ListRegistrosCapacitacionOvalPartial", Model.RegistrosCapacitacion.AsQueryable().ToPagedList(1, Model.RegistrosCapacitacion.Count()))
+                @{
+                    int enviosOVALPageSize = Model.RegistrosCapacitacion.Count() > 0 ? Model.RegistrosCapacitacion.Count() : 1;
+                }
+                @Html.Partial("_ListRegistrosCapacitacionOvalPartial", Model.RegistrosCapacitacion.AsQueryable().ToPagedList(1, enviosOVALPageSize))
             </div>
         }
     </div>

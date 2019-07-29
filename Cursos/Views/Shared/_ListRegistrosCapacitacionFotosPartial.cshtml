@@ -32,7 +32,8 @@
                 @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
             </td>
             <td>
-                <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) ">
+                @*Se comenta la carga de fotos porque no está completamente probada*@
+                @*<a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) ">*@
                 @if (item.Capacitado.PathArchivo != null)
                 {
                     <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
@@ -41,23 +42,7 @@
                 {
                     <img src="~/images/sinfoto_150x150.png" />
                 }
-                </a>
-                @*@if (item.Capacitado.PathArchivo != null)
-                {
-                    <a href="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto">
-                        <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
-                    </a>
-                }
-                else
-                {
-                    <div class="image-upload">
-                        <label for="fotoCapacitado">
-                            <img src="~/images/sinfoto_150x150.png" />
-                        </label>
-
-                        <input id="fotoCapacitado" type="file" style="display: none;" />
-                    </div>
-                }*@
+                @*</a>*@
             </td>
         </tr>
     }
