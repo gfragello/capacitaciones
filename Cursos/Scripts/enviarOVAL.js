@@ -11,11 +11,13 @@ $(".btnEnvioRegistrosOVALJornada").click(function () {
 
 });
 
-$(".btnEnvioRegistroOVAL").click(function () {
+//se DEBE usar "event delegation" porque en la grilla se podrán poner botones de tipo btnEnvioRegistroOVAL que pueden se actualizados dinamicamente
+//(sino se pierde el attachment a los eventos)
+$(document).on("click", '.btnEnvioRegistroOVAL', function(event) {
 
     tipoDeEnvioOVAL = "RI";
     registroCapacitacionId = $(this).data("registrocapacitacionid");
-    
+
 
     iniciarEnvioDatosOVAL();
 
@@ -76,6 +78,9 @@ function mostrarResultadoEnviarDatosOVAL(resultadoEnviarDatosOVAL)
 
     if (resultadoEnviarDatosOVAL.totalRechazados > 0)
         mensaje += "<div class='alert alert-warning'><strong>Se rechazaron " + resultadoEnviarDatosOVAL.totalRechazados.toString() + " registros.</strong></div>";
+
+    if (!resultadoEnviarDatosOVAL.todosEnviadosOK)
+        mensaje += "<div class='alert alert-danger'><strong>Ocurrió un error durante el envío de datos.</strong></div>";
 
     $("#bodyMensaje").html(mensaje);
 }

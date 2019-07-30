@@ -13,6 +13,7 @@ namespace Cursos.Controllers
     /// </summary>
     //TODO - Eliminar esta función y las referencias que se instalan
     //TODO - Luego de eliminar esta clase, y las referencias a las librerías para publicar api rest services (son de Microsoft)
+    //Para acceder a este servicio usar la dirección http://localhost:51414/api/registrooval
     public class RegistroOVALController : ApiController
     {
         public RespuestaOVAL ingresarRegistro(RegistroOVAL registro)

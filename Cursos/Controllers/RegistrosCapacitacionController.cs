@@ -632,10 +632,11 @@ namespace Cursos.Controllers
             int totalAceptados = 0;
             int totalRechazados = 0;
 
-            EnvioOVALHelper.GetInstance().EnviarDatosRegistroOVAL(registroCapacitacionId, ref totalAceptados, ref totalRechazados);
+            bool todosEnviadosOK = EnvioOVALHelper.GetInstance().EnviarDatosRegistroOVAL(registroCapacitacionId, ref totalAceptados, ref totalRechazados);
             
             var resultadoEnviarDatosOVAL = new
             {
+                todosEnviadosOK = todosEnviadosOK,
                 totalAceptados = totalAceptados,
                 totalRechazados = totalRechazados
             };

@@ -933,17 +933,16 @@ namespace Cursos.Controllers
                 int totalAceptados = 0;
                 int totalRechazados = 0;
 
-                //Categories.Select(c => c.Id).ToList()
-                if (EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(jornada.RegistrosCapacitacion.Select(r => r.RegistroCapacitacionID).ToList(), ref totalAceptados, ref totalRechazados))
-                {
-                    var resultadoEnviarDatosOVAL = new
-                    {
-                        totalAceptados = totalAceptados,
-                        totalRechazados = totalRechazados
-                    };
+                bool todosEnviadosOK = EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(jornada.RegistrosCapacitacion.Select(r => r.RegistroCapacitacionID).ToList(), ref totalAceptados, ref totalRechazados);
 
-                    return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
-                }
+                var resultadoEnviarDatosOVAL = new
+                {
+                    todosEnviadosOK = todosEnviadosOK,
+                    totalAceptados = totalAceptados,
+                    totalRechazados = totalRechazados
+                };
+
+                return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
             }
 
             return Json(null, JsonRequestBehavior.AllowGet);

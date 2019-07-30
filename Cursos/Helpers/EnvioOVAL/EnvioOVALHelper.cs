@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.ServiceModel;
 using System.Threading;
 using System.Web;
 
@@ -25,6 +26,42 @@ namespace Cursos.Helpers.EnvioOVAL
         {
             const string module = "enviosOVAL";
 
+            DateTime fechaJornada = r.Jornada.Fecha;
+            ServiceEnviarDatosOVAL.WebServiceResponse  rOVAL;
+
+            try
+            {
+                BasicHttpsBinding binding = new BasicHttpsBinding();
+                EndpointAddress address = new EndpointAddress(ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL"));
+
+                ServiceEnviarDatosOVAL.ServiceSoapClient sOVAL = new ServiceEnviarDatosOVAL.ServiceSoapClient(binding, address);
+
+                rOVAL = sOVAL.get_induccion(r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
+                                            r.Capacitado.Documento,
+                                            "CAP_SEG",
+                                            r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
+                                            string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
+                                            string.Empty);
+
+                //si la propiedad Result tiene contenido, el registro se recibió correctamente
+                if (rOVAL.Result != string.Empty)
+                {
+                    return new RespuestaOVAL() { Codigo = 0, Mensaje = string.Empty };
+                }
+                else
+                {
+                    return new RespuestaOVAL() { Codigo = 1, Mensaje = rOVAL.ErrorMessage };
+                }
+            }
+            catch (Exception e)
+            {
+                LogHelper.GetInstance().WriteMessage(module, e.Message);
+                return new RespuestaOVAL() { Codigo = -1, Mensaje = e.Message };
+            }
+
+            /*
+            const string module = "enviosOVAL";
+
             string mensajelog = string.Format("Iniciando envío de datos\r\n\t\t\t{0}\r\n\t\t\t{1}\r\n\t\t\t{2}\r\n\t\t\t{3}",
                                                r.Capacitado.DocumentoCompleto,
                                                r.Capacitado.NombreCompleto,
@@ -38,11 +75,9 @@ namespace Cursos.Helpers.EnvioOVAL
                 var client = new RestClient(ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL"));
                 // client.Authenticator = new HttpBasicAuthenticator(username, password);
 
-                /*
-                var request = new RestRequest("resource/{id}", Method.POST);
-                request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
-                request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
-                */
+                //var request = new RestRequest("resource/{id}", Method.POST);
+                //request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
+                //request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
 
                 var request = new RestRequest(method: Method.POST);
                 request.AddParameter("TipoDocumento", "CI");
@@ -70,6 +105,7 @@ namespace Cursos.Helpers.EnvioOVAL
             {
                 mensajelog = string.Format("ERROR - {0}", e.Message);
             }
+            */
 
             return null;
         }
@@ -78,7 +114,8 @@ namespace Cursos.Helpers.EnvioOVAL
         {
             foreach (var registroCapacitacionId in registrosCapacitacionIds)
             {
-                EnviarDatosRegistroOVAL(registroCapacitacionId, ref totalAceptados, ref totalRechazados);
+                if (!EnviarDatosRegistroOVAL(registroCapacitacionId, ref totalAceptados, ref totalRechazados))
+                    return false;
             }
 
             return true;
@@ -97,16 +134,25 @@ namespace Cursos.Helpers.EnvioOVAL
                     EstadosEnvioOVAL estado;
                     RespuestaOVAL respuesta = this.EnviarDatosRegistro(registroCapacitacion);
 
-                    //if (EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(registroCapacitacion, out totalAceptados, out totalRechazados))
-                    if (respuesta.Codigo == 0) //si el registro se recibio corrrectamente
+                    switch (respuesta.Codigo)
                     {
-                        estado = EstadosEnvioOVAL.Aceptado;
-                        totalAceptados++;
-                    }
-                    else
-                    {
-                        estado = EstadosEnvioOVAL.Rechazado;
-                        totalRechazados++;
+                        case 0: //si el registro se recibió correctamente
+
+                            estado = EstadosEnvioOVAL.Aceptado;
+                            totalAceptados++;
+
+                            break;
+
+                        case 1: //si el registro no se recibió correctamente
+
+                            estado = EstadosEnvioOVAL.Rechazado;
+                            totalRechazados++;
+
+                            break;
+
+                        default:
+
+                            return false;
                     }
 
                     registroCapacitacion.EnvioOVALEstado = estado;
@@ -118,12 +164,10 @@ namespace Cursos.Helpers.EnvioOVAL
 
                     db.Entry(registroCapacitacion).State = EntityState.Modified;
                     db.SaveChanges();
-
-                    return true;
                 }
             }
 
-            return false;
+            return true;
         }
     }
 }

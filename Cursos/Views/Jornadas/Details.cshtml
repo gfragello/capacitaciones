@@ -291,7 +291,8 @@ else
 
         //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
         $('#modalMensaje').on('hidden.bs.modal', function () {
-            location.reload(true);
+            actualizarContenidoTabs();
+            //location.reload(true);
         });
 
         $("#fotoCapacitado").change(function (e) {
