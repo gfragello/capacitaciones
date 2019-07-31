@@ -249,7 +249,7 @@
 {
     <h4>Inscriptos a la jornada</h4>
 
-    <div id="dvRegistrosCapacitacion">
+    <div id="tabRegistrosCapacitacion">
         @Html.Partial("_ListRegistrosCapacitacionPartial", Model.RegistrosCapacitacion)
     </div>
 }
@@ -448,7 +448,10 @@ else
         function actualizarContenidoTabs()
         {
             $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
-            $("#tabFotos").load('@(Url.Action("ObtenerRegistrosCapacitacionFotos", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+            
+            //se verifica y el tab de detalle de fotos está visible
+            if ($("#tabFotos").length)
+                $("#tabFotos").load('@(Url.Action("ObtenerRegistrosCapacitacionFotos", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
 
             //se verifica y el tab de detalle de envíos OVAL está visible
             if ($("#tabEnviosOVAL").length)

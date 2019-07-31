@@ -674,6 +674,7 @@
     <Content Include="Views\RegistrosCapacitacion\IndexLogs_enviosOVAL.cshtml" />
     <Content Include="Views\Shared\_ListLogsPartial.cshtml" />
     <None Include="Service References\ServiceEnviarDatosOVAL\Service.wsdl" />
+    <Content Include="Views\Configuracion\EditarItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

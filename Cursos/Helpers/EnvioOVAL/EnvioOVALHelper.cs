@@ -31,8 +31,20 @@ namespace Cursos.Helpers.EnvioOVAL
 
             try
             {
+                string mensajelog = string.Format("Iniciando envío de datos\r\n\t{0}\r\n\t{1}\r\n\t{2}\r\n\t{3}",
+                                               r.Capacitado.DocumentoCompleto,
+                                               r.Capacitado.NombreCompleto,
+                                               r.Jornada.JornadaIdentificacionCompleta,
+                                               r.Estado.ToString());
+
+                LogHelper.GetInstance().WriteMessage(module, mensajelog);
+
+                string direccionServicioEnviarDatosOVAL = ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL");
+
+                LogHelper.GetInstance().WriteMessage(module, string.Format("Conectándose al servicio ubicado en {0}", direccionServicioEnviarDatosOVAL));
+
                 BasicHttpsBinding binding = new BasicHttpsBinding();
-                EndpointAddress address = new EndpointAddress(ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL"));
+                EndpointAddress address = new EndpointAddress(direccionServicioEnviarDatosOVAL);
 
                 ServiceEnviarDatosOVAL.ServiceSoapClient sOVAL = new ServiceEnviarDatosOVAL.ServiceSoapClient(binding, address);
 
@@ -43,13 +55,17 @@ namespace Cursos.Helpers.EnvioOVAL
                                             string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
                                             string.Empty);
 
+                LogHelper.GetInstance().WriteMessage(module, string.Format("Conexión finalizada\r\n\tResult: {0}\r\n\tErrorMessage: {1}", rOVAL.Result, rOVAL.ErrorMessage));
+
                 //si la propiedad Result tiene contenido, el registro se recibió correctamente
                 if (rOVAL.Result != string.Empty)
                 {
+                    LogHelper.GetInstance().WriteMessage(module, "El registro fue recibido por el sistema OVAL");
                     return new RespuestaOVAL() { Codigo = 0, Mensaje = string.Empty };
                 }
                 else
                 {
+                    LogHelper.GetInstance().WriteMessage(module, string.Format("El registro fue rechazado por el sistema OVAL ({0})", rOVAL.ErrorMessage));
                     return new RespuestaOVAL() { Codigo = 1, Mensaje = rOVAL.ErrorMessage };
                 }
             }
