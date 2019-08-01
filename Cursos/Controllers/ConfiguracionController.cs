@@ -1,6 +1,7 @@
 ﻿using Cursos.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -33,5 +34,20 @@ namespace Cursos.Controllers
 
             return View(configuracionItem);
         }
+
+        // POST: Cursos/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditarItem([Bind(Include = "ConfiguracionID,Index,Order,Seccion,SubSeccion,Label,Value")] Configuracion configuracion)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(configuracion).State = EntityState.Modified;
+                db.SaveChanges();
+                return View(configuracion);
+            }
+            return View("EditarItem", configuracion);
+        }
+
     }
 }

@@ -61,7 +61,7 @@ namespace Cursos.Helpers.EnvioOVAL
                 if (rOVAL.Result != string.Empty)
                 {
                     LogHelper.GetInstance().WriteMessage(module, "El registro fue recibido por el sistema OVAL");
-                    return new RespuestaOVAL() { Codigo = 0, Mensaje = string.Empty };
+                    return new RespuestaOVAL() { Codigo = 0, Mensaje = rOVAL.Result };
                 }
                 else
                 {
@@ -174,9 +174,7 @@ namespace Cursos.Helpers.EnvioOVAL
                     registroCapacitacion.EnvioOVALEstado = estado;
                     registroCapacitacion.EnvioOVALFechaHora = DateTime.Now;
                     registroCapacitacion.EnvioOVALUsuario = HttpContext.Current.User.Identity.Name;
-
-                    if (estado == EstadosEnvioOVAL.Rechazado)
-                        registroCapacitacion.EnvioOVALMensaje = respuesta.Mensaje;
+                    registroCapacitacion.EnvioOVALMensaje = respuesta.Mensaje;
 
                     db.Entry(registroCapacitacion).State = EntityState.Modified;
                     db.SaveChanges();

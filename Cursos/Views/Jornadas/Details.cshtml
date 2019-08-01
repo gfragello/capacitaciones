@@ -292,6 +292,7 @@ else
         //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
         $('#modalMensaje').on('hidden.bs.modal', function () {
             actualizarContenidoTabs();
+            $("#bodyMensaje").html("<p>Enviando datos al sistema OVAL. No cierre esta ventana.</p>");
             //location.reload(true);
         });
 

@@ -238,6 +238,11 @@ namespace Cursos.Controllers
                     nuevoRC.Aprobado = true;
                     nuevoRC.FechaVencimiento = j.ObtenerFechaVencimiento(true);
 
+                    if (j.PermiteEnviosOVAL)
+                        nuevoRC.EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio;
+                    else
+                        nuevoRC.EnvioOVALEstado = EstadosEnvioOVAL.NoEnviar;
+
                     db.RegistroCapacitacion.Add(nuevoRC);
                     db.SaveChanges();
 

@@ -32,7 +32,7 @@ function iniciarEnvioDatosOVAL() {
 
 //al abrir la ventana modal, se dispara la ejecución del envío de datos
 $("#modalMensaje").on('shown.bs.modal', function () {
-    
+
     switch (tipoDeEnvioOVAL) {
 
         case "RI":
