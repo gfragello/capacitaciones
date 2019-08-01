@@ -5,6 +5,28 @@
     ViewBag.Title = "Panel de envíos OVAL";
 }
 
+<div id="modalMensaje" class="modal" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Enviando notificaciones</h4>
+            </div>
+            <div id="bodyMensaje" class="modal-body" style="text-align: center;">
+                @Html.Partial("_CargandoPartial", Model)
+                <br />
+                <p>Enviando datos al sistema OVAL. No cierre esta ventana.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <h2>Panel de envíos OVAL</h2>
 
 <p>
@@ -21,3 +43,18 @@
 Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+
+@section Scripts {
+
+@Scripts.Render("~/Scripts/enviarOval.js")
+
+<script type="text/javascript">
+
+    //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
+    $('#modalMensaje').on('hidden.bs.modal', function () {
+        location.reload(true);
+    });
+
+</script>
+
+}
