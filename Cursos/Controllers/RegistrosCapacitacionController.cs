@@ -235,6 +235,16 @@ namespace Cursos.Controllers
             {
                 registroCapacitacion.SetearAtributosControl();
 
+                var jornada = db.Jornada.Where(j => j.JornadaID == registroCapacitacion.JornadaID).FirstOrDefault();
+
+                if (jornada == null)
+                    return HttpNotFound();
+
+                if (jornada.PermiteEnviosOVAL)
+                    registroCapacitacion.EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio;
+                else
+                    registroCapacitacion.EnvioOVALEstado = EstadosEnvioOVAL.NoEnviar;
+
                 db.RegistroCapacitacion.Add(registroCapacitacion);
                 db.SaveChanges();
                 //return RedirectToAction("Index");

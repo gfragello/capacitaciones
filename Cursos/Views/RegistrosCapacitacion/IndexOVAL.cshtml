@@ -35,6 +35,43 @@
 
 <hr />
 
+<hr />
+
+@*using (Html.BeginForm())
+    {
+        <table>
+            <tr>
+                <td>
+                    <div class="form-inline" style="margin:5px 3px;">
+                        <div class="form-group">
+                            <div class="col-md-5">
+                                @Html.Label("Empresa:")
+                            </div>
+                            <div class="col-md-10">
+                                @Html.DropDownList("EmpresaID", null, htmlAttributes: new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </td>
+
+                <td width="1%">
+                    <div class="form-group">
+                        <div class="col-md-2">
+                            <input type="submit" value="Buscar" />
+                        </div>
+                        <!--
+                        <div class="col-md-2">
+                            @Html.ActionLink("Limpiar filtros", "Index")
+                        </div>
+                        -->
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    }
+*@
+
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
 
 @Html.Partial("_ListRegistrosCapacitacionOvalPartial", Model)
