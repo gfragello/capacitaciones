@@ -9,58 +9,90 @@
 //------------------------------------------------------------------------------
 
 namespace Cursos.ServiceEnviarDatosOVAL {
-    using System.Runtime.Serialization;
-    using System;
     
     
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="WebServiceResponse", Namespace="http://microsoft.com/webservices/")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ServiceModel.ServiceContractAttribute(Namespace="http://microsoft.com/webservices/", ConfigurationName="ServiceEnviarDatosOVAL.ServiceSoap")]
+    public interface ServiceSoap {
+        
+        // CODEGEN: Generating message contract since message AuthenticationUserRequest has headers
+        [System.ServiceModel.OperationContractAttribute(Action="http://microsoft.com/webservices/AuthenticationUser", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse AuthenticationUser(Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://microsoft.com/webservices/AuthenticationUser", ReplyAction="*")]
+        System.Threading.Tasks.Task<Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse> AuthenticationUserAsync(Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest request);
+        
+        // CODEGEN: Generating message contract since message get_induccionRequest has headers
+        [System.ServiceModel.OperationContractAttribute(Action="http://microsoft.com/webservices/get_induccion", ReplyAction="*")]
+        [System.ServiceModel.XmlSerializerFormatAttribute(SupportFaults=true)]
+        Cursos.ServiceEnviarDatosOVAL.get_induccionResponse get_induccion(Cursos.ServiceEnviarDatosOVAL.get_induccionRequest request);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://microsoft.com/webservices/get_induccion", ReplyAction="*")]
+        System.Threading.Tasks.Task<Cursos.ServiceEnviarDatosOVAL.get_induccionResponse> get_induccionAsync(Cursos.ServiceEnviarDatosOVAL.get_induccionRequest request);
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
     [System.SerializableAttribute()]
-    public partial class WebServiceResponse : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://microsoft.com/webservices/")]
+    public partial class TokenSucurity : object, System.ComponentModel.INotifyPropertyChanged {
         
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        private string usernameField;
         
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ResultField;
+        private string passwordField;
         
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ErrorMessageField;
+        private string authenTokenField;
         
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+        private System.Xml.XmlAttribute[] anyAttrField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        public string Username {
             get {
-                return this.extensionDataField;
+                return this.usernameField;
             }
             set {
-                this.extensionDataField = value;
+                this.usernameField = value;
+                this.RaisePropertyChanged("Username");
             }
         }
         
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false)]
-        public string Result {
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        public string Password {
             get {
-                return this.ResultField;
+                return this.passwordField;
             }
             set {
-                if ((object.ReferenceEquals(this.ResultField, value) != true)) {
-                    this.ResultField = value;
-                    this.RaisePropertyChanged("Result");
-                }
+                this.passwordField = value;
+                this.RaisePropertyChanged("Password");
             }
         }
         
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
-        public string ErrorMessage {
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=2)]
+        public string AuthenToken {
             get {
-                return this.ErrorMessageField;
+                return this.authenTokenField;
             }
             set {
-                if ((object.ReferenceEquals(this.ErrorMessageField, value) != true)) {
-                    this.ErrorMessageField = value;
-                    this.RaisePropertyChanged("ErrorMessage");
-                }
+                this.authenTokenField = value;
+                this.RaisePropertyChanged("AuthenToken");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAnyAttributeAttribute()]
+        public System.Xml.XmlAttribute[] AnyAttr {
+            get {
+                return this.anyAttrField;
+            }
+            set {
+                this.anyAttrField = value;
+                this.RaisePropertyChanged("AnyAttr");
             }
         }
         
@@ -74,63 +106,118 @@ namespace Cursos.ServiceEnviarDatosOVAL {
         }
     }
     
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(Namespace="http://microsoft.com/webservices/", ConfigurationName="ServiceEnviarDatosOVAL.ServiceSoap")]
-    public interface ServiceSoap {
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.7.3056.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://microsoft.com/webservices/")]
+    public partial class WebServiceResponse : object, System.ComponentModel.INotifyPropertyChanged {
         
-        // CODEGEN: Generating message contract since element name tipo_doc from namespace http://microsoft.com/webservices/ is not marked nillable
-        [System.ServiceModel.OperationContractAttribute(Action="http://microsoft.com/webservices/get_induccion", ReplyAction="*")]
-        Cursos.ServiceEnviarDatosOVAL.get_induccionResponse get_induccion(Cursos.ServiceEnviarDatosOVAL.get_induccionRequest request);
+        private string resultField;
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://microsoft.com/webservices/get_induccion", ReplyAction="*")]
-        System.Threading.Tasks.Task<Cursos.ServiceEnviarDatosOVAL.get_induccionResponse> get_induccionAsync(Cursos.ServiceEnviarDatosOVAL.get_induccionRequest request);
+        private string errorMessageField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=0)]
+        public string Result {
+            get {
+                return this.resultField;
+            }
+            set {
+                this.resultField = value;
+                this.RaisePropertyChanged("Result");
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute(Order=1)]
+        public string ErrorMessage {
+            get {
+                return this.errorMessageField;
+            }
+            set {
+                this.errorMessageField = value;
+                this.RaisePropertyChanged("ErrorMessage");
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="AuthenticationUser", WrapperNamespace="http://microsoft.com/webservices/", IsWrapped=true)]
+    public partial class AuthenticationUserRequest {
+        
+        [System.ServiceModel.MessageHeaderAttribute(Namespace="http://microsoft.com/webservices/")]
+        public Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity;
+        
+        public AuthenticationUserRequest() {
+        }
+        
+        public AuthenticationUserRequest(Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity) {
+            this.TokenSucurity = TokenSucurity;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="AuthenticationUserResponse", WrapperNamespace="http://microsoft.com/webservices/", IsWrapped=true)]
+    public partial class AuthenticationUserResponse {
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=0)]
+        public string AuthenticationUserResult;
+        
+        public AuthenticationUserResponse() {
+        }
+        
+        public AuthenticationUserResponse(string AuthenticationUserResult) {
+            this.AuthenticationUserResult = AuthenticationUserResult;
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="get_induccion", WrapperNamespace="http://microsoft.com/webservices/", IsWrapped=true)]
     public partial class get_induccionRequest {
         
-        [System.ServiceModel.MessageBodyMemberAttribute(Name="get_induccion", Namespace="http://microsoft.com/webservices/", Order=0)]
-        public Cursos.ServiceEnviarDatosOVAL.get_induccionRequestBody Body;
+        [System.ServiceModel.MessageHeaderAttribute(Namespace="http://microsoft.com/webservices/")]
+        public Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=0)]
+        public string tipo_doc;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=1)]
+        public string rut_trabajador;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=2)]
+        public string tipo_inducción;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=3)]
+        public string estado_induccion;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=4)]
+        public string fecha_inducción;
+        
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=5)]
+        public string Notas;
         
         public get_induccionRequest() {
         }
         
-        public get_induccionRequest(Cursos.ServiceEnviarDatosOVAL.get_induccionRequestBody Body) {
-            this.Body = Body;
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://microsoft.com/webservices/")]
-    public partial class get_induccionRequestBody {
-        
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
-        public string tipo_doc;
-        
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=1)]
-        public string rut_trabajador;
-        
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=2)]
-        public string tipo_inducción;
-        
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=3)]
-        public string estado_induccion;
-        
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=4)]
-        public string fecha_inducción;
-        
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=5)]
-        public string Notas;
-        
-        public get_induccionRequestBody() {
-        }
-        
-        public get_induccionRequestBody(string tipo_doc, string rut_trabajador, string tipo_inducción, string estado_induccion, string fecha_inducción, string Notas) {
+        public get_induccionRequest(Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity, string tipo_doc, string rut_trabajador, string tipo_inducción, string estado_induccion, string fecha_inducción, string Notas) {
+            this.TokenSucurity = TokenSucurity;
             this.tipo_doc = tipo_doc;
             this.rut_trabajador = rut_trabajador;
             this.tipo_inducción = tipo_inducción;
@@ -143,33 +230,16 @@ namespace Cursos.ServiceEnviarDatosOVAL {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
+    [System.ServiceModel.MessageContractAttribute(WrapperName="get_induccionResponse", WrapperNamespace="http://microsoft.com/webservices/", IsWrapped=true)]
     public partial class get_induccionResponse {
         
-        [System.ServiceModel.MessageBodyMemberAttribute(Name="get_induccionResponse", Namespace="http://microsoft.com/webservices/", Order=0)]
-        public Cursos.ServiceEnviarDatosOVAL.get_induccionResponseBody Body;
+        [System.ServiceModel.MessageBodyMemberAttribute(Namespace="http://microsoft.com/webservices/", Order=0)]
+        public Cursos.ServiceEnviarDatosOVAL.WebServiceResponse get_induccionResult;
         
         public get_induccionResponse() {
         }
         
-        public get_induccionResponse(Cursos.ServiceEnviarDatosOVAL.get_induccionResponseBody Body) {
-            this.Body = Body;
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-    [System.Runtime.Serialization.DataContractAttribute(Namespace="http://microsoft.com/webservices/")]
-    public partial class get_induccionResponseBody {
-        
-        [System.Runtime.Serialization.DataMemberAttribute(EmitDefaultValue=false, Order=0)]
-        public Cursos.ServiceEnviarDatosOVAL.WebServiceResponse get_induccionResult;
-        
-        public get_induccionResponseBody() {
-        }
-        
-        public get_induccionResponseBody(Cursos.ServiceEnviarDatosOVAL.WebServiceResponse get_induccionResult) {
+        public get_induccionResponse(Cursos.ServiceEnviarDatosOVAL.WebServiceResponse get_induccionResult) {
             this.get_induccionResult = get_induccionResult;
         }
     }
@@ -202,21 +272,44 @@ namespace Cursos.ServiceEnviarDatosOVAL {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse Cursos.ServiceEnviarDatosOVAL.ServiceSoap.AuthenticationUser(Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest request) {
+            return base.Channel.AuthenticationUser(request);
+        }
+        
+        public string AuthenticationUser(Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity) {
+            Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest inValue = new Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest();
+            inValue.TokenSucurity = TokenSucurity;
+            Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse retVal = ((Cursos.ServiceEnviarDatosOVAL.ServiceSoap)(this)).AuthenticationUser(inValue);
+            return retVal.AuthenticationUserResult;
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
+        System.Threading.Tasks.Task<Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse> Cursos.ServiceEnviarDatosOVAL.ServiceSoap.AuthenticationUserAsync(Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest request) {
+            return base.Channel.AuthenticationUserAsync(request);
+        }
+        
+        public System.Threading.Tasks.Task<Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse> AuthenticationUserAsync(Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity) {
+            Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest inValue = new Cursos.ServiceEnviarDatosOVAL.AuthenticationUserRequest();
+            inValue.TokenSucurity = TokenSucurity;
+            return ((Cursos.ServiceEnviarDatosOVAL.ServiceSoap)(this)).AuthenticationUserAsync(inValue);
+        }
+        
+        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         Cursos.ServiceEnviarDatosOVAL.get_induccionResponse Cursos.ServiceEnviarDatosOVAL.ServiceSoap.get_induccion(Cursos.ServiceEnviarDatosOVAL.get_induccionRequest request) {
             return base.Channel.get_induccion(request);
         }
         
-        public Cursos.ServiceEnviarDatosOVAL.WebServiceResponse get_induccion(string tipo_doc, string rut_trabajador, string tipo_inducción, string estado_induccion, string fecha_inducción, string Notas) {
+        public Cursos.ServiceEnviarDatosOVAL.WebServiceResponse get_induccion(Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity, string tipo_doc, string rut_trabajador, string tipo_inducción, string estado_induccion, string fecha_inducción, string Notas) {
             Cursos.ServiceEnviarDatosOVAL.get_induccionRequest inValue = new Cursos.ServiceEnviarDatosOVAL.get_induccionRequest();
-            inValue.Body = new Cursos.ServiceEnviarDatosOVAL.get_induccionRequestBody();
-            inValue.Body.tipo_doc = tipo_doc;
-            inValue.Body.rut_trabajador = rut_trabajador;
-            inValue.Body.tipo_inducción = tipo_inducción;
-            inValue.Body.estado_induccion = estado_induccion;
-            inValue.Body.fecha_inducción = fecha_inducción;
-            inValue.Body.Notas = Notas;
+            inValue.TokenSucurity = TokenSucurity;
+            inValue.tipo_doc = tipo_doc;
+            inValue.rut_trabajador = rut_trabajador;
+            inValue.tipo_inducción = tipo_inducción;
+            inValue.estado_induccion = estado_induccion;
+            inValue.fecha_inducción = fecha_inducción;
+            inValue.Notas = Notas;
             Cursos.ServiceEnviarDatosOVAL.get_induccionResponse retVal = ((Cursos.ServiceEnviarDatosOVAL.ServiceSoap)(this)).get_induccion(inValue);
-            return retVal.Body.get_induccionResult;
+            return retVal.get_induccionResult;
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
@@ -224,15 +317,15 @@ namespace Cursos.ServiceEnviarDatosOVAL {
             return base.Channel.get_induccionAsync(request);
         }
         
-        public System.Threading.Tasks.Task<Cursos.ServiceEnviarDatosOVAL.get_induccionResponse> get_induccionAsync(string tipo_doc, string rut_trabajador, string tipo_inducción, string estado_induccion, string fecha_inducción, string Notas) {
+        public System.Threading.Tasks.Task<Cursos.ServiceEnviarDatosOVAL.get_induccionResponse> get_induccionAsync(Cursos.ServiceEnviarDatosOVAL.TokenSucurity TokenSucurity, string tipo_doc, string rut_trabajador, string tipo_inducción, string estado_induccion, string fecha_inducción, string Notas) {
             Cursos.ServiceEnviarDatosOVAL.get_induccionRequest inValue = new Cursos.ServiceEnviarDatosOVAL.get_induccionRequest();
-            inValue.Body = new Cursos.ServiceEnviarDatosOVAL.get_induccionRequestBody();
-            inValue.Body.tipo_doc = tipo_doc;
-            inValue.Body.rut_trabajador = rut_trabajador;
-            inValue.Body.tipo_inducción = tipo_inducción;
-            inValue.Body.estado_induccion = estado_induccion;
-            inValue.Body.fecha_inducción = fecha_inducción;
-            inValue.Body.Notas = Notas;
+            inValue.TokenSucurity = TokenSucurity;
+            inValue.tipo_doc = tipo_doc;
+            inValue.rut_trabajador = rut_trabajador;
+            inValue.tipo_inducción = tipo_inducción;
+            inValue.estado_induccion = estado_induccion;
+            inValue.fecha_inducción = fecha_inducción;
+            inValue.Notas = Notas;
             return ((Cursos.ServiceEnviarDatosOVAL.ServiceSoap)(this)).get_induccionAsync(inValue);
         }
     }

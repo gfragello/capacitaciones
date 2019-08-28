@@ -546,15 +546,17 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="images\cargando.gif" />
+    <None Include="Service References\ServiceEnviarDatosOVAL\configuration91.svcinfo" />
+    <None Include="Service References\ServiceEnviarDatosOVAL\configuration.svcinfo" />
+    <Content Include="Service References\ServiceEnviarDatosOVAL\Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
     <Content Include="Service References\ServiceEnviarDatosOVAL\Cursos.ServiceEnviarDatosOVAL.get_induccionResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Service References\ServiceEnviarDatosOVAL\Cursos.ServiceEnviarDatosOVAL.WebServiceResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
-    <None Include="Service References\ServiceEnviarDatosOVAL\Service.disco" />
-    <None Include="Service References\ServiceEnviarDatosOVAL\configuration91.svcinfo" />
-    <None Include="Service References\ServiceEnviarDatosOVAL\configuration.svcinfo" />
     <None Include="Service References\ServiceEnviarDatosOVAL\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
@@ -673,8 +675,8 @@
     <Content Include="Views\RegistrosCapacitacion\IndexOVAL.cshtml" />
     <Content Include="Views\RegistrosCapacitacion\IndexLogs_enviosOVAL.cshtml" />
     <Content Include="Views\Shared\_ListLogsPartial.cshtml" />
-    <None Include="Service References\ServiceEnviarDatosOVAL\Service.wsdl" />
     <Content Include="Views\Configuracion\EditarItem.cshtml" />
+    <None Include="Service References\ServiceEnviarDatosOVAL\Service.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

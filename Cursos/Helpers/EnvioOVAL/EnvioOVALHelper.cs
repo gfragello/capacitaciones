@@ -47,8 +47,19 @@ namespace Cursos.Helpers.EnvioOVAL
                 EndpointAddress address = new EndpointAddress(direccionServicioEnviarDatosOVAL);
 
                 ServiceEnviarDatosOVAL.ServiceSoapClient sOVAL = new ServiceEnviarDatosOVAL.ServiceSoapClient(binding, address);
+                ServiceEnviarDatosOVAL.TokenSucurity token = new ServiceEnviarDatosOVAL.TokenSucurity
+                {
+                    Username = ConfiguracionHelper.GetInstance().GetValue("Usuario", "EnvioOVAL"),
+                    Password = ConfiguracionHelper.GetInstance().GetValue("Password", "EnvioOVAL")
+                };
 
-                rOVAL = sOVAL.get_induccion(r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
+                //Se invoca el método para validar las credenciaes del usuario (devuelve un string)
+                string responseToken = sOVAL.AuthenticationUser(token);
+
+                token.AuthenToken = responseToken;
+
+                rOVAL = sOVAL.get_induccion(token,
+                                            r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
                                             r.Capacitado.Documento,
                                             "CAP_SEG",
                                             r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
