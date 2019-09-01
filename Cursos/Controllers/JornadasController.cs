@@ -214,6 +214,9 @@ namespace Cursos.Controllers
 
                 jornada.HoraFormatoNumerico = int.Parse(jornada.HoraSinSeparador);
 
+                TimeSpan hora = new TimeSpan(jornada.Hora_HH, jornada.Minuto_MM, 0);
+                jornada.Fecha = jornada.Fecha.Add(hora);
+
                 db.Jornada.Add(jornada);
                 db.SaveChanges();
 
@@ -274,6 +277,9 @@ namespace Cursos.Controllers
                 jornada.SetearAtributosControl();
 
                 jornada.HoraFormatoNumerico = int.Parse(jornada.HoraSinSeparador);
+
+                TimeSpan hora = new TimeSpan(jornada.Hora_HH, jornada.Minuto_MM, 0);
+                jornada.Fecha = jornada.Fecha.Add(hora);
 
                 db.Entry(jornada).State = EntityState.Modified;
                 db.SaveChanges();

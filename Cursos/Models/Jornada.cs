@@ -33,16 +33,35 @@ namespace Cursos.Models
         }
 
         public int HoraFormatoNumerico { get; set; }
+        
+        public int Hora_HH
+        {
+            get
+            {
+                if (this.HoraFormatoNumerico > 0)
+                    return this.HoraFormatoNumerico.ToString().Length == 3 ? int.Parse(this.HoraFormatoNumerico.ToString().Substring(0, 1)) : int.Parse(this.HoraFormatoNumerico.ToString().Substring(0, 2));
+
+                return 0;
+            }
+        }
+
+        public int Minuto_MM
+        {
+            get
+            {
+                if (this.HoraFormatoNumerico > 0)
+                    return this.HoraFormatoNumerico.ToString().Length == 3 ? int.Parse(this.HoraFormatoNumerico.ToString().Substring(1, 2)) : int.Parse(this.HoraFormatoNumerico.ToString().Substring(2, 2));
+
+                return 0;
+            }
+        }
 
         [NotMapped]
         public DateTime FechaHora
         {
             get
             {
-                int hora = int.Parse(this.Hora.Substring(0, 2));
-                int minuto = int.Parse(this.Hora.Substring(3, 2));
-
-                return new DateTime(this.Fecha.Year, this.Fecha.Month, this.Fecha.Day, hora, minuto, 0);
+                return new DateTime(this.Fecha.Year, this.Fecha.Month, this.Fecha.Day, this.Hora_HH, this.Minuto_MM, 0);
             }
         }
 

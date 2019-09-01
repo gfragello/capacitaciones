@@ -19,9 +19,12 @@
         <th>
             @Html.DisplayNameFor(model => model.Estado)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.EnvioOVALEstado)
-        </th>
+        @if (!User.IsInRole("IncripcionesExternas"))
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.EnvioOVALEstado)
+            </th>
+        }
         <th></th>
     </tr>
 
@@ -43,10 +46,13 @@
             </td>
             <td>
                 <span class="label @labelClass">@item.Estado</span>
-            </td>    
-            <td style="text-align:center">
-                @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
             </td>
+            @if (!User.IsInRole("IncripcionesExternas"))
+            {
+                <td style="text-align:center">
+                    @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
+                </td>
+            }
             <td>
                 @if (item.Jornada.PuedeModificarse())
                 {

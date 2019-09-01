@@ -29,6 +29,9 @@ namespace Cursos.Controllers
                                   int? currentCursoID, int? CursoID, 
                                   int? page, bool? exportarExcel)
         {
+            if (User.IsInRole("IncripcionesExternas"))
+                return RedirectToAction("Disponibles", "Jornadas");
+
             if (nombre != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
                 page = 1;
             else
