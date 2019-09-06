@@ -16,7 +16,7 @@ using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,IncripcionesExternas")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InscripcionesExternas")]
     public class CapacitadosController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -29,7 +29,8 @@ namespace Cursos.Controllers
                                   int? currentCursoID, int? CursoID, 
                                   int? page, bool? exportarExcel)
         {
-            if (User.IsInRole("IncripcionesExternas"))
+            //no se permite el acceso al Index de capacitados a los usuarios que solamente tienen el rol InscripcionesExternas
+            if (User.IsInRole("InscripcionesExternas") && !User.IsInRole("ConsultaEmpresa"))
                 return RedirectToAction("Disponibles", "Jornadas");
 
             if (nombre != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
@@ -167,7 +168,7 @@ namespace Cursos.Controllers
         // GET: Capacitados/Create 
         //Si se especifica un valor en el parametro documentoTemplate, se muestra el valor pre cargado en la pantalla
         //Si se especifica un valor de jornadaId, luego de crear el usuario se lo agrega automáticamente a la jornada
-        [Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
+        [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
         public ActionResult Create(int? jornadaId)
         {
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
@@ -250,7 +251,7 @@ namespace Cursos.Controllers
                     db.SaveChanges();
 
                     //si la incripción fue registrada por un usuario con perfil para inscripciones externas, se notifica por email
-                    if (System.Web.HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+                    if (System.Web.HttpContext.Current.User.IsInRole("InscripcionesExternas"))
                         NotificacionesEMailHelper.GetInstance().EnviarEmailsNotificacionInscripcionExterna(nuevoRC, true);
 
                     return RedirectToAction("Details", "Jornadas", new { id = jornadaId });

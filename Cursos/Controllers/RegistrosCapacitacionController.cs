@@ -17,7 +17,7 @@ using Cursos.Helpers.EnvioOVAL;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
     public class RegistrosCapacitacionController : Controller
     {
         private CursosDbContext db = new CursosDbContext();

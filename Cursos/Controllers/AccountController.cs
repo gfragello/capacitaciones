@@ -142,6 +142,19 @@ namespace Cursos.Controllers
             else
                 ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
 
+            ViewBag.PermitirInscripcionesExternas = false;
+
+            foreach (var ur in usuario.Roles)
+            {
+                var role = db.Roles.Where(r => r.Id == ur.RoleId).FirstOrDefault();
+
+                if (role.Name == "InscripcionesExternas")
+                {
+                    ViewBag.PermitirInscripcionesExternas = true;
+                    break;
+                }
+            } 
+
             return View(usuario);
         }
 
@@ -156,7 +169,12 @@ namespace Cursos.Controllers
             string roleNameEditado = Request["RoleName"];
             Empresa empresaEditada = dbcursos.Empresas.Find(int.Parse(Request["EmpresaID"]));
 
+            //https://blog.productiveedge.com/asp-net-mvc-checkboxfor-explained
+            bool permitirInscripcionesExternas = Request["PermitirInscripcionesExternas"].Contains("true") ? true : false;
+
             var usuario = db.Users.Where(u => u.Id == id).FirstOrDefault();
+
+            bool usuarioPuedeInscripcionesExternas = UsuarioHelper.GetInstance().UsuarioTieneRol(usuario.UserName, "InscripcionesExternas");
 
             string roleNameActual = UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId);
             var empresaActual = UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(usuario.UserName);
@@ -171,6 +189,18 @@ namespace Cursos.Controllers
 
                 this.UserManager.RemoveFromRole(id, roleNameActual);
                 await this.UserManager.AddToRoleAsync(id, roleNameEditado);
+            }
+
+            //si está seleccionada la opción "PermitirInscripcionesExternas" y el usuario editado no tenía el rol asociado, se le agrega el rol "InscripcionesExternas"
+            if (permitirInscripcionesExternas)
+            { 
+                if (!usuarioPuedeInscripcionesExternas && roleNameEditado == "ConsultaEmpresa")
+                    await this.UserManager.AddToRoleAsync(id, "InscripcionesExternas");
+            }
+            else //si no está seleccionada la opción "PermitirInscripcionesExternas" y el usuario editado no tenía el rol asociado anteriormente, se retira el rol
+            {
+                if (usuarioPuedeInscripcionesExternas)
+                    this.UserManager.RemoveFromRole(id, "InscripcionesExternas");
             }
 
             int empresaActualID = -1;
@@ -256,7 +286,7 @@ namespace Cursos.Controllers
         public ActionResult Login(string returnUrl)
         {
             //si se intenta hacer cualquier acción desde jornadas.csl.uy, se redirige a la página de Jornadas Disponibles
-            //if (Request.Url.Host == "jornadas.csl.uy" || System.Web.HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+            //if (Request.Url.Host == "jornadas.csl.uy" || System.Web.HttpContext.Current.User.IsInRole("InscripcionesExternas"))
 
                 if (Request.Url.Host == "jornadas.csl.uy")
                     return RedirectToAction("Disponibles", "Jornadas");
@@ -373,6 +403,9 @@ namespace Cursos.Controllers
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
                     await this.UserManager.AddToRoleAsync(user.Id, model.RoleName);
+
+                    if (model.RoleName == "ConsultaEmpresa" && model.PermitirInscripcionesExternas)
+                        await this.UserManager.AddToRoleAsync(user.Id, "InscripcionesExternas");
 
                     if (model.RoleName == "ConsultaEmpresa")
                         this.AsociarUsuarioAEmpresa(model.EmpresaID, model.Email);

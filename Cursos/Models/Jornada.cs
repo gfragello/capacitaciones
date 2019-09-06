@@ -370,7 +370,7 @@ namespace Cursos.Models
         {
             get
             {
-                return this.PuedeRecibirIncripciones && (this.PuedeModificarse() || HttpContext.Current.User.IsInRole("IncripcionesExternas"));
+                return this.PuedeRecibirIncripciones && (this.PuedeModificarse() || HttpContext.Current.User.IsInRole("InscripcionesExternas"));
             }
         }
 

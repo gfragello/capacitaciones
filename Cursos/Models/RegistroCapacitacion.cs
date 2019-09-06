@@ -93,7 +93,7 @@ namespace Cursos.Models
                 {
                     puedeEliminar = true;
                 }
-                else if (HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+                else if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
                 {
                     if (this.UsuarioModificacion == HttpContext.Current.User.Identity.Name && this.Estado == EstadosRegistroCapacitacion.Inscripto)
                         puedeEliminar = true;

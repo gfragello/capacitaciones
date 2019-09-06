@@ -19,7 +19,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Estado)
         </th>
-        @if (!User.IsInRole("IncripcionesExternas"))
+        @if (!User.IsInRole("InscripcionesExternas"))
         {
             <th>
                 @Html.DisplayNameFor(model => model.EnvioOVALEstado)
@@ -47,7 +47,7 @@
             <td>
                 <span class="label @labelClass">@item.Estado</span>
             </td>
-            @if (!User.IsInRole("IncripcionesExternas"))
+            @if (!User.IsInRole("InscripcionesExternas"))
             {
                 <td style="text-align:center">
                     @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))

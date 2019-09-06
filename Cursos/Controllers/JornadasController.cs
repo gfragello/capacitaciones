@@ -19,7 +19,7 @@ using Cursos.Helpers.EnvioOVAL;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
     public class JornadasController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -107,7 +107,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Jornadas/Details/5
-        //[Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
+        //[Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
         public ActionResult Details(int? id,
                                     bool? exportarExcel,
                                     bool? generarActa)
@@ -425,7 +425,7 @@ namespace Cursos.Controllers
             db.SaveChanges();
 
             //si la incripción fue registrada por un usuario con perfil para inscripciones externas, se notifica por email
-            if (System.Web.HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+            if (System.Web.HttpContext.Current.User.IsInRole("InscripcionesExternas"))
                 NotificacionesEMailHelper.GetInstance().EnviarEmailsNotificacionInscripcionExterna(registroCapacitacion, false);
 
             return Json(true, JsonRequestBehavior.AllowGet);
@@ -543,7 +543,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Jornadas/Details/5
-        //[Authorize(Roles = "Administrador,AdministradorExterno,IncripcionesExternas")]
+        //[Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
         public ActionResult CargarFotos(int? id)
         {
             if (id == null)

@@ -84,6 +84,9 @@ namespace Cursos.Models
         public string RoleName { get; set; }
 
         public int EmpresaID { get; set; }
+
+        [Display(Name = "Permitir Incripciones Externas")]
+        public bool PermitirInscripcionesExternas { get; set; }
     }
 
     public class ResetPasswordViewModel

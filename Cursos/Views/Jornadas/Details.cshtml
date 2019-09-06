@@ -88,7 +88,7 @@
     </div>
 
     @*No se muestran los datos de auditoría para los usuarios de inscripción externa*@
-    @if (!HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+    @if (!HttpContext.Current.User.IsInRole("InscripcionesExternas"))
     { 
         @Html.Partial("_DatosModificacionPartial", Model)
     }
@@ -124,8 +124,8 @@
         textoAccionJornadaAutorizadas = "No Autorizar";
     }
 
-    @*Los usuarios con perfil IncripcionesExternas no tienen acceso al menú de opciones*@
-    @if (!HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+    @*Los usuarios con perfil InscripcionesExternas no tienen acceso al menú de opciones*@
+    @if (!HttpContext.Current.User.IsInRole("InscripcionesExternas"))
     {
         <p style="vertical-align: middle;">
             <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
@@ -244,8 +244,8 @@
 
 <br />
 
-@*Los usuarios con perfil IncripcionesExternas solo tienen acceso al detalle de inscriptos a la jornada*@
-@if (HttpContext.Current.User.IsInRole("IncripcionesExternas"))
+@*Los usuarios con perfil InscripcionesExternas solo tienen acceso al detalle de inscriptos a la jornada*@
+@if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
 {
     <h4>Inscriptos a la jornada</h4>
 

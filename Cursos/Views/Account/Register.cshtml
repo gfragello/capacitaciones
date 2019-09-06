@@ -20,13 +20,13 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Password, new { @class = "form-control" })
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control" })
         </div>
     </div>
 
@@ -46,6 +46,17 @@
         </div>
     </div>
 
+    @*La sección donde se selecciona si se  permiten inscripciones externas, se inicializará como
+        no visible porque el perfil "ConsultaEmpresa" no será el primero en mostrarse *@
+    <div class="form-group" style="display:none" id="SeccionPermitirInscripcionesExternas">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="checkbox">
+                @Html.CheckBoxFor(m => m.PermitirInscripcionesExternas)
+                @Html.LabelFor(m => m.PermitirInscripcionesExternas, htmlAttributes: new { @class = "control-label" })
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <input type="submit" class="btn btn-default" value="Register" />
@@ -62,8 +73,12 @@
             var value = $(this).val();
             if (value == 'ConsultaEmpresa') {
                 $('#SeccionDatosEmpresa').show();
+                $('#SeccionPermitirInscripcionesExternas').show();
             } else {
                 $('#SeccionDatosEmpresa').hide();
+                $('#SeccionPermitirInscripcionesExternas').hide();
+
+                $("#PermitirInscripcionesExternas").prop("checked", false);
             }
         });
     })

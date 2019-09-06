@@ -38,6 +38,15 @@
             </div>
         </div>
 
+        <div class="form-group" style="@visible" id="SeccionPermitirInscripcionesExternas">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    @Html.CheckBox("PermitirInscripcionesExternas", (bool)ViewBag.PermitirInscripcionesExternas)
+                    @Html.Label("Permitir Incripciones Externas", htmlAttributes: new { @class = "control-label" })
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
@@ -60,8 +69,12 @@
             var value = $(this).val();
             if (value == 'ConsultaEmpresa') {
                 $('#SeccionDatosEmpresa').show();
+                $('#SeccionPermitirInscripcionesExternas').show();
             } else {
                 $('#SeccionDatosEmpresa').hide();
+                $('#SeccionPermitirInscripcionesExternas').hide();
+
+                $("#PermitirInscripcionesExternas").prop("checked", false);
             }
         });
     })

@@ -48,5 +48,23 @@ namespace Cursos.Helpers
             return empresausuario != null ? empresausuario.Empresa : null;
         }
 
+        public bool UsuarioTieneRol(string username, string rolename)
+        {
+            var user = db.Users.Where(u => u.UserName == username).FirstOrDefault();
+
+            if (user != null)
+            {
+                foreach (var ur in user.Roles)
+                {
+                    var role = db.Roles.Where(r => r.Id == ur.RoleId).FirstOrDefault();
+
+                    if (role != null)
+                        if (role.Name == rolename) return true;
+                }
+            }
+
+            return false;
+        }
+
     }
 }
