@@ -62,22 +62,22 @@
         string textColor = item.CuposDisponibles ? "black" : "red";
 
         <tr style="color: @textColor;">
-            <td>
+            <td style="vertical-align: middle;">
                 @Html.DisplayFor(modelItem => item.Fecha)
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 @Html.DisplayFor(modelItem => item.Hora)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Curso.Descripcion)
+            <td style="vertical-align: middle;">
+                @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCurso(item))
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 @Html.DisplayFor(modelItem => item.Lugar.NombreLugar)
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 @Html.DisplayFor(modelItem => item.Direccion)
             </td>
-            <td>
+            <td style="vertical-align: middle;">
                 @Html.DisplayFor(modelItem => item.Caracteristicas)
             </td>
             <td style="font-weight: bold;">
@@ -105,11 +105,15 @@
                     string textoLink = "Ver jornada";
                 }
 
-                @if (item.PuedeRecibirIncripciones)
+                @if (item.PuedeAgregarInscripcionesUsuarioActual)
                 {
                     textoLink = "Registrar inscripción";
+                    <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@textoLink</a>
                 }
-                <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@textoLink</a>
+                else
+                {
+                    @:&nbsp;
+                }
             </td>
         </tr>
     }

@@ -15,19 +15,25 @@ namespace Cursos.Helpers
             return _instance;
         }
 
+        public string ObtenerLabelCurso(Jornada j)
+        {
+            return string.Format("<h5><span class=\"label label-default\" style=\"color: #333333; background-color: {0}\">{1}</span></h5>",
+                                 j.Curso.ColorDeFondo, j.Curso.Descripcion);
+        }
+
         public string ObtenerLabelTotalCuposDisponibles(Jornada j)
         {
             string cantidadCuposDisponiblesTexto = j.CantidadCuposDisponiblesTexto;
 
             if (j.QuedanCuposDisponibles)
-                return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", cantidadCuposDisponiblesTexto);
+                return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", cantidadCuposDisponiblesTexto);
             else
-                return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h4>", cantidadCuposDisponiblesTexto);
+                return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h5>", cantidadCuposDisponiblesTexto);
         }
 
         public string ObtenerLabelTotalInscriptos(Jornada j)
         {
-            return string.Format("<h4><span class=\"label label-default\">{0}</span></h4>", j.TotalInscriptosTexto);
+            return string.Format("<h5><span class=\"label label-default\">{0}</span></h5>", j.TotalInscriptosTexto);
         }
 
         public string ObtenerLabelCierreInscripcion(Jornada j)
@@ -37,12 +43,12 @@ namespace Cursos.Helpers
             if (j.TieneCierreIncripcion)
             {
                 if (j.FechaCierreInscripcion >= DateTime.Now)
-                    return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", cierreInscripcionTexto);
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", cierreInscripcionTexto);
                 else
-                    return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h4>", cierreInscripcionTexto);
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h5>", cierreInscripcionTexto);
             }
             else
-                return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", cierreInscripcionTexto);
+                return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", cierreInscripcionTexto);
         }
 
         public string ObtenerLabelMinimoAsistentes(Jornada j)
@@ -52,12 +58,12 @@ namespace Cursos.Helpers
             if (j.TieneMinimoAsistentes)
             {
                 if (j.TotalInscriptos >= j.MinimoAsistentes)
-                    return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", minimoAsistentesTexto);
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", minimoAsistentesTexto);
                 else
-                    return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h4>", minimoAsistentesTexto);
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h5>", minimoAsistentesTexto);
             }
             else
-                return string.Format("<h4><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h4>", minimoAsistentesTexto);
+                return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", minimoAsistentesTexto);
         }
     }
 }

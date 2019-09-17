@@ -16,7 +16,7 @@ using Cursos.Models.Enums;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InscripcionesExternas")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InscripcionesExternas,InstructorExterno")]
     public class CapacitadosController : Controller
     {
         private CursosDbContext db = new CursosDbContext();

@@ -87,6 +87,60 @@ namespace Cursos.Helpers
             }
         }
 
+        public bool EnviarEmailJornadaCreacion(Jornada jornada)
+        {
+            if (jornada != null)
+            {
+                var message = new MailMessage();
+
+                foreach (var emailDestinatario in ConfiguracionHelper.GetInstance().GetValue("EmailCreacionJornadaEDestinatario", "Notificaciones").Split(','))
+                {
+                    message.To.Add(new MailAddress(emailDestinatario));
+                }
+
+                message.From = new MailAddress(ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Notificaciones"));
+
+                //en el subject del mail se agrega un valor randómico para evitar que los mensajes se muestren anidados en los clientes web mail
+                message.Subject = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailCreacionJornadaEAsunto", "Notificaciones"), this.GenerateRandomicoSubjectMail());
+
+                UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
+
+                message.Body = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailCreacionJornadaECuerpo", "Notificaciones"),
+                                                System.Web.HttpContext.Current.User.Identity.Name,
+                                                url.Action("Details", "Jornadas", new { id = jornada.JornadaID }, "http"));
+
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    var credential = new NetworkCredential
+                    {
+                        UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Notificaciones"),
+                        Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario", "Notificaciones")
+                    };
+
+                    smtp.Credentials = credential;
+                    smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost", "Notificaciones");
+                    smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort", "Notificaciones"));
+                    smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL", "Notificaciones"));
+
+                    try
+                    {
+                        smtp.Send(message);
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private string GenerateRandomicoSubjectMail()
         {
             int _min = 0;

@@ -57,7 +57,7 @@
                             @Html.Label("Creadas otros usuarios:")
                         </div>
                         <div class="col-md-10">
-                            @{bool creadasOtrosUsuarios = ViewBag.CurrentCreadasOtrosUsuarios != null ? ViewBag.CurrentCreadasOtrosUsuarios : false;}
+                            @{bool creadasOtrosUsuarios = ViewBag.CurrentCreadasOtrosUsuarios != null ? ViewBag.CurrentCreadasOtrosUsuarios : true;}
                             @Html.CheckBox("creadasOtrosUsuarios", creadasOtrosUsuarios)
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                         </div>
                         <div class="col-md-10">
                             @{bool autorizacionPendiente = ViewBag.CurrentAutorizacionPendiente != null ? ViewBag.CurrentAutorizacionPendiente : false;}
-                            @Html.CheckBox("autorizacionPendiente", creadasOtrosUsuarios)
+                            @Html.CheckBox("autorizacionPendiente", autorizacionPendiente)
                         </div>
                     </div>
 
@@ -96,6 +96,9 @@
 <table class="table table-striped">
     <tr>
         <th>
+            &nbsp;
+        </th>
+        <th>
             Curso
         </th>
         <th>
@@ -114,9 +117,6 @@
             Hora
         </th>
         <th>
-            Características
-        </th>
-        <th>
             Disponibilidad
         </th>
         <th></th> <!--Columna con acciones sobre el elemento -->
@@ -128,6 +128,16 @@
         string textColor = item.CuposDisponibles ? "black" : "red";
 
         <tr>
+            <td>
+                    @if (item.UsuarioModificacion != User.Identity.Name)
+                    {
+                        <img src="@Url.Content("~/images/usuario_16x16.png")" title="@item.UsuarioModificacion - @item.FechaModficacion" />
+                    }
+                    else
+                    {
+                        @:&nbsp;
+                    }
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Curso.Descripcion)
             </td>
@@ -146,23 +156,11 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Hora)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Caracteristicas)
-            </td>
             <td style="color: @textColor">
                 @Html.DisplayFor(modelItem => item.CuposDisponiblesTexto)
             </td>
             <td>
                 <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>
-                @if (ViewBag.CurrentCreadasOtrosUsuarios != null) //solo si se muestran las Jornadas creadas por otros usuarios se muestra el ícono para mostrar los datos de los usuarios
-                {
-                    bool mostrarCreadasOtrosUsuarios = (bool)ViewBag.CurrentCreadasOtrosUsuarios;
-                    if (mostrarCreadasOtrosUsuarios)
-                    {
-                        @:&nbsp;|
-                        <img src="@Url.Content("~/images/usuario_16x16.png")" title="@item.UsuarioModificacion - @item.FechaModficacion" />
-                    }
-}
                 @if (item.PuedeModificarse())
                 {
                     @:&nbsp;|

@@ -27,6 +27,15 @@ namespace Cursos.Models
             }
         }
 
+        [NotMapped]
+        public string ApellidoNombre
+        {
+            get
+            {
+                return string.Format("{0}, {1}", this.Apellido, this.Nombre);
+            }
+        }
+
         public string Documento { get; set; }
 
         [Display(Name = "Fecha de Nacimiento")]
@@ -35,7 +44,7 @@ namespace Cursos.Models
 
         public string Domicilio { get; set; }
 
-        [DataType(DataType.PhoneNumber, ErrorMessage = "Ël número de teléfono ingresado no es válido")]
+        [DataType(DataType.PhoneNumber, ErrorMessage = "El número de teléfono ingresado no es válido")]
         public string Telefono { get; set; }
 
         //TODO: ver como se va a resolver el almacenamiento en un blob
@@ -46,5 +55,7 @@ namespace Cursos.Models
         public bool Activo { get; set; }
 
         public virtual List<Jornada> Jornadas { get; set; }
+
+        public virtual List<InstructorUsuario> Usuarios { get; set; }
     }
 }

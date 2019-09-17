@@ -47,6 +47,17 @@
             </div>
         </div>
 
+        @{visible = UsuarioHelper.GetInstance().ObtenerRoleName(Model.Roles.ElementAt(0).RoleId) == "InstructorExterno" ? "display:block" : "display:none"; }
+
+        <div class="form-group" style="@visible" id="SeccionDatosInstructor">
+            @Html.Label("Instructor", new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.DropDownList("InstructorID", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+        </div>
+
+
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
@@ -75,6 +86,12 @@
                 $('#SeccionPermitirInscripcionesExternas').hide();
 
                 $("#PermitirInscripcionesExternas").prop("checked", false);
+            }
+
+            if (value == 'InstructorExterno') {
+                $('#SeccionDatosInstructor').show();
+            } else {
+                $('#SeccionDatosInstructor').hide();
             }
         });
     })

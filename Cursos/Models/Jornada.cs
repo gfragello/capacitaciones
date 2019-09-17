@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using Cursos.Models.Enums;
+using Cursos.Helpers;
 
 namespace Cursos.Models
 {
@@ -352,7 +353,7 @@ namespace Cursos.Models
         {
             get
             {
-                return this.InscripcionesAbiertas && this.QuedanCuposDisponibles;
+                return this.Autorizada && this.InscripcionesAbiertas && this.QuedanCuposDisponibles;
             }
         }
 
@@ -370,7 +371,20 @@ namespace Cursos.Models
         {
             get
             {
-                return this.PuedeRecibirIncripciones && (this.PuedeModificarse() || HttpContext.Current.User.IsInRole("InscripcionesExternas"));
+                if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
+                    return this.PermiteInscripcionesExternas && this.PuedeRecibirIncripciones;
+
+                else if (HttpContext.Current.User.IsInRole("InstructorExterno"))
+                {
+                    var instructor = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(HttpContext.Current.User.Identity.Name);
+
+                    if (instructor != null)
+                        return this.PuedeRecibirIncripciones && this.InstructorId == instructor.InstructorID;
+                }
+                else if (HttpContext.Current.User.IsInRole("Administrador"))
+                    return this.PuedeRecibirIncripciones;
+
+                return false;
             }
         }
 

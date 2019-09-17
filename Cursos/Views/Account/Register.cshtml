@@ -46,6 +46,15 @@
         </div>
     </div>
 
+    @*La sección donde se selecciona el instructor, se inicializará como
+        no visible porque el perfil "InstructorExterno" no será el primero en mostrarse *@
+    <div class="form-group" style="display:none" id="SeccionDatosInstructor">
+        @Html.Label("Instructor", new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.DropDownList("InstructorID", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+
     @*La sección donde se selecciona si se  permiten inscripciones externas, se inicializará como
         no visible porque el perfil "ConsultaEmpresa" no será el primero en mostrarse *@
     <div class="form-group" style="display:none" id="SeccionPermitirInscripcionesExternas">
@@ -79,6 +88,12 @@
                 $('#SeccionPermitirInscripcionesExternas').hide();
 
                 $("#PermitirInscripcionesExternas").prop("checked", false);
+            }
+
+            if (value == 'InstructorExterno') {
+                $('#SeccionDatosInstructor').show();
+            } else {
+                $('#SeccionDatosInstructor').hide();
             }
         });
     })

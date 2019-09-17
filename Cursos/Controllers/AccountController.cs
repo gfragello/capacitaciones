@@ -142,6 +142,11 @@ namespace Cursos.Controllers
             else
                 ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
 
+            if (rolActual == "InstructorExterno")
+                ViewBag.InstructorID = new SelectList(dbcursos.Instructores.Where(i => i.Activo).OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre", UsuarioHelper.GetInstance().ObtenerInstructorAsociado(usuario.UserName).InstructorID);
+            else
+                ViewBag.InstructorID = new SelectList(dbcursos.Instructores.Where(i => i.Activo).OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre");
+
             ViewBag.PermitirInscripcionesExternas = false;
 
             foreach (var ur in usuario.Roles)
@@ -168,6 +173,7 @@ namespace Cursos.Controllers
             string id = Request["Id"];
             string roleNameEditado = Request["RoleName"];
             Empresa empresaEditada = dbcursos.Empresas.Find(int.Parse(Request["EmpresaID"]));
+            Instructor instructorEditado = dbcursos.Instructores.Find(int.Parse(Request["InstructorID"]));
 
             //https://blog.productiveedge.com/asp-net-mvc-checkboxfor-explained
             bool permitirInscripcionesExternas = Request["PermitirInscripcionesExternas"].Contains("true") ? true : false;
@@ -178,14 +184,19 @@ namespace Cursos.Controllers
 
             string roleNameActual = UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId);
             var empresaActual = UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(usuario.UserName);
+            var instructorActual = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(usuario.UserName);
 
             bool quitarAsociacionEmpresa = false;
+            bool quitarAsociacionInstructor = false;
 
             //si se modificó el rol del usuario
             if (roleNameActual != roleNameEditado)
             {
                 if (roleNameActual == "ConsultaEmpresa") //si antes el usuario estaba asociado a una empresa, se debe remover la asociación a esta empresa
                     quitarAsociacionEmpresa = true;
+
+                if (roleNameActual == "InstructorExterno")
+                    quitarAsociacionInstructor = true;
 
                 this.UserManager.RemoveFromRole(id, roleNameActual);
                 await this.UserManager.AddToRoleAsync(id, roleNameEditado);
@@ -219,6 +230,22 @@ namespace Cursos.Controllers
                 if (empresaActualID != empresaEditadaID)
                     this.AsociarUsuarioAEmpresa(empresaEditadaID, usuario.UserName);
 
+            int instructorActualID = -1;
+            if (instructorActual != null)
+                instructorActualID = instructorActual.InstructorID;
+
+            int instructorEditadoID = -1;
+            if (instructorEditado != null)
+                instructorEditadoID = instructorEditado.InstructorID;
+
+              //si el usuario estaba asociado a una empresa y se cambió esa empresa, o si tenía el rol "ConsultaEmpresa" y cambió por otro 
+            if ((instructorActualID != -1 && instructorActualID != instructorEditadoID) || quitarAsociacionInstructor)
+                this.RemoverAsociacionUsuarioInstructor(usuario.UserName);
+
+            if (roleNameEditado == "InstructorExterno")
+                if (instructorActualID != instructorEditadoID)
+                    this.AsociarUsuarioAInstructor(instructorEditadoID, usuario.UserName);
+
             dbcursos.SaveChanges();
 
             return RedirectToAction("Index");
@@ -250,6 +277,9 @@ namespace Cursos.Controllers
             //si era un usuario de tipo ConsultaEmpresa se debe remover la asociación con la empresa
             if (UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId) == "ConsultaEmpresa")
                 RemoverAsociacionUsuarioAEmpresa(usuario.UserName);
+
+            if (UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId) == "InstructorExterno")
+                RemoverAsociacionUsuarioInstructor(usuario.UserName);
 
             db.Users.Remove(usuario);
             db.SaveChanges();
@@ -291,9 +321,6 @@ namespace Cursos.Controllers
                 if (Request.Url.Host == "jornadas.csl.uy")
                     return RedirectToAction("Disponibles", "Jornadas");
 
-
-
-            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
@@ -315,6 +342,11 @@ namespace Cursos.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+
+                    //si se está logueando un instructor externo, se navega al Index de Jornadas
+                    if (System.Web.HttpContext.Current.User.IsInRole("InstructorExterno"))
+                        returnUrl = this.Url.Action("Index", "Jornadas");
+
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -377,6 +409,7 @@ namespace Cursos.Controllers
         {
             ViewBag.RoleName = new SelectList(db.Roles.OrderBy(r => r.Name).ToList(), "Name", "Name");
             ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
+            ViewBag.InstructorID = new SelectList(dbcursos.Instructores.OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre");
 
             return View();
         }
@@ -409,6 +442,9 @@ namespace Cursos.Controllers
 
                     if (model.RoleName == "ConsultaEmpresa")
                         this.AsociarUsuarioAEmpresa(model.EmpresaID, model.Email);
+
+                    if (model.RoleName == "InstructorExterno")
+                        this.AsociarUsuarioAInstructor(model.InstructorID, model.Email);
 
                     return RedirectToAction("Index");
                 }
@@ -796,6 +832,21 @@ namespace Cursos.Controllers
         {
             var eu = dbcursos.EmpresasUsuarios.Where(eus => eus.Usuario == usuario).FirstOrDefault();
             dbcursos.EmpresasUsuarios.Remove(eu);
+            dbcursos.SaveChanges();
+        }
+
+        private void AsociarUsuarioAInstructor(int instructorID, string usuario)
+        {
+            InstructorUsuario iu = new InstructorUsuario { Usuario = usuario };
+
+            dbcursos.Instructores.Find(instructorID).Usuarios.Add(iu);
+            dbcursos.SaveChanges();
+        }
+
+        private void RemoverAsociacionUsuarioInstructor(string usuario)
+        {
+            var iu = dbcursos.InstructoresUsuarios.Where(ius => ius.Usuario == usuario).FirstOrDefault();
+            dbcursos.InstructoresUsuarios.Remove(iu);
             dbcursos.SaveChanges();
         }
 

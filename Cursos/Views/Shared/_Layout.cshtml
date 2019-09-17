@@ -99,6 +99,23 @@
                      }
                 </ul>
                 }
+
+                @if (User.IsInRole("InstructorExterno"))
+                {
+                    <ul class="nav navbar-nav">
+                        <li><a href="@Url.Action("Index", "Jornadas")">Home</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Funcionalidades
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="@Url.Action("Index", "Jornadas")">Jornadas</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                }
+
                 @Html.Partial("_LoginPartial")
             </div>
         </div>

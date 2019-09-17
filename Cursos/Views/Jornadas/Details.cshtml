@@ -113,15 +113,19 @@
         textoAccionCuposDisponibles = "Habilitar Cupos";
     }
 
-    @if (!Model.Autorizada) //si la jornada no está autorizada se muestra la opción para eliminar la autorización
+    @*Solo los usuarios con rol Administrador pueden autorizar las jornadas*@
+    @if (HttpContext.Current.User.IsInRole("Administrador"))
     {
-        classAccionJornadaAutorizadas = "glyphicon glyphicon-ok-sign";
-        textoAccionJornadaAutorizadas = "Autorizar";
-    }
-    else
-    {
-        classAccionJornadaAutorizadas = "glyphicon glyphicon-remove-sign";
-        textoAccionJornadaAutorizadas = "No Autorizar";
+        if (!Model.Autorizada) //si la jornada no está autorizada se muestra la opción para autorizarla
+        {
+            classAccionJornadaAutorizadas = "glyphicon glyphicon-ok-sign";
+            textoAccionJornadaAutorizadas = "Autorizar";
+        }
+        else
+        {
+            classAccionJornadaAutorizadas = "glyphicon glyphicon-remove-sign";
+            textoAccionJornadaAutorizadas = "No Autorizar";
+        }
     }
 
     @*Los usuarios con perfil InscripcionesExternas no tienen acceso al menú de opciones*@

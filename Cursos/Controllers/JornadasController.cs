@@ -19,7 +19,7 @@ using Cursos.Helpers.EnvioOVAL;
 
 namespace Cursos.Controllers
 {
-    [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
+    [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas,InstructorExterno")]
     public class JornadasController : Controller
     {
         private CursosDbContext db = new CursosDbContext();
@@ -87,18 +87,31 @@ namespace Cursos.Controllers
             if (fechaFin != null)
                 jornadas = jornadas.Where(j => j.Fecha <= fechaFin.Value);
 
-            bool motrarCreadasOtrosUsuarios = creadasOtrosUsuarios != null ? creadasOtrosUsuarios.Value : false;
-            bool mostrarAutorizacionPendiente = autorizacionPendiente != null ? autorizacionPendiente.Value : false;
+            if (User.IsInRole("InstructorExterno")) //si es un instructor externo, solo se muestran las jornadas asignadas al instructor asociado al usuario actual
+            {
+                var iu = db.InstructoresUsuarios.Where(ius => ius.Usuario == User.Identity.Name).FirstOrDefault();
 
-            //si no se aplicó el filtro de ver las jornadas creadas por otro usuarios (está opción solo es válida para el rol Administrador)
-            //o si el usuario tiene el rol AdministradorExterno, solo se mostrarán las jornadas creadas por el usuario
-            if (!motrarCreadasOtrosUsuarios || User.IsInRole("AdministradorExterno"))
-                jornadas = jornadas.Where(j => j.UsuarioModificacion == User.Identity.Name);
+                if (iu != null)
+                {
+                    var instructorUsuario = iu.Instructor;
+                    jornadas = jornadas.Where(j => j.Instructor.InstructorID == instructorUsuario.InstructorID);
+                }
+            }
+            else
+            {
+                bool motrarCreadasOtrosUsuarios = creadasOtrosUsuarios != null ? creadasOtrosUsuarios.Value : true;
+                bool mostrarAutorizacionPendiente = autorizacionPendiente != null ? autorizacionPendiente.Value : false;
 
-            if (mostrarAutorizacionPendiente)
-                jornadas = jornadas.Where(j => j.RequiereAutorizacion && !j.Autorizada);
+                //si no se aplicó el filtro de ver las jornadas creadas por otro usuarios (está opción solo es válida para el rol Administrador)
+                //o si el usuario tiene el rol AdministradorExterno, solo se mostrarán las jornadas creadas por el usuario
+                if (!motrarCreadasOtrosUsuarios || User.IsInRole("AdministradorExterno") || User.IsInRole("InstructorExterno"))
+                    jornadas = jornadas.Where(j => j.UsuarioModificacion == User.Identity.Name);
 
-            int pageSize = 10;
+                if (mostrarAutorizacionPendiente)
+                    jornadas = jornadas.Where(j => j.RequiereAutorizacion && !j.Autorizada);
+            }
+
+            int pageSize = 50;
             int pageNumber = (page ?? 1);
 
             jornadas = jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora);
@@ -220,15 +233,16 @@ namespace Cursos.Controllers
                 db.Jornada.Add(jornada);
                 db.SaveChanges();
 
+                //si la jornada fue creada por un usuario con perfil para InstructorExterno, se notifica por email
+                if (System.Web.HttpContext.Current.User.IsInRole("InstructorExterno"))
+                    NotificacionesEMailHelper.GetInstance().EnviarEmailJornadaCreacion(jornada);
+
                 if (JornadaTemplateId == null)
                 {
                     return RedirectToAction("Index");
                 }
                 else
                 {
-                    //jornada = db.Jornada.Find(jornada.JornadaID);
-                    //return View("Details", jornada);
-                    //return RedirectToAction("Details", jornada);
                     return RedirectToAction("Details", "Jornadas", new { id = jornada.JornadaID });
                 }
             }

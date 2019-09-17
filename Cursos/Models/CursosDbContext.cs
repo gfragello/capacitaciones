@@ -11,12 +11,12 @@ namespace Cursos.Models
     {
         //comentar lo siguiente para trabajar en la base de datos local
         //descomentar los siguiente para trabajar en la base de datos de producción
-        /*
+        //20190916 - Se modificó el DefaultConnection del Web.config del entorno de desarrollo para que se acceda solamente a la base de datos ubicada en la instancia de
+        //           del SQL Express local (antes la seguridad estaba en una instancia de LocalDB (LocalDB dejó de funcionar luego de una instalación de un actualización de Windows aplicada el 20190916))
         public CursosDbContext() : base("DefaultConnection")
         {
         }
-        */
-
+        
         protected override void OnModelCreating(DbModelBuilder modelbuilder)
         {
             //se sobreescribe el método OnModelCreating y se agrega lo siguiente (fluent API) para evitar que se hagan cascade deletes
@@ -58,6 +58,8 @@ namespace Cursos.Models
         public DbSet<Departamento> Departamentos { get; set; }
 
         public DbSet<EmpresaUsuario> EmpresasUsuarios { get; set; }
+
+        public DbSet<InstructorUsuario> InstructoresUsuarios { get; set; }
 
         public DbSet<PathArchivo> PathArchivos { get; set; }
 

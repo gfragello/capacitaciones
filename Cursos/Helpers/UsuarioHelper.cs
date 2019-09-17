@@ -48,6 +48,13 @@ namespace Cursos.Helpers
             return empresausuario != null ? empresausuario.Empresa : null;
         }
 
+        public Instructor ObtenerInstructorAsociado(string username)
+        {
+            var instructorusuario = dbcursos.InstructoresUsuarios.Where(iu => iu.Usuario == username).FirstOrDefault();
+
+            return instructorusuario != null ? instructorusuario.Instructor : null;
+        }
+
         public bool UsuarioTieneRol(string username, string rolename)
         {
             var user = db.Users.Where(u => u.UserName == username).FirstOrDefault();

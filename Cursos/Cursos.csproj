@@ -410,6 +410,10 @@
     <Compile Include="Migrations\201907252021120_Tipo_Documento_OVAL.Designer.cs">
       <DependentUpon>201907252021120_Tipo_Documento_OVAL.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201909161413363_InstructorUsuario.cs" />
+    <Compile Include="Migrations\201909161413363_InstructorUsuario.Designer.cs">
+      <DependentUpon>201909161413363_InstructorUsuario.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -429,6 +433,7 @@
     <Compile Include="Models\Enums\TiposArchivo.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Instructor.cs" />
+    <Compile Include="Models\InstructorUsuario.cs" />
     <Compile Include="Models\Jornada.cs" />
     <Compile Include="Models\Lugar.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -824,6 +829,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201907252021120_Tipo_Documento_OVAL.resx">
       <DependentUpon>201907252021120_Tipo_Documento_OVAL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909161413363_InstructorUsuario.resx">
+      <DependentUpon>201909161413363_InstructorUsuario.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

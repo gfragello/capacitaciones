@@ -85,6 +85,8 @@ namespace Cursos.Models
 
         public int EmpresaID { get; set; }
 
+        public int InstructorID { get; set; }
+
         [Display(Name = "Permitir Incripciones Externas")]
         public bool PermitirInscripcionesExternas { get; set; }
     }
