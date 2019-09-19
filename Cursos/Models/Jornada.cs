@@ -206,7 +206,10 @@ namespace Cursos.Models
                 {
                     if (this.QuedanCuposDisponibles)
                     {
-                        return string.Format("Cupos disponibles: {0}", this.CantidadCuposDisponibles.ToString());
+                        if (HttpContext.Current.User.IsInRole("Administrador"))
+                            return string.Format("Cupos disponibles: {0} de {1}", this.CantidadCuposDisponibles.ToString(), this.MaximoAsistentes.ToString());
+                        else
+                            return string.Format("Cupos disponibles: {0}", this.CantidadCuposDisponibles.ToString());
                     }
                     else
                         return "Sin cupos disponibles";
@@ -353,7 +356,10 @@ namespace Cursos.Models
         {
             get
             {
-                return this.Autorizada && this.InscripcionesAbiertas && this.QuedanCuposDisponibles;
+                //sino requiere autorización, puede recibir inscripciones
+                bool autorizada = this.RequiereAutorizacion ? this.Autorizada : true;
+
+                return autorizada && this.InscripcionesAbiertas && this.QuedanCuposDisponibles;
             }
         }
 

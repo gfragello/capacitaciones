@@ -22,6 +22,7 @@ namespace Cursos.Controllers
         private CursosDbContext db = new CursosDbContext();
 
         // GET: Capacitados
+        [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InscripcionesExternas")]
         public ActionResult Index(string documento, 
                                   string currentNombre, string nombre,
                                   string currentApellido, string apellido, 
@@ -147,7 +148,7 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Details/5
-        [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral")]
+        [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InstructorExterno")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -168,7 +169,7 @@ namespace Cursos.Controllers
         // GET: Capacitados/Create 
         //Si se especifica un valor en el parametro documentoTemplate, se muestra el valor pre cargado en la pantalla
         //Si se especifica un valor de jornadaId, luego de crear el usuario se lo agrega automáticamente a la jornada
-        [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
+        [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas,InstructorExterno")]
         public ActionResult Create(int? jornadaId)
         {
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");

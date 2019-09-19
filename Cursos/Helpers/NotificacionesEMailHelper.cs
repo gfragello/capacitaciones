@@ -107,6 +107,7 @@ namespace Cursos.Helpers
 
                 message.Body = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailCreacionJornadaECuerpo", "Notificaciones"),
                                                 System.Web.HttpContext.Current.User.Identity.Name,
+                                                jornada.JornadaIdentificacionCompleta,
                                                 url.Action("Details", "Jornadas", new { id = jornada.JornadaID }, "http"));
 
                 message.IsBodyHtml = true;

@@ -235,7 +235,11 @@ namespace Cursos.Controllers
 
                 //si la jornada fue creada por un usuario con perfil para InstructorExterno, se notifica por email
                 if (System.Web.HttpContext.Current.User.IsInRole("InstructorExterno"))
-                    NotificacionesEMailHelper.GetInstance().EnviarEmailJornadaCreacion(jornada);
+                {
+                    //se recarga la jornada para incluir los cursos
+                    var jornadaC = db.Jornada.Where(j => j.JornadaID == jornada.JornadaID).Include(j => j.Curso).Include(j => j.Lugar).FirstOrDefault();
+                    NotificacionesEMailHelper.GetInstance().EnviarEmailJornadaCreacion(jornadaC);
+                }
 
                 if (JornadaTemplateId == null)
                 {
@@ -394,12 +398,16 @@ namespace Cursos.Controllers
                 return HttpNotFound();
             }
 
+            return View(jornada);
+
+            /*
             if (jornada.PuedeModificarse())
             {
                 return View(jornada);
             }
             else
                 return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            */
         }
 
         protected override void Dispose(bool disposing)

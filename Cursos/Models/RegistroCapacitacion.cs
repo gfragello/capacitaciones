@@ -89,7 +89,7 @@ namespace Cursos.Models
             {
                 bool puedeEliminar = false;
 
-                if (HttpContext.Current.User.IsInRole("Administrador"))
+                if (HttpContext.Current.User.IsInRole("Administrador") || HttpContext.Current.User.IsInRole("InstructorExterno"))
                 {
                     puedeEliminar = true;
                 }
