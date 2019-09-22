@@ -153,10 +153,22 @@ namespace Cursos.Controllers
         public ActionResult Create(int? id)
         {
             ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion");
-            ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto");
             ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar");
 
             ViewBag.JornadaTemplateId = id;
+
+            //si la jornada está siendo creada por un usuario con perfil para InstructorExterno, solo se puede asignar la jornada a ese instructor
+            if (System.Web.HttpContext.Current.User.IsInRole("InstructorExterno"))
+            {
+                var instructor = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(System.Web.HttpContext.Current.User.Identity.Name);
+
+                ViewBag.InstructorId = instructor.InstructorID;
+                ViewBag.InstructorNombreCompleto = instructor.NombreCompleto;
+            }
+            else
+            {
+                ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto");
+            }
 
             if (id != null)
             {
@@ -270,11 +282,28 @@ namespace Cursos.Controllers
                 return HttpNotFound();
             }
 
-            if (jornada.PuedeModificarse())
+            if (jornada.PuedeEditarUsuarioActual)
             {
                 ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
-                ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto", jornada.InstructorId);
                 ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
+
+                //si la jornada está siendo editada por un usuario con perfil para InstructorExterno, solo se puede asignar la jornada a ese instructor
+                //también se verifica que la jornada esté asignada a ese instructor
+                if (System.Web.HttpContext.Current.User.IsInRole("InstructorExterno"))
+                {
+                    var instructor = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(System.Web.HttpContext.Current.User.Identity.Name);
+
+                    if (jornada.InstructorId != instructor.InstructorID)
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                    ViewBag.InstructorId = instructor.InstructorID;
+                    ViewBag.InstructorNombreCompleto = instructor.NombreCompleto;
+                }
+                else
+                {
+                    ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto", jornada.InstructorId);
+                }
+
                 return View(jornada);
             }
             else

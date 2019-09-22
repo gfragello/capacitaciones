@@ -215,7 +215,7 @@ namespace Cursos.Models
                         return "Sin cupos disponibles";
                 }
 
-                return "La jornada no tiene un cupo definido";
+                return "No tiene un cupo definido";
             }
         }
 
@@ -391,6 +391,34 @@ namespace Cursos.Models
                     return this.PuedeRecibirIncripciones;
 
                 return false;
+            }
+        }
+
+        public bool PuedeEditarUsuarioActual
+        {
+            get
+            {
+                if (HttpContext.Current.User.IsInRole("InstructorExterno"))
+                {
+                    var instructor = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(HttpContext.Current.User.Identity.Name);
+
+                    if (instructor != null)
+                        return this.InstructorId == instructor.InstructorID;
+
+                    return false;
+                }
+                else
+                {
+                    return this.PuedeModificarse();
+                }    
+            }
+        }
+
+        public bool PuedeEliminarUsuarioActual
+        {
+            get
+            {
+                return this.PuedeModificarse();
             }
         }
 
