@@ -101,13 +101,9 @@
                 }
             </td>
             <td>
-                @{
-                    string textoLink = "Ver jornada";
-                }
-
                 @if (item.PuedeAgregarInscripcionesUsuarioActual)
                 {
-                    textoLink = "Registrar inscripción";
+                    string textoLink = "Registrar inscripción";
                     <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@textoLink</a>
                 }
                 else

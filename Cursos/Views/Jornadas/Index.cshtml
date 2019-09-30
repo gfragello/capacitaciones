@@ -9,8 +9,11 @@
 
 <p>
     @Html.ActionLink("Crear Nueva", "Create")
-    &nbsp;&nbsp;
-    @Html.ActionLink("Próximas disponibles", "Disponibles")
+    @if (!User.IsInRole("InstructorExterno"))
+    {
+        @:&nbsp; &nbsp;
+        @Html.ActionLink("Próximas disponibles", "Disponibles")
+    }
 </p>
 
 <hr />
