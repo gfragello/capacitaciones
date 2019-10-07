@@ -423,7 +423,8 @@ namespace Cursos.Controllers
 
             db.SaveChanges();
 
-            return RedirectToAction("Edit", new { id = capacitadoId });
+            return Redirect(Request.UrlReferrer.ToString());
+            //return RedirectToAction("Edit", new { id = capacitadoId });
         }
 
         private ActionResult ExportDataExcel(List<Capacitado> capacitados, int? CursoID)

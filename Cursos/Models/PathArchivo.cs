@@ -17,6 +17,7 @@ namespace Cursos.Models
         public string NombreArchivo { get; set; }
         public string SubDirectorio { get; set; }
         public TiposArchivo TipoArchivo { get; set; }
+        public DateTime FechaArchivo { get; set; }
 
         [NotMapped]
         public string PathCompleto

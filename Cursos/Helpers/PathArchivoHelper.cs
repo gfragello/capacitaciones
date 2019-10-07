@@ -26,7 +26,8 @@ namespace Cursos.Helpers
             {
                 NombreArchivo = nombreArchivo,
                 SubDirectorio = carpetaArchivo,
-                TipoArchivo = tipoArchivo
+                TipoArchivo = tipoArchivo,
+                FechaArchivo = DateTime.Now
             };
 
             var pathArchivo = Path.Combine(pathDirectorio, pathFotoCapacitado.NombreArchivo);
