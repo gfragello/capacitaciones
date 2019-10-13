@@ -123,7 +123,8 @@ namespace Cursos.Controllers
         //[Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
         public ActionResult Details(int? id,
                                     bool? exportarExcel,
-                                    bool? generarActa)
+                                    bool? generarActa,
+                                    bool? generarReporteOVAL)
         {
             if (id == null)
             {
@@ -137,12 +138,16 @@ namespace Cursos.Controllers
 
             bool excel = exportarExcel != null ? (bool)exportarExcel : false;
             bool acta = generarActa != null ? (bool)generarActa : false;
+            bool reporteOVAL = generarReporteOVAL != null ? (bool)generarReporteOVAL : false;
 
             if (excel)
                 return ExportDataExcel(jornada);
 
             if (acta)
                 return GenerarActa(jornada);
+
+            if (reporteOVAL)
+                return GenerarReporteOVAL(jornada);
 
             return View(jornada);
 
@@ -905,6 +910,158 @@ namespace Cursos.Controllers
                 package.SaveAs(stream);
 
                 string fileName = String.Format("ACTA {0} {1}.xlsx", j.Curso.Descripcion, j.FechaFormatoYYYYYMMDD);
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
+        }
+
+        private ActionResult GenerarReporteOVAL(Jornada j)
+        {
+            const int heightSeparaciónCabezal = 40;
+
+            const int colLabelCapacitacion = 2;
+            const int colCurso = 3;
+
+            const int colLabelLugar = 5;
+            const int colLugar = 6;
+
+            const int colFecha = 8;
+
+            const int heightDetalleCapacitado = 30;
+
+            const int rowHeaderCapacitados = 3;
+
+            const int colOrdinal = 1;
+            const int colNombre = 2;
+            const int colApellido = 3;
+            const int colTipoDocumento = 4;
+            const int colDocumento = 5;
+            const int colEmpresa = 6;
+            const int colEstadoOVAL = 7;
+            const int colMensajeOVAL = 8;
+            const int colFechaHoraOVAL = 9;
+
+            const int widthOrdinal = 8;
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add(j.Curso.Descripcion);
+
+                int ordinal = 1;
+                int rowActual = rowHeaderCapacitados;
+
+                foreach (var r in j.RegistrosCapacitacion)
+                {
+                    rowActual++;
+
+                    ws.Cells[rowActual, colOrdinal].Value = ordinal;
+                    ws.Cells[rowActual, colOrdinal].Style.Font.Bold = true;
+                    ws.Cells[rowActual, colOrdinal].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    ws.Cells[rowActual, colNombre].Value = r.Capacitado.Nombre;
+                    ws.Cells[rowActual, colApellido].Value = r.Capacitado.Apellido;
+                    ws.Cells[rowActual, colTipoDocumento].Value = r.Capacitado.TipoDocumento.Abreviacion;
+                    ws.Cells[rowActual, colDocumento].Value = r.Capacitado.Documento;
+                    ws.Cells[rowActual, colEmpresa].Value = r.Capacitado.Empresa.NombreFantasia;
+                    ws.Cells[rowActual, colEstadoOVAL].Value = r.EnvioOVALEstado;
+                    ws.Cells[rowActual, colMensajeOVAL].Value = r.EnvioOVALMensaje;
+                    ws.Cells[rowActual, colFechaHoraOVAL].Value = r.EnvioOVALFechaHora.ToString();
+
+                    if (r.EnvioOVALEstado == EstadosEnvioOVAL.Rechazado)
+                    {
+                        ws.Cells[rowActual, colOrdinal, rowActual, colFechaHoraOVAL].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[rowActual, colOrdinal, rowActual, colFechaHoraOVAL].Style.Fill.BackgroundColor.SetColor(Color.OrangeRed);
+                    }
+
+                    ws.Row(rowActual).Height = heightDetalleCapacitado;
+
+                    ordinal++;
+                }
+
+                int paginaActual = 1;
+
+                //se agregan cabezal y pie de página
+                foreach (var wsFormat in package.Workbook.Worksheets)
+                {
+                    //Cabezal ////////////////////////////////////////////////////////////////////////////
+                    //se setea el label Capacitación, donde se indica además el curso
+                    wsFormat.Cells[1, colLabelCapacitacion].Value = "Capacitación: ";
+                    wsFormat.Cells[1, colLabelCapacitacion].Style.Font.Bold = true;
+
+                    wsFormat.Cells[1, colCurso].Value = j.Curso.Descripcion;
+                    wsFormat.Cells[1, colCurso].Style.Font.Bold = true;
+                    wsFormat.Cells[1, colCurso].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    wsFormat.Cells[1, colCurso].Style.Font.Color.SetColor(Color.White);
+                    wsFormat.Cells[1, colCurso].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    wsFormat.Cells[1, colCurso].Style.Fill.BackgroundColor.SetColor(Color.FromName(j.Curso.ColorDeFondo));
+
+                    wsFormat.Cells[1, colLabelCapacitacion, 1, colCurso].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    //se muestra la información del lugar
+                    wsFormat.Cells[1, colLabelLugar].Value = "Lugar: ";
+                    wsFormat.Cells[1, colLabelLugar].Style.Font.Bold = true;
+
+                    wsFormat.Cells[1, colLugar].Value = j.Lugar.NombreLugar;
+                    wsFormat.Cells[1, colLugar].Style.Font.Bold = true;
+
+                    wsFormat.Cells[1, colLabelLugar, 1, colLugar].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    //se muestra la fecha
+                    wsFormat.Cells[1, colFecha].Value = String.Format("{0}: {1}", "Fecha", j.Fecha.ToShortDateString());
+                    wsFormat.Cells[1, colFecha].Style.Font.Bold = true;
+                    wsFormat.Cells[1, colFecha].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    wsFormat.Row(2).Height = heightSeparaciónCabezal;
+
+                    //se setea el cabezal de los capacitados
+                    wsFormat.Cells[rowHeaderCapacitados, colNombre].Value = "Nombre";
+                    wsFormat.Cells[rowHeaderCapacitados, colApellido].Value = "Apellido";
+                    wsFormat.Cells[rowHeaderCapacitados, colTipoDocumento].Value = "Tipo";
+                    wsFormat.Cells[rowHeaderCapacitados, colDocumento].Value = "Documento";
+                    wsFormat.Cells[rowHeaderCapacitados, colEmpresa].Value = "Empresa";
+                    wsFormat.Cells[rowHeaderCapacitados, colEstadoOVAL].Value = "Estado último envío";
+                    wsFormat.Cells[rowHeaderCapacitados, colMensajeOVAL].Value = "Mensaje último envío";
+                    wsFormat.Cells[rowHeaderCapacitados, colFechaHoraOVAL].Value = "Fecha último envío";
+                    
+                    //se setea el estilo del cabezal de los capacitados
+                    var cellsHeaderCapacitados = wsFormat.Cells[rowHeaderCapacitados, colOrdinal, rowHeaderCapacitados, colFechaHoraOVAL];
+
+                    cellsHeaderCapacitados.Style.Font.Bold = true;
+                    cellsHeaderCapacitados.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    wsFormat.Row(rowHeaderCapacitados).Height = heightDetalleCapacitado;
+
+                    //Cuerpo y Pie de página ////////////////////////////////////////////////////////////////////////////
+                    var rangoContenido = wsFormat.Cells[rowHeaderCapacitados, colOrdinal, rowActual, colFechaHoraOVAL];
+
+                    rangoContenido.Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+
+                    rangoContenido.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    rangoContenido.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    rangoContenido.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    rangoContenido.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+
+                    var rangoContenidoTipoDocumento = wsFormat.Cells[rowHeaderCapacitados + 1, colTipoDocumento, rowActual - 1, colTipoDocumento];
+                    rangoContenidoTipoDocumento.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                    //seteo de anchos de columna
+                    wsFormat.Cells[wsFormat.Dimension.Address].AutoFitColumns();
+                    wsFormat.Column(colOrdinal).Width = widthOrdinal;
+
+                    //seteo de los parámetros de impresión
+                    wsFormat.PrinterSettings.PaperSize = ePaperSize.A4;
+                    wsFormat.PrinterSettings.Orientation = eOrientation.Portrait;
+                    //wsFormat.PrinterSettings.FitToPage = true;
+
+                    paginaActual++;
+                }
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = String.Format("Envíos OVAL - {0} {1}.xlsx", j.Curso.Descripcion, j.FechaFormatoYYYYYMMDD);
                 string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
                 stream.Position = 0;

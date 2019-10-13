@@ -151,7 +151,17 @@
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
                 if (Model.PermiteEnviosOVAL)
                 {
-                    <span class="glyphicon glyphicon-transfer btnEnvioRegistrosOVALJornada" data-jornadaid="@Model.JornadaID.ToString()" style="font-size: 25px; color: #017d49; cursor: pointer;"></span>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            OVAL
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="btnEnvioRegistrosOVALJornada" data-jornadaid="@Model.JornadaID.ToString()" style="cursor: pointer;"><a href="#">Enviar datos</a></li>
+                            <li><a href="@Url.Action("Details", new { id = Model.JornadaID, generarReporteOVAL = true })">Reporte de envíos</a></li>
+                        </ul>
+                    </div>
+                    <!--<span class="glyphicon glyphicon-transfer btnEnvioRegistrosOVALJornada" data-jornadaid="@Model.JornadaID.ToString()" style="font-size: 25px; color: #017d49; cursor: pointer;"></span>-->
                     @*:&nbsp;&nbsp; &nbsp; &nbsp;*@
                 }
                 @*:&nbsp;&nbsp; &nbsp; &nbsp;
