@@ -552,6 +552,18 @@ namespace Cursos.Controllers
                 return -1;
         }
 
+        public ActionResult ExisteCapacitadoDocumento(string documento, int tipoDocumentoId)
+        {
+            return Json(BuscarExisteCapacitadoDocumento(documento, tipoDocumentoId), JsonRequestBehavior.AllowGet);
+        }
+
+        public bool BuscarExisteCapacitadoDocumento(string documento, int tipoDocumentoId)
+        {
+            var capacitado = db.Capacitados.Where(c => c.Documento == documento && c.TipoDocumentoID == tipoDocumentoId).FirstOrDefault();
+
+            return capacitado != null;
+        }
+
         public ActionResult CargarFotoCapacitado(Capacitado model, int capacitadoId, HttpPostedFileBase foto)
         {
             var capacitado = db.Capacitados.Where(c => c.CapacitadoID == capacitadoId).FirstOrDefault();

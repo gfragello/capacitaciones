@@ -16,7 +16,7 @@
         <th>
             Foto
         </th>
-        <th>&nbsp;</th><!--Actions-->
+        <!--<th>&nbsp;</th>--><!--Actions-->
     </tr>
 
     @foreach (var item in Model)
@@ -44,9 +44,11 @@
                 }
                 </a>
             </td>
+            <!--
             <td>
                 <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/tomarFoto.png")" title="Tomar Foto" /></a>
             </td>
+            -->
         </tr>
     }
 

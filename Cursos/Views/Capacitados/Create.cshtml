@@ -4,7 +4,7 @@
     ViewBag.Title = "Create";
 }
 
-@using (Html.BeginForm("Create", "Capacitados", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Create", "Capacitados", null, FormMethod.Post, new { enctype = "multipart/form-data", id = "formCapacitado", name = "formCapacitado" }))
 {
     @Html.AntiForgeryToken()
 
@@ -70,7 +70,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Crear" class="btn btn-default" />
+                <input type="button" value="Crear" class="btn btn-default btnGuardar" />
             </div>
         </div>
     </div>
@@ -83,6 +83,72 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 <script>
+
+    /*
+    //$('#formCapacitado').submit(function (e) {
+    $(document).on('submit', '#formCapacitado', function (e) {
+        var documento = $('#Documento').val();
+        var tipoDocumentoID = $('#TipoDocumentoID').val();
+
+        alert('Documento: ' + documento);
+        alert('TipoDocumentoID: ' + tipoDocumentoID);
+
+        //solo se controlan la CI
+        if (tipoDocumentoID == 1) {
+            $.ajax({
+                url: '/Capacitados/ExisteCapacitadoDocumento',
+                type: 'post',
+                data: {
+                    documento: documento,
+                    tipoDocumentoID: tipoDocumentoID
+                },
+                success: function (existeCapacitado) {
+                    if (!existeCapacitado)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        e.stopImmediatePropagation();
+                        e.preventDefault();
+                        alert('El capacitado con documento ' + documento + ' ya existe en la base de datos.');
+                        return false;
+                        //e.preventDefault();
+                    }
+                }
+            });
+        }
+    });
+    */
+
+    $('.btnGuardar').on('click', function (e)
+    {
+        var documento = $('#Documento').val();
+        var tipoDocumentoID = $('#TipoDocumentoID').val();
+
+        //solo se controlan la CI
+        if (tipoDocumentoID == 1)
+        {
+            $.ajax({
+                url: '/Capacitados/ExisteCapacitadoDocumento',
+                type: 'post',
+                data: { documento: documento, 
+                        tipoDocumentoID: tipoDocumentoID },
+                success: function (existeCapacitado)
+                         {
+                            if (!existeCapacitado) 
+                            {
+                                $("#formCapacitado")[0].submit();
+                            }
+                            else
+                            {
+                                alert('El capacitado con documento ' + documento + ' ya existe en la base de datos.');
+                            }
+                         }
+            });
+        }
+    });
+
     function validarDocumentoRepetido()
     {
         var documento = $('#Documento').val();
@@ -106,5 +172,6 @@
                      }
         });
     }
+
 </script>
 }
