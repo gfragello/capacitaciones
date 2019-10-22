@@ -172,7 +172,19 @@ namespace Cursos.Controllers
         [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas,InstructorExterno")]
         public ActionResult Create(int? jornadaId)
         {
-            ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
+            //si el capacitado está siendo creado por un usuario con perfil para ConsultaEmpresa con InscripcionesExternas, solo se puede asignar la jornada a la empresa del usuario
+            if (System.Web.HttpContext.Current.User.IsInRole("ConsultaEmpresa") && System.Web.HttpContext.Current.User.IsInRole("InscripcionesExternas"))
+            {
+                var empresa = UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(System.Web.HttpContext.Current.User.Identity.Name);
+
+                ViewBag.EmpresaID = empresa.EmpresaID;
+                ViewBag.EmpresaNombreFantasia = empresa.NombreFantasia;
+            }
+            else
+            {
+                ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
+            }
+
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion");
 
             ViewBag.JornadaId = jornadaId;

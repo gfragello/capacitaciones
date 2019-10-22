@@ -60,10 +60,19 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.EmpresaID, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("EmpresaID", null, htmlAttributes: new { @class = "form-control" })
+            @if (User.IsInRole("ConsultaEmpresa") && User.IsInRole("InscripcionesExternas"))
+            {
+                <label class="control-label col-md-2" style="text-align: left;">@ViewBag.EmpresaNombreFantasia</label>
+                <input type="hidden" id="EmpresaID" name="EmpresaID" value="@ViewBag.EmpresaID" />
                 @Html.ValidationMessageFor(model => model.EmpresaID, "", new { @class = "text-danger" })
-            </div>
+            }
+            else
+            {
+                <div class="col-md-10">
+                    @Html.DropDownList("EmpresaID", null, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.EmpresaID, "", new { @class = "text-danger" })
+                </div>
+            }
         </div>
 
         <input type="hidden" name="jornadaId" value="@ViewBag.JornadaId" />
