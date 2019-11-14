@@ -449,6 +449,11 @@
     <Compile Include="Models\RespuestaOVAL.cs" />
     <Compile Include="Models\TipoDocumento.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service References\ServiceEnviarDatosFotoOVAL\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="Service References\ServiceEnviarDatosOVAL\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -557,8 +562,25 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="images\cargando.gif" />
+    <Content Include="Service References\ServiceEnviarDatosFotoOVAL\Cursos.ServiceEnviarDatosFotoOVAL.AuthenticationUserResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\ServiceEnviarDatosFotoOVAL\Cursos.ServiceEnviarDatosFotoOVAL.get_induccionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Service References\ServiceEnviarDatosFotoOVAL\Cursos.ServiceEnviarDatosFotoOVAL.WebServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Service References\ServiceEnviarDatosFotoOVAL\Service.wsdl" />
     <None Include="Service References\ServiceEnviarDatosOVAL\configuration91.svcinfo" />
     <None Include="Service References\ServiceEnviarDatosOVAL\configuration.svcinfo" />
+    <None Include="Service References\ServiceEnviarDatosFotoOVAL\Service.disco" />
+    <None Include="Service References\ServiceEnviarDatosFotoOVAL\configuration91.svcinfo" />
+    <None Include="Service References\ServiceEnviarDatosFotoOVAL\configuration.svcinfo" />
+    <None Include="Service References\ServiceEnviarDatosFotoOVAL\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
     <Content Include="Service References\ServiceEnviarDatosOVAL\Cursos.ServiceEnviarDatosOVAL.AuthenticationUserResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
@@ -848,6 +870,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadataStorage Include="Service References\ServiceEnviarDatosFotoOVAL\" />
     <WCFMetadataStorage Include="Service References\ServiceEnviarDatosOVAL\" />
   </ItemGroup>
   <PropertyGroup>

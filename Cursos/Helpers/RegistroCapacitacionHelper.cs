@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Cursos.Helpers
 {
@@ -80,6 +81,54 @@ namespace Cursos.Helpers
                 default:
                     return "&nbsp;";
             }
+        }
+
+        public SelectList ObtenerEstadoEnvioOvalSelectList(int itemSeleccionado)
+        {
+            List<SelectListItem> lista = new List<SelectListItem>();
+            //SelectListItem sliSeleccionado = null;
+
+            lista.Add(new SelectListItem
+            {
+                Text = "Todos",
+                Value = "-1"
+            });
+
+            lista.Add(new SelectListItem
+            {
+                Text = "Pendiente de envio",
+                Value = ((int)EstadosEnvioOVAL.PendienteEnvio).ToString()
+            });
+
+            lista.Add(new SelectListItem
+            {
+                Text = "Aceptado",
+                Value = ((int)EstadosEnvioOVAL.Aceptado).ToString()
+            });
+
+            lista.Add(new SelectListItem
+            {
+                Text = "Rechazado",
+                Value = ((int)EstadosEnvioOVAL.Rechazado).ToString()
+            });
+
+            lista.Add(new SelectListItem
+            {
+                Text = "No Enviar",
+                Value = ((int)EstadosEnvioOVAL.NoEnviar).ToString()
+            });
+
+            /*
+            foreach (var sli in lista)
+            {
+                if (sli.Value == itemSeleccionado.ToString())
+                    sli.Selected = true;
+                else
+                    sli.Selected = false;
+            }
+            */
+
+            return new SelectList(lista, "Value", "Text", itemSeleccionado);
         }
     }
 }

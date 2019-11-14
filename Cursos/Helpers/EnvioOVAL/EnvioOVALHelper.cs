@@ -4,6 +4,8 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Threading;
@@ -27,7 +29,7 @@ namespace Cursos.Helpers.EnvioOVAL
             const string module = "enviosOVAL";
 
             DateTime fechaJornada = r.Jornada.Fecha;
-            ServiceEnviarDatosOVAL.WebServiceResponse  rOVAL;
+            ServiceEnviarDatosOVAL.WebServiceResponse rOVAL;
 
             try
             {
@@ -85,56 +87,83 @@ namespace Cursos.Helpers.EnvioOVAL
                 LogHelper.GetInstance().WriteMessage(module, e.Message);
                 return new RespuestaOVAL() { Codigo = -1, Mensaje = e.Message };
             }
+        }
 
-            /*
+        public RespuestaOVAL EnviarDatosRegistroConFoto(RegistroCapacitacion r)
+        {
             const string module = "enviosOVAL";
 
-            string mensajelog = string.Format("Iniciando envío de datos\r\n\t\t\t{0}\r\n\t\t\t{1}\r\n\t\t\t{2}\r\n\t\t\t{3}",
+            DateTime fechaJornada = r.Jornada.Fecha;
+            ServiceEnviarDatosFotoOVAL.WebServiceResponse rOVAL;
+
+            try
+            {
+                string mensajelog = string.Format("Iniciando envío de datos\r\n\t{0}\r\n\t{1}\r\n\t{2}\r\n\t{3}",
                                                r.Capacitado.DocumentoCompleto,
                                                r.Capacitado.NombreCompleto,
                                                r.Jornada.JornadaIdentificacionCompleta,
                                                r.Estado.ToString());
 
-            LogHelper.GetInstance().WriteMessage(module, mensajelog);
-
-            try
-            {
-                var client = new RestClient(ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL"));
-                // client.Authenticator = new HttpBasicAuthenticator(username, password);
-
-                //var request = new RestRequest("resource/{id}", Method.POST);
-                //request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
-                //request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
-
-                var request = new RestRequest(method: Method.POST);
-                request.AddParameter("TipoDocumento", "CI");
-                request.AddParameter("NumeroDocumento", r.Capacitado.Documento);
-                request.AddParameter("TipoInduccion", "IND");
-                request.AddParameter("Aprobado", "true");
-                request.AddParameter("FechaInduccion", DateTime.Now);
-                request.AddParameter("Notas", "");
-
-                LogHelper.GetInstance().WriteMessage(module, "Iniciando envío de datos");
-
-                // execute the request
-                IRestResponse response = client.Execute(request);
-                var content = response.Content; // raw content as string
-
-                mensajelog = string.Format("Envío de datos completado.\r\n\t\t\tRespuesta recibida:{0}", content);
-
                 LogHelper.GetInstance().WriteMessage(module, mensajelog);
 
-                IRestResponse<RespuestaOVAL> respuesta = client.Execute<RespuestaOVAL>(request);
+                string direccionServicioEnviarDatosOVAL = ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL");
 
-                return (RespuestaOVAL)respuesta.Data;
+                LogHelper.GetInstance().WriteMessage(module, string.Format("Conectándose al servicio ubicado en {0}", direccionServicioEnviarDatosOVAL));
+
+                BasicHttpsBinding binding = new BasicHttpsBinding();
+                EndpointAddress address = new EndpointAddress(direccionServicioEnviarDatosOVAL);
+
+                ServiceEnviarDatosFotoOVAL.ServiceSoapClient sOVAL = new ServiceEnviarDatosFotoOVAL.ServiceSoapClient(binding, address);
+                ServiceEnviarDatosFotoOVAL.TokenSucurity token = new ServiceEnviarDatosFotoOVAL.TokenSucurity
+                {
+                    Username = ConfiguracionHelper.GetInstance().GetValue("Usuario", "EnvioOVAL"),
+                    Password = ConfiguracionHelper.GetInstance().GetValue("Password", "EnvioOVAL")
+                };
+
+                //Se invoca el método para validar las credenciaes del usuario (devuelve un string)
+                string responseToken = sOVAL.AuthenticationUser(token);
+
+                token.AuthenToken = responseToken;
+
+                //se obtiene el path donde está almacenada la imagen que se enviará al web service
+                string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(r.Capacitado.CapacitadoID);
+                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+
+                var pathArchivoImagen = Path.Combine(pathDirectorio, r.Capacitado.PathArchivo.NombreArchivo);
+
+                rOVAL = sOVAL.get_induccion(token,
+                                            r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
+                                            r.Capacitado.Documento,
+                                            r.Capacitado.Nombre,
+                                            r.Capacitado.Apellido,
+                                            string.Empty,
+                                            r.Capacitado.Empresa.RUT,
+                                            r.Capacitado.Empresa.NombreFantasia,
+                                            "CAP_SEG",
+                                            r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
+                                            string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
+                                            string.Empty,
+                                            this.GetImageAsByteArray(pathArchivoImagen));
+
+                LogHelper.GetInstance().WriteMessage(module, string.Format("Conexión finalizada\r\n\tResult: {0}\r\n\tErrorMessage: {1}", rOVAL.Result, rOVAL.ErrorMessage));
+
+                //si la propiedad Result tiene contenido, el registro se recibió correctamente
+                if (rOVAL.Result != string.Empty)
+                {
+                    LogHelper.GetInstance().WriteMessage(module, "El registro fue recibido por el sistema OVAL");
+                    return new RespuestaOVAL() { Codigo = 0, Mensaje = rOVAL.Result };
+                }
+                else
+                {
+                    LogHelper.GetInstance().WriteMessage(module, string.Format("El registro fue rechazado por el sistema OVAL ({0})", rOVAL.ErrorMessage));
+                    return new RespuestaOVAL() { Codigo = 1, Mensaje = rOVAL.ErrorMessage };
+                }
             }
             catch (Exception e)
             {
-                mensajelog = string.Format("ERROR - {0}", e.Message);
+                LogHelper.GetInstance().WriteMessage(module, e.Message);
+                return new RespuestaOVAL() { Codigo = -1, Mensaje = e.Message };
             }
-            */
-
-            return null;
         }
 
         public bool EnviarDatosListaRegistros(List<int> registrosCapacitacionIds, ref int totalAceptados, ref int totalRechazados)
@@ -159,7 +188,7 @@ namespace Cursos.Helpers.EnvioOVAL
                 if (registroCapacitacion.ListoParaEnviarOVAL)
                 {
                     EstadosEnvioOVAL estado;
-                    RespuestaOVAL respuesta = this.EnviarDatosRegistro(registroCapacitacion);
+                    RespuestaOVAL respuesta = this.EnviarDatosRegistroConFoto(registroCapacitacion);
 
                     switch (respuesta.Codigo)
                     {
@@ -193,6 +222,20 @@ namespace Cursos.Helpers.EnvioOVAL
             }
 
             return true;
+        }
+
+        public byte[] GetImageAsByteArray(string pathFile)
+        {
+            Image img = Image.FromFile(pathFile);
+            byte[] arr;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                arr = ms.ToArray();
+            }
+
+            return arr;
         }
     }
 }

@@ -120,12 +120,22 @@ namespace Cursos.Controllers
         }
 
         // GET: RegistrosCapacitacion/IndexOVAL
-        public ActionResult IndexOVAL(int? page)
+        public ActionResult IndexOVAL(int? currentEstadoEnvioOVAL, int? EstadoEnvioOVAL, 
+                                      bool? paginarResultados, int? page,
+                                      bool? iniciarBusqueda)
         {
             bool paginar;
             int pageSize;
             int pageNumber;
 
+            paginar = paginarResultados != null ? paginarResultados.Value : false;
+            pageNumber = page != null ? page.Value : 1;
+            iniciarBusqueda = iniciarBusqueda != null ? iniciarBusqueda : false;
+
+            if (iniciarBusqueda.Value)
+                pageNumber = 1;
+
+            /*
             if (page == null)
             {
                 paginar = false;
@@ -136,9 +146,40 @@ namespace Cursos.Controllers
                 paginar = true;
                 pageNumber = page.Value;
             }
-                
-            var registrosCapacitacion = db.RegistroCapacitacion.Where(r => r.EnvioOVALEstado != EstadosEnvioOVAL.NoEnviar).OrderByDescending(r => r.Jornada.Fecha);
+            */
 
+            /*
+            if (EstadoEnvioOVAL != null)
+                page = 1;
+            else
+            {
+                if (currentEstadoEnvioOVAL == null)
+                    currentEstadoEnvioOVAL = -1; //(int) EstadosEnvioOVAL.Rechazado;
+
+                EstadoEnvioOVAL = currentEstadoEnvioOVAL;
+            }
+            */
+
+            if (EstadoEnvioOVAL == null)
+            {
+                if (currentEstadoEnvioOVAL == null)
+                    currentEstadoEnvioOVAL = -1; //(int) EstadosEnvioOVAL.Rechazado;
+
+                EstadoEnvioOVAL = currentEstadoEnvioOVAL;
+            }
+
+            ViewBag.CurrentEstadoEnvioOVAL = EstadoEnvioOVAL;
+
+            ViewBag.EstadoEnvioOVAL = RegistroCapacitacionHelper.GetInstance().ObtenerEstadoEnvioOvalSelectList(EstadoEnvioOVAL.Value);
+
+            var registrosCapacitacion = db.RegistroCapacitacion.Include(r => r.Capacitado);
+
+            if (EstadoEnvioOVAL == -1)
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.EnvioOVALEstado != EstadosEnvioOVAL.NoEnviar);
+            else
+                registrosCapacitacion = registrosCapacitacion.Where(r => r.EnvioOVALEstado == (EstadosEnvioOVAL)EstadoEnvioOVAL);
+
+            registrosCapacitacion = registrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha);
 
             if (paginar)
                 pageSize = 10;

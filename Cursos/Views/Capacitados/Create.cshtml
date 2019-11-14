@@ -93,43 +93,6 @@
     @Scripts.Render("~/bundles/jqueryval")
 <script>
 
-    /*
-    //$('#formCapacitado').submit(function (e) {
-    $(document).on('submit', '#formCapacitado', function (e) {
-        var documento = $('#Documento').val();
-        var tipoDocumentoID = $('#TipoDocumentoID').val();
-
-        alert('Documento: ' + documento);
-        alert('TipoDocumentoID: ' + tipoDocumentoID);
-
-        //solo se controlan la CI
-        if (tipoDocumentoID == 1) {
-            $.ajax({
-                url: '/Capacitados/ExisteCapacitadoDocumento',
-                type: 'post',
-                data: {
-                    documento: documento,
-                    tipoDocumentoID: tipoDocumentoID
-                },
-                success: function (existeCapacitado) {
-                    if (!existeCapacitado)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        e.stopImmediatePropagation();
-                        e.preventDefault();
-                        alert('El capacitado con documento ' + documento + ' ya existe en la base de datos.');
-                        return false;
-                        //e.preventDefault();
-                    }
-                }
-            });
-        }
-    });
-    */
-
     $('.btnGuardar').on('click', function (e)
     {
         var documento = $('#Documento').val();

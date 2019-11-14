@@ -555,8 +555,10 @@ namespace Cursos.Controllers
                 var pathActa = new PathArchivo
                 {
                     NombreArchivo = nombreArchivo,
-                    TipoArchivo = Models.Enums.TiposArchivo.FotoCapacitado
+                    TipoArchivo = Models.Enums.TiposArchivo.ActaEscaneada,
+                    FechaArchivo = DateTime.Now
                 };
+
                 jornada.PathArchivo = pathActa;
 
                 var path = Path.Combine(Server.MapPath("~/Images/Actas/"), pathActa.NombreArchivo);
