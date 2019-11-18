@@ -31,6 +31,8 @@
 
 <p>
     @Html.ActionLink("Ver logs", "IndexLogs_EnviosOVAL")
+    &nbsp;&nbsp;
+    @Html.ActionLink("Exportar a Excel", "IndexOVAL", new { currentEstadoEnvioOVAL = ViewBag.CurrentEstadoEnvioOVAL, exportarExcel = true })
 </p>
 
 <hr />

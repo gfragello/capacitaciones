@@ -122,7 +122,7 @@ namespace Cursos.Controllers
         // GET: RegistrosCapacitacion/IndexOVAL
         public ActionResult IndexOVAL(int? currentEstadoEnvioOVAL, int? EstadoEnvioOVAL, 
                                       bool? paginarResultados, int? page,
-                                      bool? iniciarBusqueda)
+                                      bool? iniciarBusqueda, bool? exportarExcel)
         {
             bool paginar;
             int pageSize;
@@ -181,12 +181,19 @@ namespace Cursos.Controllers
 
             registrosCapacitacion = registrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha);
 
-            if (paginar)
-                pageSize = 10;
-            else
-                pageSize = registrosCapacitacion.Count() > 0 ? registrosCapacitacion.Count() : 1;
+            bool exportar = exportarExcel != null ? (bool)exportarExcel : false;
 
-            return View(registrosCapacitacion.ToPagedList(pageNumber, pageSize));
+            if (!exportar)
+            {
+                if (paginar)
+                    pageSize = 10;
+                else
+                    pageSize = registrosCapacitacion.Count() > 0 ? registrosCapacitacion.Count() : 1;
+
+                return View(registrosCapacitacion.ToPagedList(pageNumber, pageSize));
+            }
+            else
+                return ExportDataOVALExcel(registrosCapacitacion.ToList());
         }
 
         public ActionResult IndexLogs_enviosOVAL(int? page)
@@ -694,5 +701,66 @@ namespace Cursos.Controllers
 
             return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
         }
+
+        private ActionResult ExportDataOVALExcel(List<RegistroCapacitacion> registrosCapacitacion)
+        {
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("Registros");
+
+                const int rowInicial = 2;
+                int i = rowInicial + 1;
+
+                ws.Cells[rowInicial, 1].Value = "Documento";
+                ws.Cells[rowInicial, 2].Value = "Nombre";
+                ws.Cells[rowInicial, 3].Value = "Empresa";
+                ws.Cells[rowInicial, 4].Value = "Jornada";
+                ws.Cells[rowInicial, 5].Value = "Estado último envío";
+                ws.Cells[rowInicial, 6].Value = "Fecha último envío";
+                ws.Cells[rowInicial, 7].Value = "Mensaje último envío";
+
+                //se ponen en negrita los encabezados
+                ws.Cells[rowInicial, 1, rowInicial, 7].Style.Font.Bold = true;
+
+                var bgColor = Color.White;
+
+                foreach (var r in registrosCapacitacion)
+                {
+                    ws.Cells[i, 1].Value = r.Capacitado.Documento;
+                    ws.Cells[i, 2].Value = r.Capacitado.NombreCompleto;
+                    ws.Cells[i, 3].Value = r.Capacitado.Empresa.NombreFantasia;
+                    ws.Cells[i, 4].Value = r.Jornada.JornadaIdentificacionCompleta;
+                    ws.Cells[i, 5].Value = r.EnvioOVALEstado.ToString();
+                    ws.Cells[i, 6].Value = r.EnvioOVALFechaHora.ToString();
+                    ws.Cells[i, 7].Value = r.EnvioOVALMensaje;
+
+                    //se seleccionan las columnas con datos del capacitado para setear el background color.
+                    if (bgColor != Color.White)
+                    {
+                        ws.Cells[i - 1, 1, i - 1, 7].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i - 1, 1, i - 1, 7].Style.Fill.BackgroundColor.SetColor(bgColor);
+                    }
+
+                    //se pone un borde alrededor del renglón del encabezado
+                    //ws.Cells[i - 1, 1, i - 1, 7].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
+
+                    i++;
+                }
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = "estadoRegistrosOVAL.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
+        }
+
     }
 }
