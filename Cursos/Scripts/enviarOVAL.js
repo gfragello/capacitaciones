@@ -1,4 +1,4 @@
-﻿var tipoDeEnvioOVAL = ""; //RI - Registro Individual; RL - Todos los registros listos para envío; RJ - Todos los registros de una jornada
+﻿var tipoDeEnvioOVAL = ""; //RI - Registro Individual; RR - Todos los registros que fueron rechazados; RJ - Todos los registros de una jornada
 var registroCapacitacionId = "";
 var jornadaId = "";
 
@@ -8,7 +8,6 @@ $(".btnEnvioRegistrosOVALJornada").click(function () {
     jornadaId = $(this).data("jornadaid");
 
     iniciarEnvioDatosOVAL();
-
 });
 
 //se DEBE usar "event delegation" porque en la grilla se podrán poner botones de tipo btnEnvioRegistroOVAL que pueden se actualizados dinamicamente
@@ -18,9 +17,14 @@ $(document).on("click", '.btnEnvioRegistroOVAL', function(event) {
     tipoDeEnvioOVAL = "RI";
     registroCapacitacionId = $(this).data("registrocapacitacionid");
 
+    iniciarEnvioDatosOVAL();
+});
+
+$(".btnEnvioRegistrosOVALRechazados").click(function () {
+
+    tipoDeEnvioOVAL = "RR";
 
     iniciarEnvioDatosOVAL();
-
 });
 
 function iniciarEnvioDatosOVAL() {
@@ -56,6 +60,19 @@ $("#modalMensaje").on('shown.bs.modal', function () {
                 type: "GET",
                 dataType: "JSON",
                 data: { jornadaId: jornadaId },
+                success: function (resultadoEnviarDatosOVAL) {
+                    mostrarResultadoEnviarDatosOVAL(resultadoEnviarDatosOVAL);
+                }
+            });
+
+            break;
+
+        case "RR":
+
+            $.ajax({
+                url: '/RegistrosCapacitacion/EnviarDatosRegistosOVALRechazados',
+                type: "GET",
+                dataType: "JSON",
                 success: function (resultadoEnviarDatosOVAL) {
                     mostrarResultadoEnviarDatosOVAL(resultadoEnviarDatosOVAL);
                 }

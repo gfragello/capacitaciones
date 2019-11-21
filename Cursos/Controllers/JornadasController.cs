@@ -1172,7 +1172,10 @@ namespace Cursos.Controllers
         [AllowAnonymous]
         public ActionResult Disponibles()
         {
-            var jornadas = db.Jornada.Where(j => j.Fecha >= DateTime.Now && j.Autorizada).OrderBy(j => j.Fecha).ThenBy(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
+            TimeZoneInfo montevideoStandardTime = TimeZoneInfo.FindSystemTimeZoneById("Montevideo Standard Time");
+            DateTime dateTime_Montevideo = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, montevideoStandardTime); 
+
+            var jornadas = db.Jornada.Where(j => j.Fecha >= dateTime_Montevideo && j.Autorizada).OrderBy(j => j.Fecha).ThenBy(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
 
             return View(jornadas.ToList());
         }   

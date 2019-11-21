@@ -702,6 +702,25 @@ namespace Cursos.Controllers
             return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult EnviarDatosRegistosOVALRechazados()
+        {
+            var registrosCapacitacionRechazadosIDs = db.RegistroCapacitacion.Where(r => r.EnvioOVALEstado == EstadosEnvioOVAL.Rechazado).Select(r => r.RegistroCapacitacionID).ToList();
+
+            int totalAceptados = 0;
+            int totalRechazados = 0;
+
+            bool todosEnviadosOK = EnvioOVALHelper.GetInstance().EnviarDatosListaRegistros(registrosCapacitacionRechazadosIDs, ref totalAceptados, ref totalRechazados);
+
+            var resultadoEnviarDatosOVAL = new
+            {
+                todosEnviadosOK = todosEnviadosOK,
+                totalAceptados = totalAceptados,
+                totalRechazados = totalRechazados
+            };
+
+            return Json(resultadoEnviarDatosOVAL, JsonRequestBehavior.AllowGet);
+        }
+
         private ActionResult ExportDataOVALExcel(List<RegistroCapacitacion> registrosCapacitacion)
         {
             using (ExcelPackage package = new ExcelPackage())

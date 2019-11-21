@@ -125,11 +125,18 @@ namespace Cursos.Helpers.EnvioOVAL
 
                 token.AuthenToken = responseToken;
 
-                //se obtiene el path donde está almacenada la imagen que se enviará al web service
-                string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(r.Capacitado.CapacitadoID);
-                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+                byte[] fotoCapacitadoAsArray = null;
 
-                var pathArchivoImagen = Path.Combine(pathDirectorio, r.Capacitado.PathArchivo.NombreArchivo);
+                if (r.Capacitado.PathArchivo != null)
+                { 
+                    //se obtiene el path donde está almacenada la imagen que se enviará al web service
+                    string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(r.Capacitado.CapacitadoID);
+                    string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+
+                    var pathArchivoImagen = Path.Combine(pathDirectorio, r.Capacitado.PathArchivo.NombreArchivo);
+
+                    fotoCapacitadoAsArray = this.GetImageAsByteArray(pathArchivoImagen);
+                }
 
                 rOVAL = sOVAL.get_induccion(token,
                                             r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
@@ -143,7 +150,7 @@ namespace Cursos.Helpers.EnvioOVAL
                                             r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
                                             string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
                                             string.Empty,
-                                            this.GetImageAsByteArray(pathArchivoImagen));
+                                            fotoCapacitadoAsArray);
 
                 LogHelper.GetInstance().WriteMessage(module, string.Format("Conexión finalizada\r\n\tResult: {0}\r\n\tErrorMessage: {1}", rOVAL.Result, rOVAL.ErrorMessage));
 
