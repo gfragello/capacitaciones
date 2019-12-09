@@ -1173,7 +1173,10 @@ namespace Cursos.Controllers
         public ActionResult Disponibles()
         {
             TimeZoneInfo montevideoStandardTime = TimeZoneInfo.FindSystemTimeZoneById("Montevideo Standard Time");
-            DateTime dateTime_Montevideo = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, montevideoStandardTime); 
+            DateTime dateTime_Montevideo = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, montevideoStandardTime);
+
+            //se muestran las jornadas hasta una hora después de iniciadas (si la jornada empieza a 8am, la jornada se muestra en la grilla hasta las 9am)
+            dateTime_Montevideo = dateTime_Montevideo.AddHours(-1);
 
             var jornadas = db.Jornada.Where(j => j.Fecha >= dateTime_Montevideo && j.Autorizada).OrderBy(j => j.Fecha).ThenBy(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
 
