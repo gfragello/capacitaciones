@@ -17,11 +17,22 @@ namespace Cursos.Models
     {
         public int CapacitadoID { get; set; }
 
+        private string nombre;
         [Required(ErrorMessage = "Debe ingresar el nombre del capacitado")]
-        public string Nombre { get; set; }
+        public string Nombre
+        {
+            get { if (nombre != null) return nombre.ToUpper(); else return string.Empty; }
+            set { nombre = value; }
+        }
 
+        private string apellido;
         [Required(ErrorMessage = "Debe ingresar el apellido del capacitado")]
-        public string Apellido { get; set; }
+        public string Apellido
+        {
+            get { if (apellido != null) return apellido.ToUpper(); else return string.Empty; }
+            set { apellido = value; }
+        }
+
 
         [NotMapped]
         public string NombreCompleto

@@ -385,12 +385,18 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/CargarFoto/5
-        public ActionResult CargarFoto(int? id)
+        public ActionResult CargarFoto(int? id,
+                                       string previousUrl)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            if (string.IsNullOrEmpty(previousUrl))
+                ViewBag.PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer; // get the previous url and store it with view model
+            else
+                ViewBag.PreviousUrl = previousUrl;
 
             var capacitado = db.Capacitados.Where(c => c.CapacitadoID == (int)id).First();
 
@@ -412,7 +418,8 @@ namespace Cursos.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EliminarFoto(int? capacitadoId)
+        public ActionResult EliminarFoto(int? capacitadoId,
+                                         string previousUrl)
         {
             if (capacitadoId == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
@@ -435,8 +442,8 @@ namespace Cursos.Controllers
 
             db.SaveChanges();
 
-            return Redirect(Request.UrlReferrer.ToString());
-            //return RedirectToAction("Edit", new { id = capacitadoId });
+            //return Redirect(Request.UrlReferrer.ToString());
+            return RedirectToAction("CargarFoto", new { id = capacitadoId, previousUrl = previousUrl });
         }
 
         private ActionResult ExportDataExcel(List<Capacitado> capacitados, int? CursoID)
@@ -617,7 +624,25 @@ namespace Cursos.Controllers
 
             ViewBag.JornadaIdExcluir = jornadaIdExcluir;
 
+            Jornada jornada = db.Jornada.Where(j => j.JornadaID == jornadaIdExcluir).FirstOrDefault();
+
+            if (jornada != null)
+                ViewBag.JornadaExcluirCursoId = jornada.CursoId;
+            else
+                ViewBag.JornadaExcluirCursoId = -1;
+
             return PartialView("_SeleccionarCapacitadosPartial", capacitados.ToList());
+        }
+
+        [HttpGet]
+        public ActionResult ObtenerCapacitadoCargarFoto(int capacitadoId)
+        {
+            var capacitado = db.Capacitados.Find(capacitadoId);
+
+            if (capacitado == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            return PartialView("_CapacitadoCargarFotoPartial", capacitado);
         }
     }
 }

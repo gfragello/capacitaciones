@@ -20,7 +20,8 @@
             if (resultadoOK) {
                 //se recarga la página para que se muestre la foto recién cargada
                 //cambiar este código para solo recargar el elemtno foto para que funcione en la versión que se muestra en una ventana modal
-                location.reload(true);
+                //location.reload(true);
+                $("#tabFotos").load('@(Url.Action("ObtenerCapacitadoCargarFoto", "Capacitados",null, Request.Url.Scheme))?capacitadoId=8022');
             }
             else {
                 alert("Error cargando la foto. Vuelva a intentarlo.")
@@ -59,4 +60,9 @@ function rotarFoto(direccion)
             }
         }
     });
+}
+
+function habilitarBotonesControlFotos()
+{
+
 }

@@ -6,12 +6,66 @@
 
 <h2>Cargar Foto</h2>
 
+<p style="vertical-align: middle;">
+    <a href="@ViewBag.PreviousUrl"><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
+</p>
+
 <div id="tabFotos">
     @Html.Partial("_CapacitadoCargarFotoPartial", Model)
 </div>
 
+@using (Html.BeginForm("EliminarFoto", "Capacitados", null, FormMethod.Post, new { name = "frmEliminarFoto", id = "frmEliminarFoto" }))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="capacitadoId" value="@Model.CapacitadoID" />
+    <input type="hidden" name="previousUrl" value="@ViewBag.PreviousUrl" />
+
+    string imgEliminarFotoVisible = Model.PathArchivo != null ? "display:block" : "display:none";
+
+    <a href="javascript:if (confirm('¿Confirma eliminación de la foto?')) frmEliminarFoto.submit();"><img id="imgEliminarFoto" style="@imgEliminarFotoVisible;margin-left: auto; margin-right: auto;" src="~/images/eliminarFoto.png"></a>
+}
+
 @section Scripts {
 
-    @Scripts.Render("~/Scripts/cargarfoto.js")
+    @*Scripts.Render("~/Scripts/cargarfoto.js")*@
+
+    <script type="text/javascript">
+    
+        $("#fotoCapacitado").change(function (e) {
+
+            //se muestra la imagen que indica que se está procesando
+            $("#imgCapacitadoFoto").attr("src", "/images/cargando.gif");
+
+            //se define una variable de tipo FormData, porque los parámetros de entrada se van a pasar por post
+            var formData = new FormData();
+
+            formData.append('capacitadoId', $("#CapacitadoID").val());
+            formData.append('foto', $('input[type=file]')[0].files[0]);
+
+            $.ajax({
+                url: '/Capacitados/CargarFotoCapacitado',
+                type: "POST",
+                dataType: "JSON",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (resultadoOK) {
+                    if (resultadoOK) {
+                        //se recarga la página para que se muestre la foto recién cargada
+                        //cambiar este código para solo recargar el elemtno foto para que funcione en la versión que se muestra en una ventana modal
+                        //location.reload(true);
+                        $("#tabFotos").load('@(Url.Action("ObtenerCapacitadoCargarFoto", "Capacitados",null, Request.Url.Scheme))?capacitadoId=' + $("#CapacitadoID").val());
+                        //$("#imgEliminarFoto").show();
+                        $("#imgEliminarFoto").css("display", "block")
+                    }
+                    else {
+                        alert("Error cargando la foto. Vuelva a intentarlo.")
+                    }
+                }
+            });
+        });
+    
+    </script>
 
 }

@@ -30,20 +30,6 @@
                     <br />
                     @Html.Partial("_ArchivoFechaHoraPartial", Model.PathArchivo)
                     <br />
-
-                    @if (Model.PathArchivo != null)
-                    {
-                        using (Html.BeginForm("EliminarFoto", "Capacitados", null, FormMethod.Post, new { name = "frmEliminarFoto", id = "frmEliminarFoto" }))
-                        {
-                            @Html.AntiForgeryToken()
-
-                            <input type="hidden" name="capacitadoId" value="@Model.CapacitadoID" />
-
-                            <p style="vertical-align: middle;">
-                                <a href="javascript:if (confirm('¿Confirma eliminación de la foto?')) frmEliminarFoto.submit();"><img id="imgEliminarFoto" src="~/images/eliminarFoto.png"></a>
-                            </p>
-                        }
-                    }
                 </td>
                 <td>
                     <img id="imgRotarDerecha" style="cursor:pointer;" src="~/images/rotarDerecha.png">

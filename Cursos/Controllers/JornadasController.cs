@@ -828,7 +828,7 @@ namespace Cursos.Controllers
                     wsFormat.Cells[1, colLabelLugar, 1, colLugar].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
 
                     //se muestra la fecha
-                    wsFormat.Cells[1, colFecha].Value = String.Format("{0}: {1}", "Fecha", j.Fecha.ToShortDateString());
+                    wsFormat.Cells[1, colFecha].Value = String.Format("{0}: {1} {2}", "Fecha", j.Fecha.ToShortDateString(), j.Hora);
                     wsFormat.Cells[1, colFecha].Style.Font.Bold = true;
                     wsFormat.Cells[1, colFecha].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
 
@@ -911,7 +911,7 @@ namespace Cursos.Controllers
                 var stream = new MemoryStream();
                 package.SaveAs(stream);
 
-                string fileName = String.Format("ACTA {0} {1}.xlsx", j.Curso.Descripcion, j.FechaFormatoYYYYYMMDD);
+                string fileName = String.Format("ACTA {0} {1} {2}.xlsx", j.Curso.Descripcion, j.FechaFormatoYYYYYMMDD, j.HoraSinSeparador);
                 string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
                 stream.Position = 0;

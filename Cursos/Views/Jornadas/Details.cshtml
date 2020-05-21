@@ -231,6 +231,13 @@
 
 <div id="demo" class="collapse well" style="@estilo;background-color: whitesmoke">
     <table>
+    @*Los usuarios con perfil InscripcionesExternas solo tienen acceso al detalle de inscriptos a la jornada*@
+    @if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
+    {
+        <tr>
+            <td><div class="alert alert-warning"><strong>Atención!</strong> Se solicita puntualidad, no se permite el ingreso al aula pasado 15 minutos de la hora fijada de inicio.</div></td>
+        </tr>
+    }
         <tr>
             <td>
                 <div class="form-inline" style="margin:5px 3px;">

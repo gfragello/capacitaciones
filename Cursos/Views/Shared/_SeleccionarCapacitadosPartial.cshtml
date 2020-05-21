@@ -23,6 +23,11 @@
         @foreach (var item in Model)
         {
             var registroCapacitacionEnJornadaActual = item.RegistrosCapacitacion.Where(r => r.JornadaID == ViewBag.JornadaIdExcluir).FirstOrDefault();
+
+            //se obtiene los registros en estado "Incripto" para el mismo curso de la jornada en la que se está haciendo la inscripción
+            //no se permite inscribir un capacitado a una jornada si ya está inscripto (y aún no completó) a otra joranda del mismo curso
+            var registroCapacitacionMismoCurso = item.RegistrosCapacitacion.Where(r => r.JornadaID != ViewBag.JornadaIdExcluir && r.Jornada.CursoId == ViewBag.JornadaExcluirCursoId && r.Estado == Cursos.Models.Enums.EstadosRegistroCapacitacion.Inscripto).FirstOrDefault();
+            
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.Apellido)
@@ -38,8 +43,12 @@
                 </td>
                 <td id="tdSeleccionarCapacitado">
                     @*Si el capacitado aún no había sido agregado a la Jornada actual*@
-                    @if (registroCapacitacionEnJornadaActual == null)
-                    { 
+                    @if (registroCapacitacionMismoCurso != null)
+                    {
+                    <span class="label label-primary">@string.Format("Inscripto en la jornada {0}", registroCapacitacionMismoCurso.Jornada.FechaHoraTexto)</span>
+                    }
+                    else if (registroCapacitacionEnJornadaActual == null)
+                    {
                         <a href="javascript:seleccionarCapacitado(@item.CapacitadoID);"><span class="glyphicon glyphicon-plus-sign"></span></a>
                     }
                     else
