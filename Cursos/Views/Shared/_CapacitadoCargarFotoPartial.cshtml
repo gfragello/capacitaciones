@@ -23,9 +23,6 @@
 
                     <a href="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto">
                         <img id="imgCapacitadoFoto" src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
-                        <!--
-                        <img id="imgCapacitadoFoto" src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top&@string.Format("{0}_{1}", DateTime.Now.Millisecond.ToString().Trim(), DateTime.Now.Second.ToString().Trim())" alt="" />
-                        -->
                     </a>
                     <br />
                     @Html.Partial("_ArchivoFechaHoraPartial", Model.PathArchivo)

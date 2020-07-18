@@ -19,7 +19,7 @@
 <hr />
 }
 
-<h2>Próximas Jornadas Disponibles</h2>
+<h2>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblProximasJornadasDisponibles")</h2>
 
 <hr />
 
@@ -28,22 +28,22 @@
 <table class="table table-striped">
     <tr>
         <th>
-            Fecha
+            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblFecha")
         </th>
         <th>
-            Hora
+            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblHora")
         </th>
         <th>
-            Curso
+            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblCurso")
         </th>
         <th>
-            Lugar
+            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblLugar")
         </th>
         <th>
-            Dirección
+            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblDireccion")
         </th>
         <th>
-            Características
+            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblCaracteristicas")
         </th>
         <th>
             &nbsp;
@@ -103,8 +103,7 @@
             <td>
                 @if (item.PuedeAgregarInscripcionesUsuarioActual)
                 {
-                    string textoLink = "Registrar inscripción";
-                    <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@textoLink</a>
+                    <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkRegistrarInscripcion")</a>
                 }
                 else
                 {

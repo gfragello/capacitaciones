@@ -200,6 +200,56 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_GlobalResources\PartialViewListCapacitados.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PartialViewListCapacitados.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\PartialViewListCapacitados.en-US.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PartialViewListCapacitados.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\PartialViewListCapacitados.es-UY.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PartialViewListCapacitados.es-UY.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewCapacitadosCreate.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewCapacitadosCreate.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewCapacitadosIndex.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewCapacitadosIndex.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewCapacitadosIndex.en-US.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewCapacitadosIndex.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewCapacitadosIndex.es-UY.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewCapacitadosIndex.es-UY.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewJornadasDisponibles.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewJornadasDisponibles.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewJornadasDisponibles.en-US.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewJornadasDisponibles.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewJornadasDisponibles.es-UY.designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewJornadasDisponibles.es-UY.resx</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
@@ -207,6 +257,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CapacitadosController.cs" />
     <Compile Include="Controllers\ConfiguracionController.cs" />
     <Compile Include="Controllers\CursosController.cs" />
@@ -227,7 +278,10 @@
     </Compile>
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
     <Compile Include="Helpers\CSSHelper.cs" />
+    <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\EnvioOVAL\EnvioOVALHelper.cs" />
+    <Compile Include="Helpers\GlobalHelper.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
     <Compile Include="Helpers\EstadosRegistroCapacitacionHelper.cs" />
     <Compile Include="Helpers\JornadaHelper.cs" />
@@ -418,6 +472,14 @@
     <Compile Include="Migrations\201910062139469_Empresa_Telefono__PathArchivo_Fecha.Designer.cs">
       <DependentUpon>201910062139469_Empresa_Telefono__PathArchivo_Fecha.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202007081209497_Jornada_DescripcionEnIngles.cs" />
+    <Compile Include="Migrations\202007081209497_Jornada_DescripcionEnIngles.Designer.cs">
+      <DependentUpon>202007081209497_Jornada_DescripcionEnIngles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202007141338081_Jornada_CaracteristicasEnIngles.cs" />
+    <Compile Include="Migrations\202007141338081_Jornada_CaracteristicasEnIngles.Designer.cs">
+      <DependentUpon>202007141338081_Jornada_CaracteristicasEnIngles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -460,6 +522,16 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Startup.cs" />
+    <Compile Include="App_GlobalResources\ViewCapacitadosCreate.en-US.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewCapacitadosCreate.en-US.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\ViewCapacitadosCreate.es-UY.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ViewCapacitadosCreate.es-UY.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -514,6 +586,8 @@
     <Content Include="images\email_disabled.png" />
     <Content Include="images\email_disabled_16x16.png" />
     <Content Include="images\empresas.png" />
+    <Content Include="images\flag-united-kingdom_40x40.png" />
+    <Content Include="images\flag-uruguay_40x40.png" />
     <Content Include="images\forzarContrasena_16x16.png" />
     <Content Include="images\logos\CSL_logo_main.png" />
     <Content Include="images\logos\CSL_logo_main_h.png" />
@@ -533,6 +607,7 @@
     <Content Include="images\rotarIzquierda.png" />
     <Content Include="images\sinfoto_150x150.png" />
     <Content Include="images\tomarFoto.png" />
+    <Content Include="images\tomarFoto_40x40.png" />
     <Content Include="images\usuario_16x16.png" />
     <Content Include="images\vencido_20x20.png" />
     <Content Include="images\verDetalle_16x16.png" />
@@ -540,11 +615,23 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ClassDiagram1.cd" />
+    <EmbeddedResource Include="App_GlobalResources\PartialViewListCapacitados.en-US.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PartialViewListCapacitados.en-US.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007081209497_Jornada_DescripcionEnIngles.resx">
+      <DependentUpon>202007081209497_Jornada_DescripcionEnIngles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202007141338081_Jornada_CaracteristicasEnIngles.resx">
+      <DependentUpon>202007141338081_Jornada_CaracteristicasEnIngles.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
     <Content Include="Scripts\cargarfoto.js" />
+    <Content Include="Scripts\clickableRow.js" />
     <Content Include="Scripts\enviarOVAL.js" />
     <Content Include="Scripts\jquery-2.2.0.js" />
     <Content Include="Scripts\jquery-2.2.0.min.js" />
@@ -558,6 +645,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\multiLanguaje.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
@@ -711,6 +799,7 @@
     <Content Include="Views\Configuracion\EditarItem.cshtml" />
     <None Include="Service References\ServiceEnviarDatosOVAL\Service.wsdl" />
     <Content Include="Views\Shared\_ArchivoFechaHoraPartial.cshtml" />
+    <Content Include="Views\Jornadas\UltimasCargarFotos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -730,6 +819,42 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_GlobalResources\ViewCapacitadosCreate.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ViewCapacitadosCreate.Designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\ViewJornadasDisponibles.es-UY.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ViewJornadasDisponibles.es-UY.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\ViewJornadasDisponibles.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ViewJornadasDisponibles.en-US.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\ViewJornadasDisponibles.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ViewJornadasDisponibles.Designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\ViewCapacitadosIndex.es-UY.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ViewCapacitadosIndex.es-UY.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\ViewCapacitadosIndex.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ViewCapacitadosIndex.en-US.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\ViewCapacitadosIndex.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>ViewCapacitadosIndex.Designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\PartialViewListCapacitados.es-UY.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>PartialViewListCapacitados.es-UY.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\PartialViewListCapacitados.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>PartialViewListCapacitados.Designer.cs</LastGenOutput>
+    </Content>
     <EmbeddedResource Include="Migrations\201602211431159_InitialCreate.resx">
       <DependentUpon>201602211431159_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
@@ -864,6 +989,16 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201910062139469_Empresa_Telefono__PathArchivo_Fecha.resx">
       <DependentUpon>201910062139469_Empresa_Telefono__PathArchivo_Fecha.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App_GlobalResources\ViewCapacitadosCreate.en-US.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ViewCapacitadosCreate.en-US.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Resources</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App_GlobalResources\ViewCapacitadosCreate.es-UY.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>ViewCapacitadosCreate.es-UY.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Resources</CustomToolNamespace>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

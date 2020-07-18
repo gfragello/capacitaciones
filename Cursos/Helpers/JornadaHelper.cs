@@ -18,7 +18,7 @@ namespace Cursos.Helpers
         public string ObtenerLabelCurso(Jornada j)
         {
             return string.Format("<h5><span class=\"label label-default\" style=\"color: #333333; background-color: {0}\">{1}</span></h5>",
-                                 j.Curso.ColorDeFondo, j.Curso.Descripcion);
+                                 j.Curso.ColorDeFondo, j.Curso.DescripcionMultiLanguage);
         }
 
         public string ObtenerLabelTotalCuposDisponibles(Jornada j)

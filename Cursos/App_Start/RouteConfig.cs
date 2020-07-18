@@ -14,9 +14,16 @@ namespace Cursos
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                   name: "LocalizedDefault",
+                   url: "{lang}/{controller}/{action}/{id}",
+                   defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+                   constraints: new { lang = "es-UY|en-US" }
+               );
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional, lang = "es-UY" }
             );
         }
     }

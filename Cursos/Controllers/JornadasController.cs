@@ -20,7 +20,7 @@ using Cursos.Helpers.EnvioOVAL;
 namespace Cursos.Controllers
 {
     [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas,InstructorExterno")]
-    public class JornadasController : Controller
+    public class JornadasController : BaseController
     {
         private CursosDbContext db = new CursosDbContext();
 
@@ -151,6 +151,23 @@ namespace Cursos.Controllers
 
             return View(jornada);
 
+        }
+
+        [Authorize(Roles = "Administrador,InstructorExterno")]
+        public ActionResult UltimasCargarFotos(int? page)
+        {
+            TimeZoneInfo montevideoStandardTime = TimeZoneInfo.FindSystemTimeZoneById("Montevideo Standard Time");
+            DateTime dateTime_Montevideo = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, montevideoStandardTime);
+
+            //se muestran las jornadas hasta una hora después de iniciadas (si la jornada empieza a 8am, la jornada se muestra en la grilla hasta las 9am)
+            DateTime finDelDia = new DateTime(dateTime_Montevideo.Year, dateTime_Montevideo.Month, dateTime_Montevideo.Day, 23, 59, 59);
+
+            int pageSize = 5;
+            int pageNumber = (page ?? 1);
+
+            var jornadas = db.Jornada.Where(j => j.Fecha <= finDelDia && j.Autorizada).OrderByDescending(j => j.Fecha).ThenByDescending(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
+
+            return View(jornadas.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Jornadas/Create - Si se especifica un valor en el parámtero id, se copiaran sus registros de 

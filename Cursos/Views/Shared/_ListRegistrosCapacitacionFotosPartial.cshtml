@@ -10,13 +10,15 @@
         <th>
             @Html.DisplayNameFor(model => model.Capacitado.Nombre)
         </th>
+        <!--
         <th>
             @Html.DisplayNameFor(model => model.Capacitado.Empresa)
         </th>
+        -->
         <th>
             Foto
         </th>
-        <!--<th>&nbsp;</th>--><!--Actions-->
+        <th>&nbsp;</th><!--Actions-->
     </tr>
 
     @foreach (var item in Model)
@@ -29,11 +31,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
             </td>
+            <!--
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
             </td>
+            -->
             <td>
-                <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) ">
+                @*<a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) ">*@
                 @if (item.Capacitado.PathArchivo != null)
                 {
                     <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
@@ -42,14 +46,12 @@
                 {
                     <img src="~/images/sinfoto_150x150.png" />
                 }
-                </a>
+                @*</a>*@
             </td>
-            <!--
             <td>
                 <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/tomarFoto.png")" title="Tomar Foto" /></a>
             </td>
-            -->
         </tr>
-    }
+        }
 
-</table>
+    </table>

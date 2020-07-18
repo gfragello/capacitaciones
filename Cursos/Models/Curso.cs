@@ -15,6 +15,21 @@ namespace Cursos.Models
         [Required(ErrorMessage = "Debe ingresar la descripción del curso")]
         public string Descripcion { get; set; }
 
+        [Display(Name = "Descripción en Inglés")]
+        public string DescripcionEnIngles { get; set; }
+
+        [NotMapped]
+        public string DescripcionMultiLanguage
+        {
+            get
+            {
+                if (System.Threading.Thread.CurrentThread.CurrentUICulture.Name.ToString() == "en-US" && !string.IsNullOrEmpty(this.DescripcionEnIngles))
+                    return this.DescripcionEnIngles;
+
+                return this.Descripcion;
+            }
+        }
+
         [Required(ErrorMessage = "Debe ingresar el costo del curso")]
         public int Costo { get; set; }
 

@@ -17,7 +17,7 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.Documento, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label(Resources.ViewCapacitadosCreate.ResourceManager.GetString("lblDocumento"), htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.DropDownList("TipoDocumentoID", null, htmlAttributes: new { @class = "form-control" })
                 @Html.EditorFor(model => model.Documento, new { htmlAttributes = new { @class = "form-control", @onblur = "validarDocumentoRepetido();" } })
@@ -28,7 +28,7 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label(Resources.ViewCapacitadosCreate.ResourceManager.GetString("lblNombre"), htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
@@ -36,7 +36,7 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Apellido, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label(Resources.ViewCapacitadosCreate.ResourceManager.GetString("lblApellido"), htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Apellido, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Apellido, "", new { @class = "text-danger" })
@@ -46,7 +46,7 @@
         @if (!User.IsInRole("InscripcionesExternas"))
         {
             <div class="form-group">
-                @Html.Label("Foto", new { @class = "control-label col-md-2" })
+                @Html.Label(Resources.ViewCapacitadosCreate.ResourceManager.GetString("lblFoto"), new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     <input type="file" id="Photo" name="upload" />
                 </div>
@@ -54,7 +54,7 @@
         }
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Fecha, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label(Resources.ViewCapacitadosCreate.ResourceManager.GetString("lblFechaNacimiento"), new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Fecha, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
@@ -62,7 +62,7 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.EmpresaID, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.Label(Resources.ViewCapacitadosCreate.ResourceManager.GetString("lblEmpresa"), new { @class = "control-label col-md-2" })
             @if (User.IsInRole("ConsultaEmpresa") && User.IsInRole("InscripcionesExternas"))
             {
                 <label class="control-label col-md-2" style="text-align: left;">@ViewBag.EmpresaNombreFantasia</label>

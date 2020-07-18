@@ -1,0 +1,52 @@
+﻿@model PagedList.IPagedList<Cursos.Models.Jornada>
+@using PagedList.Mvc;
+@using Cursos.Helpers;
+
+@{
+    ViewBag.Title = "Cargar Fotos en Jornadas";
+}
+
+<h2>Cargar Fotos en Jornadas</h2>
+
+<hr />
+
+@Html.PagedListPager(Model, page => Url.Action("UltimasCargarFotos", new { page }))
+
+<table class="table table-striped">
+
+    @foreach (var item in Model)
+    {
+        //si la jornada no tiene cupos disponibles se muestra el texto en colo rojo
+        string textColor = item.CuposDisponibles ? "black" : "red";
+
+        //<tr class='clickable-row' data-href='url://link-for-first-row/'>
+
+        <tr class="clickable-row" data-href="@Url.Action("CargarFotos", "Jornadas", new { id = item.JornadaID })" style="cursor: pointer; user-select: none;">
+            <td style="vertical-align: middle;">
+                @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCurso(item))
+            </td>
+            <td style="vertical-align: middle;">
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td style="vertical-align: middle;">
+                @Html.DisplayFor(modelItem => item.Hora)
+            </td>
+            <td style="vertical-align: middle;">
+                @Html.DisplayFor(modelItem => item.Lugar.NombreLugar)
+            </td>
+            <td style="vertical-align: middle;">
+                @Html.DisplayFor(modelItem => item.TotalInscriptosTexto)
+            </td>
+        </tr>
+    }
+
+</table>
+
+<br />
+Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+
+@section Scripts {
+
+    @Scripts.Render("~/Scripts/clickableRow.js")
+
+}

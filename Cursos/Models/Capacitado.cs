@@ -9,6 +9,7 @@ using Cursos.Models.Enums;
 using Cursos.Helpers;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Cursos.Models
 {
@@ -187,12 +188,30 @@ namespace Cursos.Models
 
                 var pathArchivoImagen = Path.Combine(pathDirectorio, nombreArchivo);
 
-                using (Image img = Image.FromFile(pathArchivoImagen))
+                Stream streamSinEXIF = new MemoryStream();
+
+                using (Image imgOriginal = Image.FromFile(pathArchivoImagen))
                 {
                     //rotate the picture by 90 degrees and re-save the picture as a Jpeg
-                    img.RotateFlip(RotateFlipType.Rotate270FlipNone);
-                    img.Save(pathArchivoImagen, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //imgOriginal.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                    //img.Save(pathArchivoImagen, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                    var streamOriginal = new MemoryStream();
+                    imgOriginal.Save(streamOriginal, ImageFormat.Jpeg);
+
+                    // If you're going to read from the stream, you may need to reset the position to the start
+                    streamOriginal.Position = 0;
+
+                    streamSinEXIF = ImageHelper.GetInstance().PatchAwayExif(streamOriginal, streamSinEXIF);
                 }
+
+                Image imgSinEXIF = Image.FromStream(streamSinEXIF);
+
+                //si la imagen está apaisada, rotarla 90 grados
+                if (imgSinEXIF.Width > imgSinEXIF.Height)
+                    imgSinEXIF.RotateFlip(RotateFlipType.Rotate90FlipNone);
+
+                imgSinEXIF.Save(pathArchivoImagen, System.Drawing.Imaging.ImageFormat.Jpeg);
 
                 return true;
             }

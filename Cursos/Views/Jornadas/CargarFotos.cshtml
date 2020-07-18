@@ -1,4 +1,6 @@
 ﻿@model Cursos.Models.Jornada
+@using Cursos.Models.Enums;
+@using Cursos.Helpers;
 
 @{
     ViewBag.Title = "Jornada - Cargar Fotos";
@@ -11,12 +13,69 @@
 
 <h2>Inscriptos a la jornada</h2>
 
-<div id="tabFotos">
-    @Html.Partial("_ListRegistrosCapacitacionFotosPartial", Model.RegistrosCapacitacion)
-</div>
+<table class="table table-striped">
+    <tr>
+        <th>
+            Datos
+        </th>
+        <th>
+            Foto
+        </th>
+        @*<th>&nbsp;</th><!--Actions-->*@
+    </tr>
+
+    @foreach (var item in Model.RegistrosCapacitacion)
+    {
+        string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(item.Estado);
+        <tr class="clickable-row" data-href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID })" style="cursor: pointer; user-select: none;">
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+                <br />
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+                <br />
+                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
+            </td>
+            <td>
+                @*<a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) ">*@
+                @if (item.Capacitado.PathArchivo != null)
+                {
+                    <table>
+                        <tr>
+                            <td>
+                                <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.Partial("_ArchivoFechaHoraPartial", item.Capacitado.PathArchivo)
+                            </td>
+                        </tr>
+                    </table>
+                }
+                else
+                {
+                    <img src="~/images/sinfoto_150x150.png" />
+                }
+                @*</a>*@
+            </td>
+            @*
+            <td>
+                <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/tomarFoto.png")" title="Tomar Foto" /></a>
+            </td>
+            *@
+        </tr>
+    }
+
+</table>
+
+@*
+    <div id="tabFotos">
+        @Html.Partial("_ListRegistrosCapacitacionFotosPartial", Model.RegistrosCapacitacion)
+    </div>
+*@
 
 @section Scripts {
 
-    @Scripts.Render("~/Scripts/cargarfoto.js")
+    @Scripts.Render("~/Scripts/clickableRow.js")
 
 }

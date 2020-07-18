@@ -17,7 +17,8 @@ using Cursos.Models.Enums;
 namespace Cursos.Controllers
 {
     [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InscripcionesExternas,InstructorExterno")]
-    public class CapacitadosController : Controller
+    public class CapacitadosController : BaseController //Hereda de BaseController (en lugar de Controller) porque algunos view requieren se en multi-idioma
+                                                        //En BaseController se setea el lenguage en SetCurrentCultureOnThread
     {
         private CursosDbContext db = new CursosDbContext();
 

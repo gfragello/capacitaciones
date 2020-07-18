@@ -85,6 +85,21 @@ namespace Cursos.Models
         [Display(Name = "Características")]
         public string Caracteristicas { get; set; }
 
+        [Display(Name = "Características en Inglés")]
+        public string CaracteristicasEnIngles { get; set; }
+
+        [NotMapped]
+        public string CaracteristicasMultiLanguage
+        {
+            get
+            {
+                if (System.Threading.Thread.CurrentThread.CurrentUICulture.Name.ToString() == "en-US" && !string.IsNullOrEmpty(this.CaracteristicasEnIngles.Trim()))
+                    return this.CaracteristicasEnIngles;
+
+                return this.CaracteristicasEnIngles;
+            }
+        }
+
         public virtual List<RegistroCapacitacion> RegistrosCapacitacion { get; set; }
 
         [Display(Name = "Acta")]
