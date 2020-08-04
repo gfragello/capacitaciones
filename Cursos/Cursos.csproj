@@ -990,16 +990,14 @@
     <EmbeddedResource Include="Migrations\201910062139469_Empresa_Telefono__PathArchivo_Fecha.resx">
       <DependentUpon>201910062139469_Empresa_Telefono__PathArchivo_Fecha.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="App_GlobalResources\ViewCapacitadosCreate.en-US.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
+    <Content Include="App_GlobalResources\ViewCapacitadosCreate.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>ViewCapacitadosCreate.en-US.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>Resources</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App_GlobalResources\ViewCapacitadosCreate.es-UY.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
+    </Content>
+    <Content Include="App_GlobalResources\ViewCapacitadosCreate.es-UY.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>ViewCapacitadosCreate.es-UY.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>Resources</CustomToolNamespace>
-    </EmbeddedResource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

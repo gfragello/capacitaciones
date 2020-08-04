@@ -239,7 +239,7 @@ namespace Cursos.Models
             get
             {
                 if (this.TieneMaximoAsistentes)
-                    if (this.CantidadCuposDisponibles == 0)
+                    if (this.CantidadCuposDisponibles <= 0) //por un error (ya corregido) se estaba dejando la cantidad de cupos disponibles con valores negativos
                         return false;
 
                 return true;

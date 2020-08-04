@@ -395,21 +395,38 @@ else
             $("#tdSeleccionarCapacitado").load('@(Url.Action("ObtenerCargandoMini", "CustomTools"))');
 
             var jornadaId = @Model.JornadaID;
-            $.ajax({
-                url: '/Jornadas/AgregarRegistroCapacitacion',
+
+			$.ajax({
+                url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
                 type: "GET",
                 dataType: "JSON",
-                data: { jornadaId: jornadaId,
-                        capacitadoId: capacitadoId },
-                        success: function (resultadoOK)
-                         {
-                            if (resultadoOK)
-                            {
-                                actualizarContenidoTabs();
-
-                                actualizarDisponibilidadJornada();
-                            }
-                         }
+                data: { JornadaId: jornadaId},
+                success: function (datosDisponiblidadCupos)
+                {
+                    if (datosDisponiblidadCupos.QuedanCuposDisponibles)
+                    {
+						$.ajax({
+							url: '/Jornadas/AgregarRegistroCapacitacion',
+							type: "GET",
+							dataType: "JSON",
+							data: { jornadaId: jornadaId,
+									capacitadoId: capacitadoId },
+							success: function (resultadoOK)
+							{
+								if (resultadoOK)
+								{
+									actualizarContenidoTabs();
+									actualizarDisponibilidadJornada();
+								}
+							}
+						});
+					}
+                    else
+                    {
+                        alert('Ya no quedan cupos disponibles. No es posible realizar la inscripción.');
+						location.reload(true); //se recarga la página para que se actualice la no disponibilidad de cupos
+                    }
+                }
             });
         }
 
@@ -470,7 +487,7 @@ else
         function actualizarContenidoTabs()
         {
             $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
-            
+
             //se verifica y el tab de detalle de fotos está visible
             if ($("#tabFotos").length)
                 $("#tabFotos").load('@(Url.Action("ObtenerRegistrosCapacitacionFotos", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
