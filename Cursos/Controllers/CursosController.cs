@@ -42,6 +42,8 @@ namespace Cursos.Controllers
             //se inicializa la propiedad EvaluacionConNota para que esté chequeado por defecto
             var c = new Curso { EvaluacionConNota = true };
 
+            ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre");
+
             return View(c);
         }
 
@@ -50,10 +52,13 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId")] Curso curso)
         {
             if (ModelState.IsValid)
             {
+                if (!curso.PermiteEnviosOVAL)
+                    curso.PuntoServicioId = null;
+
                 db.Cursos.Add(curso);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -74,6 +79,9 @@ namespace Cursos.Controllers
             {
                 return HttpNotFound();
             }
+
+            ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre");
+
             return View(curso);
         }
 
@@ -82,10 +90,13 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId")] Curso curso)
         {
             if (ModelState.IsValid)
             {
+                if (!curso.PermiteEnviosOVAL)
+                    curso.PuntoServicioId = null;
+
                 db.Entry(curso).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

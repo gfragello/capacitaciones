@@ -480,6 +480,10 @@
     <Compile Include="Migrations\202007141338081_Jornada_CaracteristicasEnIngles.Designer.cs">
       <DependentUpon>202007141338081_Jornada_CaracteristicasEnIngles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202008092212012_PuntoServicio.cs" />
+    <Compile Include="Migrations\202008092212012_PuntoServicio.Designer.cs">
+      <DependentUpon>202008092212012_PuntoServicio.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -506,6 +510,7 @@
     <Compile Include="Models\MultipleMailValidator.cs" />
     <Compile Include="Models\NotificacionVencimiento.cs" />
     <Compile Include="Models\PathArchivo.cs" />
+    <Compile Include="Models\PuntoServicio.cs" />
     <Compile Include="Models\RegistroCapacitacion.cs" />
     <Compile Include="Models\RegistroOVAL.cs" />
     <Compile Include="Models\RespuestaOVAL.cs" />
@@ -625,6 +630,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202007141338081_Jornada_CaracteristicasEnIngles.resx">
       <DependentUpon>202007141338081_Jornada_CaracteristicasEnIngles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202008092212012_PuntoServicio.resx">
+      <DependentUpon>202008092212012_PuntoServicio.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

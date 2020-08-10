@@ -89,6 +89,10 @@ namespace Cursos.Models
         [Display(Name = "Permite envíos OVAL")]
         public bool PermiteEnviosOVAL { get; set; }
 
+        [Display(Name = "Punto de servicio")]
+        public int? PuntoServicioId { get; set; }
+        public virtual PuntoServicio PuntoServicio { get; set; }
+
         public virtual List<Jornada> Jornadas { get; set; }
     }
 }

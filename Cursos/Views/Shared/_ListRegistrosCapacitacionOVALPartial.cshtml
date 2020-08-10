@@ -4,6 +4,7 @@
 
 <table class="table table-striped">
     <tr>
+        <th><!--Número de línea--></th>
         <th>
             Documento
         </th>
@@ -22,10 +23,15 @@
         <th>&nbsp;</th>
     </tr>
 
+    @{ int numeroLinea = 1; }
+
     @foreach (var item in Model)
     {
         string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(item.Estado);
         <tr>
+            <td>
+                @string.Format("{0}.", numeroLinea++.ToString().PadLeft(2, '0'))
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
             </td>

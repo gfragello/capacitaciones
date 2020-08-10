@@ -171,10 +171,20 @@
             @Html.LabelFor(model => model.PermiteEnviosOVAL, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
-                    @Html.EditorFor(model => model.PermiteEnviosOVAL)
+                    @Html.EditorFor(model => model.PermiteEnviosOVAL, new { htmlAttributes = new { @onclick = "togglePuntoServicio();" } } )
                 </div>
             </div>
         </div>
+
+        @*La sección donde se selecciona el punto de servicio, se inicializará como
+          no visible porque el checkbox "PermiteEnviosOVAL" no será el primero en mostrarse *@
+        <div class="form-group" style="display:none" id="SeccionDatosEmpresa">
+            @Html.Label("Punto de servicio", new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.DropDownList("PuntoServicioId", null, htmlAttributes: new { @class = "form-control" })
+            </div>
+        </div>
+
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
@@ -238,6 +248,11 @@
                 //se setea 0 como valor por defecto para prevenir que los validadores lo indiquen como un error
                 $("#HorasCierreInscripcion").val("0");
             }
+        }
+
+        function togglePuntoServicio()
+        {
+            $('#SeccionDatosEmpresa').toggle();
         }
 
     </script>

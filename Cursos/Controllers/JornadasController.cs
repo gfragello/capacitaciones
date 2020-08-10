@@ -167,6 +167,17 @@ namespace Cursos.Controllers
 
             var jornadas = db.Jornada.Where(j => j.Fecha <= finDelDia && j.Autorizada).OrderByDescending(j => j.Fecha).ThenByDescending(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
 
+            /*
+            //los usuarios con perfil InstructorExterno, solamente pueden ver sus jornadas asignadas
+            if (System.Web.HttpContext.Current.User.IsInRole("InstructorExterno"))
+            {
+                var instructor = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(System.Web.HttpContext.Current.User.Identity.Name);
+
+                ViewBag.InstructorId = instructor.InstructorID;
+                ViewBag.InstructorNombreCompleto = instructor.NombreCompleto;
+            }
+             */
+
             return View(jornadas.ToPagedList(pageNumber, pageSize));
         }
 

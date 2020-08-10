@@ -66,5 +66,7 @@ namespace Cursos.Models
         public DbSet<NotificacionVencimiento> NotificacionVencimientos { get; set; }
 
         public DbSet<Configuracion> Configuracion { get; set; }
+
+        public DbSet<PuntoServicio> PuntoServicio { get; set; }
     }
 }
