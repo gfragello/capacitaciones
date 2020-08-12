@@ -484,6 +484,10 @@
     <Compile Include="Migrations\202008092212012_PuntoServicio.Designer.cs">
       <DependentUpon>202008092212012_PuntoServicio.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202008101320507_PuntoServicio_Usuario_Password.cs" />
+    <Compile Include="Migrations\202008101320507_PuntoServicio_Usuario_Password.Designer.cs">
+      <DependentUpon>202008101320507_PuntoServicio_Usuario_Password.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -633,6 +637,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202008092212012_PuntoServicio.resx">
       <DependentUpon>202008092212012_PuntoServicio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202008101320507_PuntoServicio_Usuario_Password.resx">
+      <DependentUpon>202008101320507_PuntoServicio_Usuario_Password.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

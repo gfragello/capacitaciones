@@ -17,5 +17,9 @@ namespace Cursos.Models
 
         [Required(ErrorMessage = "Debe ingresar la dirección")]
         public string Direccion { get; set; }
+
+        public string Usuario { get; set; }
+
+        public string Password { get; set; }
     }
 }

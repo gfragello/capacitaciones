@@ -106,7 +106,7 @@ namespace Cursos.Helpers.EnvioOVAL
 
                 LogHelper.GetInstance().WriteMessage(module, mensajelog);
 
-                string direccionServicioEnviarDatosOVAL = ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL");
+                string direccionServicioEnviarDatosOVAL = r.Jornada.Curso.PuntoServicio.Direccion;
 
                 LogHelper.GetInstance().WriteMessage(module, string.Format("Conectándose al servicio ubicado en {0}", direccionServicioEnviarDatosOVAL));
 
@@ -116,8 +116,8 @@ namespace Cursos.Helpers.EnvioOVAL
                 ServiceEnviarDatosFotoOVAL.ServiceSoapClient sOVAL = new ServiceEnviarDatosFotoOVAL.ServiceSoapClient(binding, address);
                 ServiceEnviarDatosFotoOVAL.TokenSucurity token = new ServiceEnviarDatosFotoOVAL.TokenSucurity
                 {
-                    Username = ConfiguracionHelper.GetInstance().GetValue("Usuario", "EnvioOVAL"),
-                    Password = ConfiguracionHelper.GetInstance().GetValue("Password", "EnvioOVAL")
+                    Username = r.Jornada.Curso.PuntoServicio.Usuario,
+                    Password = r.Jornada.Curso.PuntoServicio.Password
                 };
 
                 //Se invoca el método para validar las credenciaes del usuario (devuelve un string)

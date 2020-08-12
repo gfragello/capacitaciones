@@ -18,7 +18,9 @@
             <div id="bodyMensaje" class="modal-body" style="text-align: center;">
                 @Html.Partial("_CargandoPartial", Model)
                 <br />
-                <p>Enviando datos al sistema OVAL. No cierre esta ventana.</p>
+                <p style="font-weight: bold;">Enviando datos al sistema OVAL</p>
+                <p style="font-size: small;">@string.Format("Punto de servicio: {0}", Model.Curso.PuntoServicio.Nombre)</p>
+                <p style="font-weight: bold; color: darkred">No cierre esta ventana</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>

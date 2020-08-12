@@ -12,6 +12,9 @@
             Nombre
         </th>
         <th>
+            Curso
+        </th>
+        <th>
             Estado último envío
         </th>
         <th>
@@ -37,6 +40,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+            </td>
+            <td style="vertical-align: middle;">
+                @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCurso(item.Jornada))
             </td>
             <td style="text-align:center">
                 @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
