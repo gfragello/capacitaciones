@@ -6,11 +6,9 @@
 
 <h3>Registro de capacitación</h3>
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "formRegistroCapacitacion", name = "formRegistroCapacitacion" }))
 {
     @Html.AntiForgeryToken()
-    
-        
 
     <div class="form-inline">
 
@@ -41,35 +39,13 @@
         <div class="form-group">
             @Html.LabelFor(model => model.JornadaID, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("JornadaID", null, "Seleccionar la jornada..." , htmlAttributes: new { @class = "form-control", @onchange = "cargarFechaVencimiento();" })
+                @Html.DropDownList("JornadaID", null, "Seleccionar la jornada..." , htmlAttributes: new { @class = "form-control", @onchange = "cargarCuposDisponibles();cargarFechaVencimiento();" })
                 @Html.ValidationMessageFor(model => model.JornadaID, "", new { @class = "text-danger" })
+                <p id="pCantidadCuposDisponibles"></p>
             </div>
         </div>
 
         @Html.Hidden("CapacitadoID")
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Nota, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Nota, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Nota, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.NotaPrevia, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.NotaPrevia, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.NotaPrevia, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Estado, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.Estado, new { @class = "form-control" })
-            </div>
-        </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.FechaVencimiento, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -80,6 +56,32 @@
         </div>
 
         <div class="form-group">
+            @Html.LabelFor(model => model.Estado, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EnumDropDownListFor(model => model.Estado, new { @class = "form-control", @id = "Estado" })
+            </div>
+        </div>
+
+        @*Se inicializará como no visible porque el estado "Inscripto" será el primero en mostrarse *@
+        <div class="form-group" style="display:none" id="SeccionNota">
+            @Html.LabelFor(model => model.Nota, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Nota, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Nota, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*Se inicializará como no visible porque el estado "Inscripto" será el primero en mostrarse *@
+        <div class="form-group" style="display:none" id="SeccionNotaPrevia">
+            @Html.LabelFor(model => model.NotaPrevia, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NotaPrevia, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NotaPrevia, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        @*Se inicializará como no visible porque el estado "Inscripto" será el primero en mostrarse *@
+        <div class="form-group" style="display:none" id="SeccionAprobado">
             @Html.LabelFor(model => model.Aprobado, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <div class="checkbox">
@@ -91,7 +93,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Aceptar" class="btn btn-default" />
+                <input type="button" id="btnAceptar" value="Aceptar" class="btn btn-default btnAceptar" />
             </div>
         </div>
     </div>
@@ -104,6 +106,44 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 <script>
+    $('.btnAceptar').on('click', function (e) {
+        var jornadaId = $('#JornadaID').val();
+        $.ajax({
+            url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
+            type: "GET",
+            dataType: "JSON",
+            data: { JornadaId: jornadaId},
+            success: function (datosDisponiblidadCupos)
+            {
+                if (datosDisponiblidadCupos.QuedanCuposDisponibles)
+                {
+                    $("#formRegistroCapacitacion")[0].submit();
+                }
+                else
+                {
+                    alert('Ya no quedan cupos disponibles. No es posible realizar la inscripción.');
+                    cargarCuposDisponibles(); //se recargan los cupos disponibles para la jornada
+                }
+            }
+        });
+    });
+
+    $(function () {
+        $('#Estado').change(function () {
+            var value = $(this).val();
+            //el valor 0 corresponde a Inscripto
+            if (value == 0) {
+                $('#SeccionNota').hide();
+                $('#SeccionNotaPrevia').hide();
+                $('#SeccionAprobado').hide();
+            } else {
+                $('#SeccionNota').show();
+                $('#SeccionNotaPrevia').show();
+                $('#SeccionAprobado').show();
+            }
+        });
+    })
+
     function cargarFechaVencimiento()
     {
         var jornadaId = $('#JornadaID').val();
@@ -118,5 +158,37 @@
                      }
         });
     }
+
+    function cargarCuposDisponibles()
+    {
+        var jornadaId = $('#JornadaID').val();
+
+        if (jornadaId.length != 0) {
+            $.ajax({
+                url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
+                type: "GET",
+                dataType: "JSON",
+                data: { JornadaId: jornadaId },
+                success: function (datosDisponiblidadCupos) {
+                    $("#pCantidadCuposDisponibles").html(datosDisponiblidadCupos.LabelTotalCuposDisponibles);
+
+                    if (datosDisponiblidadCupos.QuedanCuposDisponibles) {
+                        //si quedan cupos disponibles, se habilita el botón "Aceptar"
+                        $("#btnAceptar").prop('disabled', false);
+                    }
+                    else {
+                        //sino quedan cupos disponibles, se inhabililta el botón "Aceptar"
+                        $("#btnAceptar").prop('disabled', true);
+
+                    }
+                }
+            });
+        }
+        else
+        {
+            $("#pCantidadCuposDisponibles").html('');
+        }
+    }
+
 </script>
 }

@@ -5,7 +5,7 @@
     ViewBag.Title = "Edit";
 }
 
-@using (Html.BeginForm())
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "formJornada", name = "formJornada" }))
 {
     @Html.AntiForgeryToken()
     
@@ -132,6 +132,7 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.MaximoAsistentes, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.MaximoAsistentes, "", new { @class = "text-danger" })
+                @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelTotalInscriptos(Model))
             </div>
         </div>
 
@@ -177,7 +178,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="button" value="Aceptar" class="btn btn-default btnAceptar" />
             </div>
         </div>
     </div>
@@ -190,6 +191,30 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 <script>
+
+    $('.btnAceptar').on('click', function (e) {
+        //si tiene un máximo de asistentes definido, se debe verificar que no se haya 
+        //especificado un valor inferior al numéro de asistentes ya incripto
+        if ($("#TieneMaximoAsistentes").is(":checked")) {
+
+            var maximoAsistentes = $("#MaximoAsistentes").val();
+
+            $.ajax({
+                url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
+                type: "GET",
+                dataType: "JSON",
+                data: { JornadaId: @Model.JornadaID },
+                success: function (datosDisponiblidadCupos) {
+                    if (datosDisponiblidadCupos.TotalInscriptos <= maximoAsistentes) {
+                        $("#formJornada")[0].submit();
+                    }
+                    else {
+                        alert('El Máximo de asistenetes no puede ser menor que el número de incriptos');
+                    }
+                }
+            });
+        }
+    });
 
     function cargarDireccionLugar()
     {

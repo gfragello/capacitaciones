@@ -1163,6 +1163,7 @@ namespace Cursos.Controllers
                 var datosDisponibilidadCupos = new
                 {
                     QuedanCuposDisponibles = jornada.QuedanCuposDisponibles,
+                    TotalInscriptos = jornada.TotalInscriptos,
                     LabelTotalCuposDisponibles = JornadaHelper.GetInstance().ObtenerLabelTotalCuposDisponibles(jornada),
                     LabelTotalInscriptos = JornadaHelper.GetInstance().ObtenerLabelTotalInscriptos(jornada)
                 };

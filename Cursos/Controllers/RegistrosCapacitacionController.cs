@@ -269,7 +269,11 @@ namespace Cursos.Controllers
                 }
             }
 
-            return View("Create");
+            //se setean nota y fecha de vencimiento con un valor por defecto
+            RegistroCapacitacion r = new RegistroCapacitacion();
+            r.Nota = 0;
+
+            return View("Create", r);
         }
 
         // POST: RegistrosCapacitacion/Create
