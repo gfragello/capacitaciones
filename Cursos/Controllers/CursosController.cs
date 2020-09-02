@@ -80,7 +80,7 @@ namespace Cursos.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre");
+            ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre", curso.PuntoServicioId);
 
             return View(curso);
         }
