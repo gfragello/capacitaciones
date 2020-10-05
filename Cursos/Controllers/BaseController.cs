@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace Cursos.Controllers
 {
@@ -14,22 +15,21 @@ namespace Cursos.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             string cultureOnCookie = GetCultureOnCookie(filterContext.HttpContext.Request);
-            string cultureOnURL = filterContext.RouteData.Values.ContainsKey("lang")
-                ? filterContext.RouteData.Values["lang"].ToString()
-                : GlobalHelper.DefaultCulture;
-            string culture = (cultureOnCookie == string.Empty)
-                ? (filterContext.RouteData.Values["lang"].ToString())
-                : cultureOnCookie;
-
+            string cultureOnURL = filterContext.RouteData.Values.ContainsKey("lang") ?
+            filterContext.RouteData.Values["lang"].ToString() : GlobalHelper.DefaultCulture;
+            string culture = (cultureOnCookie == string.Empty) ?
+            (filterContext.RouteData.Values["lang"].ToString()) : cultureOnCookie;
             if (cultureOnURL != culture)
             {
-                filterContext.HttpContext.Response.RedirectToRoute("LocalizedDefault",
-                new
+                RouteValueDictionary routeValue = new RouteValueDictionary();
+                routeValue.Add("lang", culture);
+                routeValue.Add("controller", filterContext.RouteData.Values["controller"]);
+                routeValue.Add("action", filterContext.RouteData.Values["action"]);
+                foreach (var item in filterContext.ActionParameters)
                 {
-                    lang = culture,
-                    controller = filterContext.RouteData.Values["controller"],
-                    action = filterContext.RouteData.Values["action"]
-                });
+                    routeValue.Add(item.Key, item.Value);
+                }
+                filterContext.HttpContext.Response.RedirectToRoute("LocalizedDefault", routeValue);
                 return;
             }
 
@@ -44,9 +44,45 @@ namespace Cursos.Controllers
                 (ViewEngines.Engines[0] as MultiLanguageViewEngine).SetCurrentCulture(culture);
             }
             */
-
             base.OnActionExecuting(filterContext);
         }
+
+        //protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        //{
+        //    string cultureOnCookie = GetCultureOnCookie(filterContext.HttpContext.Request);
+        //    string cultureOnURL = filterContext.RouteData.Values.ContainsKey("lang")
+        //        ? filterContext.RouteData.Values["lang"].ToString()
+        //        : GlobalHelper.DefaultCulture;
+        //    string culture = (cultureOnCookie == string.Empty)
+        //        ? (filterContext.RouteData.Values["lang"].ToString())
+        //        : cultureOnCookie;
+
+        //    if (cultureOnURL != culture)
+        //    {
+        //        filterContext.HttpContext.Response.RedirectToRoute("LocalizedDefault",
+        //        new
+        //        {
+        //            lang = culture,
+        //            controller = filterContext.RouteData.Values["controller"],
+        //            action = filterContext.RouteData.Values["action"],
+        //        });
+        //        return;
+        //    }
+
+        //    SetCurrentCultureOnThread(culture);
+
+        //    //El siguiente fragmento de código (y la implementación de la clase MultiLanguageViewEngine (pendiente)) permite 
+        //    //el diferenciación (por localización) de vistas enteras. Ver la sección "Dealing with Localizing Entire Views" en el artículo de referencia
+        //    //(https://www.codeproject.com/Articles/1160340/Get-insight-to-build-your-first-Multi-Language-ASP)
+        //    /*
+        //    if (culture != MultiLanguageViewEngine.CurrentCulture)
+        //    {
+        //        (ViewEngines.Engines[0] as MultiLanguageViewEngine).SetCurrentCulture(culture);
+        //    }
+        //    */
+
+        //    base.OnActionExecuting(filterContext);
+        //}
 
         private static void SetCurrentCultureOnThread(string lang)
         {

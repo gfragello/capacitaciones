@@ -87,6 +87,64 @@ namespace Cursos.Helpers
             }
         }
 
+        public bool EnviarEmailsNotificacionEliminacionInscripcionExterna(RegistroCapacitacion registroCapacitacion)
+        {
+            if (registroCapacitacion != null)
+            {
+                var message = new MailMessage();
+
+                foreach (var emailDestinatario in ConfiguracionHelper.GetInstance().GetValue("EmailInscripcionEDestinatario", "Inscripciones_Externas").Split(','))
+                {
+                    message.To.Add(new MailAddress(emailDestinatario));
+                }
+
+                message.From = new MailAddress(ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Inscripciones_Externas"));
+
+                //en el subject del mail se agrega un valor randómico para evitar que los mensajes se muestren anidados en los clientes web mail
+                message.Subject = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailInscripcionEAsunto", "Inscripciones_Externas"), registroCapacitacion.Jornada.JornadaIdentificacionCompleta, this.GenerateRandomicoSubjectMail());
+
+                UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
+
+                message.Body = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailInscripcionECuerpo", "Inscripciones_Externas"),
+                                             System.Web.HttpContext.Current.User.Identity.Name,
+                                             registroCapacitacion.Capacitado.NombreCompleto,
+                                             registroCapacitacion.Capacitado.TipoDocumento.Abreviacion,
+                                             registroCapacitacion.Capacitado.Documento,
+                                             registroCapacitacion.Jornada.JornadaIdentificacionCompleta,
+                                             url.Action("Details", "Jornadas", new { id = registroCapacitacion.JornadaID }, "http"));
+
+                message.IsBodyHtml = true;
+
+                using (var smtp = new SmtpClient())
+                {
+                    var credential = new NetworkCredential
+                    {
+                        UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Inscripciones_Externas"),
+                        Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario", "Inscripciones_Externas")
+                    };
+
+                    smtp.Credentials = credential;
+                    smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost", "Inscripciones_Externas");
+                    smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort", "Inscripciones_Externas"));
+                    smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL", "Inscripciones_Externas"));
+
+                    try
+                    {
+                        smtp.Send(message);
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public bool EnviarEmailJornadaCreacion(Jornada jornada)
         {
             if (jornada != null)

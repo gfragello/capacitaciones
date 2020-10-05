@@ -208,8 +208,12 @@ namespace Cursos.Models
                 Image imgSinEXIF = Image.FromStream(streamSinEXIF);
 
                 //si la imagen está apaisada, rotarla 90 grados
+                //20201003 - GF: hasta que se resuelva el cropping de las fotos no se capturan a través de la cámara
+                //               y no es neceario rotarla
+                /*
                 if (imgSinEXIF.Width > imgSinEXIF.Height)
                     imgSinEXIF.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                */
 
                 imgSinEXIF.Save(pathArchivoImagen, System.Drawing.Imaging.ImageFormat.Jpeg);
 

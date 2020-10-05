@@ -118,10 +118,8 @@
 
                 @Html.Partial("_LoginPartial")
 
-                @if (User.IsInRole("Administrador") || User.IsInRole("InstructorExterno"))
-                {
+                
                     <ul class="langs" style="list-style:none;">
-                        <!--
                         <li style="display:inline;">
                             <a href="" class="setLang" data-lang="es-UY"><img src="@Url.Content("~/images/flag-uruguay_40x40.png")" title="Español" /></a>
                         
@@ -129,12 +127,13 @@
                         <li style="display:inline;">
                             <a href="" class="setLang" data-lang="en-US"><img src="@Url.Content("~/images/flag-united-kingdom_40x40.png")" title="English" /></a>
                         </li>
-                        -->
+                        @if (User.IsInRole("Administrador") || User.IsInRole("InstructorExterno"))
+                        {
                         <li style="display:inline;">
                             <a href="@Url.Action("UltimasCargarFotos", "Jornadas")"><img src="@Url.Content("~/images/tomarFoto_40x40.png")" title="Tomar fotos" /></a>
                         </li>
+                        }
                     </ul>
-                }
             </div>
         </div>
     </div>

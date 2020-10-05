@@ -683,6 +683,12 @@ namespace Cursos.Controllers
         public ActionResult EliminarRegistroCapacitacion(int registroCapacitacionId)
         {
             RegistroCapacitacion registroCapacitacion = db.RegistroCapacitacion.Find(registroCapacitacionId);
+
+            //si la incripción fue registrada por un usuario con perfil para inscripciones externas, se notifica por email
+            //20200928 - GF: para implementar esta invocación primero se debe actualizar la función 
+            //if (System.Web.HttpContext.Current.User.IsInRole("InscripcionesExternas"))
+            //    NotificacionesEMailHelper.GetInstance().EnviarEmailsNotificacionEliminacionInscripcionExterna(registroCapacitacion);
+
             db.RegistroCapacitacion.Remove(registroCapacitacion);
             db.SaveChanges();
 
