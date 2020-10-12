@@ -208,7 +208,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload, int? jornadaId)
+        public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,Telefono,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload, int? jornadaId)
         {
             if (ModelState.IsValid)
             {
@@ -311,7 +311,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,EmpresaID,TipoDocumentoID,PathArchivoID")] Capacitado capacitado, HttpPostedFileBase upload)
+        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,Telefono,EmpresaID,TipoDocumentoID,PathArchivoID")] Capacitado capacitado, HttpPostedFileBase upload)
         {
             if (ModelState.IsValid)
             {

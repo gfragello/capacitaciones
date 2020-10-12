@@ -82,6 +82,9 @@ namespace Cursos.Models
         [Display(Name = "Fecha de nacimiento")]
         public DateTime? Fecha { get; set; }
 
+        [Display(Name = "Teléfono")]
+        public string Telefono { get; set; }
+
         [Display(Name = "Empresa")]
         public int EmpresaID { get; set; }
         public virtual Empresa Empresa { get; set; }

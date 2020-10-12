@@ -135,4 +135,7 @@
   <data name="lblNombre" xml:space="preserve">
     <value>Nombre</value>
   </data>
+  <data name="lblTelefono" xml:space="preserve">
+    <value>Teléfono</value>
+  </data>
 </root>
