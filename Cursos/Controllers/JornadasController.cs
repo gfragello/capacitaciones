@@ -1174,6 +1174,24 @@ namespace Cursos.Controllers
             return Json(null, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult ObtenerDatosDocumentacionAdicional(int JornadaId)
+        {
+            var jornada = db.Jornada.Where(j => j.JornadaID == JornadaId).FirstOrDefault();
+
+            if (jornada != null)
+            {
+                var datosDocumentacionAdicional = new
+                {
+                    DocumentacionAdicionalCompleta = jornada.DocumentacionAdicionalCompleta,
+                    LabelDocumentacionAdicional = JornadaHelper.GetInstance().ObtenerLabelDocumentacionAdicional(jornada)
+                };
+
+                return Json(datosDocumentacionAdicional, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(null, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult EnviarDatosOVAL(int jornadaId)
         {
             var jornada = db.Jornada.Where(j => j.JornadaID == jornadaId).FirstOrDefault();

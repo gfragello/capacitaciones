@@ -791,5 +791,18 @@ namespace Cursos.Controllers
             }
         }
 
+        public ActionResult ActualizarDocumentacionAdicionalDatos(int registroCapacitacionId, string documentacionAdicionalDatos)
+        {
+            var registroCapacitacion = db.RegistroCapacitacion.Find(registroCapacitacionId);
+
+            if (registroCapacitacion == null)
+                return Json(false, JsonRequestBehavior.AllowGet);
+
+            registroCapacitacion.DocumentacionAdicionalDatos = documentacionAdicionalDatos;
+            db.SaveChanges();
+
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

@@ -62,6 +62,9 @@ namespace Cursos.Models
         [Display(Name = "Mensaje último envio")]
         public string EnvioOVALMensaje { get; set; }
 
+        [Display(Name = "Datos adicionales")]
+        public string DocumentacionAdicionalDatos { get; set; }
+
         [NotMapped]
         private DateTime FechaInicioNoficacionVencimiento
         {
@@ -115,6 +118,28 @@ namespace Cursos.Models
             }
         }
 
+        [NotMapped]
+        public bool EdicionDocumentacionAdicionalInscripcionPermitida
+        {
+            get
+            {
+                bool puedeEditar = false;
+
+                if (HttpContext.Current.User.IsInRole("Administrador") || HttpContext.Current.User.IsInRole("InstructorExterno"))
+                {
+                    puedeEditar = true;
+                }
+                /*
+                else if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
+                {
+                    if (this.UsuarioModificacion == HttpContext.Current.User.Identity.Name && this.Estado == EstadosRegistroCapacitacion.Inscripto)
+                        puedeEditar = true;
+                }
+                */
+
+                return puedeEditar;
+            }
+        }
 
         [NotMapped]
         public bool FueCalificado

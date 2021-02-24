@@ -6,6 +6,8 @@
     ViewBag.Title = "Jornada - Detalles";
 }
 
+@Html.HiddenFor(model => model.JornadaID)
+
 <div id="modalMensaje" class="modal" role="dialog">
     <div class="modal-dialog">
 
@@ -72,6 +74,13 @@
                             {
                                 <td id="tdCantidadCuposDisponibles" style="padding-right: 10px">
                                     @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelMinimoAsistentes(Model))
+                                </td>
+                            }
+                            @if (Model.Curso.RequiereDocumentacionAdicionalInscripcion &&
+                                (HttpContext.Current.User.IsInRole("Administrador") || HttpContext.Current.User.IsInRole("InstructorExterno")))
+                            {
+                                <td id="tdDocumentacionAdicional" style="padding-right: 10px">
+                                    @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelDocumentacionAdicional(Model))
                                 </td>
                             }
                         </tr>
@@ -321,6 +330,7 @@ else
 @section Scripts {
 
     @Scripts.Render("~/Scripts/enviarOval.js")
+    @Scripts.Render("~/Scripts/documentacionAdicional.js")
 
     <script type="text/javascript">
 
@@ -435,6 +445,7 @@ else
                                     {
                                         actualizarContenidoTabs();
                                         actualizarDisponibilidadJornada();
+                                        actualizarLabelsDocumentacionAdicional();
                                     }
                                 }
                             });

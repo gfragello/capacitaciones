@@ -492,6 +492,14 @@
     <Compile Include="Migrations\202010121853184_Capacitado_Telefono.Designer.cs">
       <DependentUpon>202010121853184_Capacitado_Telefono.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202012152100096_CursoDocumentacionAdicionalInscripcion.cs" />
+    <Compile Include="Migrations\202012152100096_CursoDocumentacionAdicionalInscripcion.Designer.cs">
+      <DependentUpon>202012152100096_CursoDocumentacionAdicionalInscripcion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101312347328_DocumentacionAdicionalDatos.cs" />
+    <Compile Include="Migrations\202101312347328_DocumentacionAdicionalDatos.Designer.cs">
+      <DependentUpon>202101312347328_DocumentacionAdicionalDatos.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -549,6 +557,7 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\custom.css" />
     <Content Include="Content\PagedList.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
@@ -648,12 +657,19 @@
     <EmbeddedResource Include="Migrations\202010121853184_Capacitado_Telefono.resx">
       <DependentUpon>202010121853184_Capacitado_Telefono.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202012152100096_CursoDocumentacionAdicionalInscripcion.resx">
+      <DependentUpon>202012152100096_CursoDocumentacionAdicionalInscripcion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101312347328_DocumentacionAdicionalDatos.resx">
+      <DependentUpon>202101312347328_DocumentacionAdicionalDatos.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
     <Content Include="Scripts\cargarfoto.js" />
     <Content Include="Scripts\clickableRow.js" />
+    <Content Include="Scripts\documentacionAdicional.js" />
     <Content Include="Scripts\enviarOVAL.js" />
     <Content Include="Scripts\jquery-2.2.0.js" />
     <Content Include="Scripts\jquery-2.2.0.min.js" />

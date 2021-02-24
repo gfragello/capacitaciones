@@ -93,6 +93,15 @@ namespace Cursos.Models
         public int? PuntoServicioId { get; set; }
         public virtual PuntoServicio PuntoServicio { get; set; }
 
+        [Display(Name = "Requiere documentación adicional en la incripción")]
+        public bool RequiereDocumentacionAdicionalInscripcion { get; set; }
+
+        [Display(Name = "Identificador documentación adicional")]
+        public string DocumentacionAdicionalIdentificador { get; set; }
+
+        [Display(Name = "Documentación adicional es obligatoria")]
+        public bool RequiereDocumentacionAdicionalInscripcionObligatoria { get; set; }
+
         public virtual List<Jornada> Jornadas { get; set; }
     }
 }

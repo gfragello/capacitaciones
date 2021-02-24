@@ -367,6 +367,29 @@ namespace Cursos.Models
             }
         }
 
+        public int TotalDocumentacionAdicionalPresentada
+        {
+            get
+            {
+                return this.RegistrosCapacitacion != null ? this.RegistrosCapacitacion.Where(r => !string.IsNullOrEmpty(r.DocumentacionAdicionalDatos)).Count() : 0;
+            }
+        }
+
+        public string TotalDocumentacionAdicionalPresentadaTexto
+        {
+            get
+            {
+                return string.Format("Documentación adicional presentada: {0} de {1}", this.TotalDocumentacionAdicionalPresentada.ToString(), this.TotalInscriptos.ToString());
+            }
+        }
+
+        public bool DocumentacionAdicionalCompleta
+        {
+            get { return this.TotalInscriptos == this.TotalDocumentacionAdicionalPresentada; }
+        }
+
+
+
         public bool PuedeRecibirIncripciones
         {
             get

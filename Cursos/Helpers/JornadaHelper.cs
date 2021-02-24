@@ -65,5 +65,21 @@ namespace Cursos.Helpers
             else
                 return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", minimoAsistentesTexto);
         }
+
+        public string ObtenerLabelDocumentacionAdicional(Jornada j)
+        {
+            if (j.TotalInscriptos > 0)
+                if (j.DocumentacionAdicionalCompleta)
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", j.TotalDocumentacionAdicionalPresentadaTexto);
+                else
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h5>", j.TotalDocumentacionAdicionalPresentadaTexto);
+            else
+                if (j.Curso.RequiereDocumentacionAdicionalInscripcion)
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-info\">{0}</span></h5>", "Se requiere la presentación de documentación adicional");
+                else if (j.Curso.RequiereDocumentacionAdicionalInscripcionObligatoria)
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-info\">{0}</span></h5>", "Se requiere la presentación de documentación adicional obligatoria");
+
+            return string.Empty;
+        }
     }
 }

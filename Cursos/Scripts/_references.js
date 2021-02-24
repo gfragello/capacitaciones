@@ -2,6 +2,7 @@
 /// <reference path="bootstrap.js" />
 /// <reference path="cargarfoto.js" />
 /// <reference path="clickablerow.js" />
+/// <reference path="documentacionadicional.js" />
 /// <reference path="enviaroval.js" />
 /// <reference path="jquery.validate.date.js" />
 /// <reference path="jquery.validate.js" />
