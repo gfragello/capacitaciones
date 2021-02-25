@@ -370,7 +370,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento,EnvioOVALEstado")] RegistroCapacitacion registroCapacitacion, 
+        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento,EnvioOVALEstado,DocumentacionAdicionalDatos")] RegistroCapacitacion registroCapacitacion, 
                                   string PreviousUrl)
         {
             if (ModelState.IsValid)

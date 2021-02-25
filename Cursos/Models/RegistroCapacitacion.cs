@@ -125,7 +125,7 @@ namespace Cursos.Models
             {
                 bool puedeEditar = false;
 
-                if (HttpContext.Current.User.IsInRole("Administrador") || HttpContext.Current.User.IsInRole("InstructorExterno"))
+                if (HttpContext.Current.User.IsInRole("Administrador"))
                 {
                     puedeEditar = true;
                 }
@@ -138,6 +138,15 @@ namespace Cursos.Models
                 */
 
                 return puedeEditar;
+            }
+        }
+
+        [NotMapped]
+        public bool VisualizacionDocumentacionAdicionalInscripcionPermitida
+        {
+            get
+            {
+                return HttpContext.Current.User.IsInRole("InstructorExterno");
             }
         }
 

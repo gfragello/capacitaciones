@@ -5,11 +5,13 @@
 @{ 
     bool requiereDocumentacionAdicionalInscripcion = false;
     bool edicionDocumentacionAdicionalInscripcionPermitida = false;
+    bool visualizacionDocumentacionAdicionalInscripcionPermitida = false;
 
     if (Model.Count() > 0)
     {
         requiereDocumentacionAdicionalInscripcion = Model.ElementAt(0).Jornada.Curso.RequiereDocumentacionAdicionalInscripcion;
         edicionDocumentacionAdicionalInscripcionPermitida = Model.ElementAt(0).EdicionDocumentacionAdicionalInscripcionPermitida;
+        visualizacionDocumentacionAdicionalInscripcionPermitida = Model.ElementAt(0).VisualizacionDocumentacionAdicionalInscripcionPermitida;
     }
 }
 
@@ -22,7 +24,8 @@
         <th>
             @Html.DisplayNameFor(model => model.Capacitado.Nombre)
         </th>
-        @if (requiereDocumentacionAdicionalInscripcion && edicionDocumentacionAdicionalInscripcionPermitida)
+        @if (requiereDocumentacionAdicionalInscripcion && 
+            (edicionDocumentacionAdicionalInscripcionPermitida || visualizacionDocumentacionAdicionalInscripcionPermitida))
         {
             <th>
                 Documentación
@@ -61,14 +64,23 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
             </td>
-            @if (requiereDocumentacionAdicionalInscripcion && edicionDocumentacionAdicionalInscripcionPermitida)
+            @if (requiereDocumentacionAdicionalInscripcion)
             {
-                <td>
-                    @{ string bgcolor = !string.IsNullOrEmpty(item.DocumentacionAdicionalDatos) ? "#DCF9AF" : "#F9C1AF"; }
-                    <input id="@string.Format("txtDocumentacionAdicionalDatos_{0}", item.RegistroCapacitacionID.ToString().Trim())" type="text" value="@item.DocumentacionAdicionalDatos" size="4" class="txtDocumentacionAdicionalDatos" data-registrocapacitacionid="@item.RegistroCapacitacionID.ToString()" style="background-color:@bgcolor;" />
+                if (edicionDocumentacionAdicionalInscripcionPermitida)
+                {
+                    <td>
+                        @{ string bgcolor = !string.IsNullOrEmpty(item.DocumentacionAdicionalDatos) ? "#DCF9AF" : "#F9C1AF"; }
+                        <input id="@string.Format("txtDocumentacionAdicionalDatos_{0}", item.RegistroCapacitacionID.ToString().Trim())" type="text" value="@item.DocumentacionAdicionalDatos" size="4" class="txtDocumentacionAdicionalDatos" data-registrocapacitacionid="@item.RegistroCapacitacionID.ToString()" style="background-color:@bgcolor;" />
 
-                    <input id="@string.Format("txtDocumentacionAdicionalDatosAnteriores_{0}", item.RegistroCapacitacionID.ToString().Trim())" type="hidden" value="@item.DocumentacionAdicionalDatos" />
-                </td>
+                        <input id="@string.Format("txtDocumentacionAdicionalDatosAnteriores_{0}", item.RegistroCapacitacionID.ToString().Trim())" type="hidden" value="@item.DocumentacionAdicionalDatos" />
+                    </td>
+                }
+                else if (visualizacionDocumentacionAdicionalInscripcionPermitida)
+                {
+                    <td>
+                        @item.DocumentacionAdicionalDatos
+                    </td>
+                }
             }
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
