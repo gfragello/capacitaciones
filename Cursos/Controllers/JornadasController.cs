@@ -30,7 +30,7 @@ namespace Cursos.Controllers
                                   DateTime? currentFechaFin, DateTime? fechaFin,
                                   bool? currentCreadasOtrosUsuarios, bool? creadasOtrosUsuarios,
                                   bool? currentAutorizacionPendiente, bool? autorizacionPendiente, 
-                                  int? page)
+                                  int? page, bool? exportarExcel)
         {
             if (CursoID != null)
                 page = 1;
@@ -116,7 +116,12 @@ namespace Cursos.Controllers
 
             jornadas = jornadas.OrderByDescending(j => j.Fecha).ThenByDescending(j => j.Hora);
 
-            return View(jornadas.ToPagedList(pageNumber, pageSize));
+            bool exportar = exportarExcel != null ? (bool)exportarExcel : false;
+
+            if (!exportar)
+                return View(jornadas.ToPagedList(pageNumber, pageSize));
+            else
+                return ExportDataExcelIndex(jornadas.ToList());
         }
 
         // GET: Jornadas/Details/5
@@ -643,6 +648,65 @@ namespace Cursos.Controllers
             }
 
             return View(jornada);
+        }
+
+        private ActionResult ExportDataExcelIndex(List<Jornada> jornadas)
+        {
+            
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("Jornadas");
+
+                const int rowInicial = 1;
+                int i = rowInicial + 1;
+
+                ws.Cells[rowInicial, 1].Value = "Curso";
+                ws.Cells[rowInicial, 2].Value = "Intructor";
+                ws.Cells[rowInicial, 3].Value = "Lugar";
+                ws.Cells[rowInicial, 4].Value = "Dirección";
+                ws.Cells[rowInicial, 5].Value = "Fecha";
+                ws.Cells[rowInicial, 6].Value = "Hora";
+
+                //se ponen en negrita los encabezados
+                ws.Cells[rowInicial, 1, rowInicial, 6].Style.Font.Bold = true;
+
+                var bgColor = Color.WhiteSmoke;
+
+                //foreach (var j in jornadas)
+                {
+                    ws.Cells[i, 1].Value = j.Curso.Descripcion;
+                    ws.Cells[i, 2].Value = j.Instructor.NombreCompleto;
+                    ws.Cells[i, 3].Value = j.Lugar.NombreLugar;
+                    ws.Cells[i, 4].Value = j.Lugar.DireccionHabitual;
+                    ws.Cells[i, 5].Value = j.Fecha.ToShortDateString();
+                    ws.Cells[i, 6].Value = j.Hora;
+
+                    //se seleccionan las columnas con datos del capacitado para setear el background color.
+                    if (bgColor != Color.White)
+                    {
+                        ws.Cells[i, 1, i, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i, 1, i, 6].Style.Fill.BackgroundColor.SetColor(bgColor);
+                    }
+
+                    //se pone un borde alrededor del renglón del encabezado
+                    //ws.Cells[i - 1, 1, i - 1, j - 1].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+
+                    bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
+
+                    i++;
+                }
+
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                package.SaveAs(stream);
+
+                string fileName = "jornadas.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
         }
 
         private ActionResult ExportDataExcel(Jornada j)

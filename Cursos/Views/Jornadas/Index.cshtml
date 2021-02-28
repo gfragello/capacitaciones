@@ -14,6 +14,11 @@
         @:&nbsp; &nbsp;
         @Html.ActionLink("Próximas disponibles", "Disponibles")
     }
+    @if (User.IsInRole("Administrador"))
+    {
+        @:&nbsp; &nbsp;
+        @Html.ActionLink("Exportar a Excel", "Index", new { currentCursoID = ViewBag.CurrentCursoID, currentFechaInicio = ViewBag.CurrentFechaInicio, currentFechaFin = ViewBag.CurrentFechaFin, currentCreadasOtrosUsuarios = ViewBag.CurrentCreadasOtrosUsuarios, exportarExcel = true })
+    }
 </p>
 
 <hr />
