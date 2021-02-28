@@ -672,7 +672,7 @@ namespace Cursos.Controllers
 
                 var bgColor = Color.WhiteSmoke;
 
-                //foreach (var j in jornadas)
+                foreach (var j in jornadas)
                 {
                     ws.Cells[i, 1].Value = j.Curso.Descripcion;
                     ws.Cells[i, 2].Value = j.Instructor.NombreCompleto;
