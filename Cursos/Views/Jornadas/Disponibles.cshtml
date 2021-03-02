@@ -19,6 +19,33 @@
 <hr />
 }
 
+<div id="modalMensaje" class="modal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Atención</h4>
+            </div>
+            <div id="bodyMensaje" class="modal-body" style="text-align: center;">
+                <div class="well">
+                    <p class="text-left"><b>RESPONSABILIDAD de las EMPRESAS:</b> Verificar las jornadas a las que han inscripto a su personal, esto incluye el tipo de curso, la dirección, día y horario. No se emiten recordatorios de las jornadas.</p>
+                </div>
+                <div class="well">
+                    <p class="text-left"><b>RECORDATORIO para ASISTENTES:</b> Deben estar 15 minutos antes del horario de comienzo, no será posible ingresar al curso pasados 15 minutos de la hora pautada de inicio. No se permite el uso de celular durante el curso y al finalizar el mismo deben realizar una prueba eliminatoria.</p>
+                </div>
+                <div class="well">
+                    <p class="text-left"><b>REQUISITO EXCLUYENTE:</b> PARA PARTICIPAR DE LAS INDUCCIONES LOS ASISTENTES DEBEN TENER <b>TEST PCR-RT CON RESULTADO NEGATIVO A COVID-19 NO MAYOR A 3 DÍAS.</b></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <h2>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblProximasJornadasDisponibles")</h2>
 
 <div class="alert alert-info"><strong>REQUISITO EXCLUYENTE:</strong> PARA PARTICIPAR DE LAS INDUCCIONES LOS ASISTENTES  DEBEN TENER <strong>TEST PCR-RT CON RESULTADO NEGATIVO A COVID-19 NO MAYOR A 3 DÍAS.</strong></div>
@@ -116,3 +143,13 @@
     }
 
 </table>
+
+@section Scripts {
+
+<script type="text/javascript">
+        $(window).on('load', function() {
+            $('#modalMensaje').modal('show');
+        });
+</script>
+
+}

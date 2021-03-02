@@ -677,7 +677,7 @@ namespace Cursos.Controllers
                     ws.Cells[i, 1].Value = j.Curso.Descripcion;
                     ws.Cells[i, 2].Value = j.Instructor.NombreCompleto;
                     ws.Cells[i, 3].Value = j.Lugar.NombreLugar;
-                    ws.Cells[i, 4].Value = j.Lugar.DireccionHabitual;
+                    ws.Cells[i, 4].Value = j.Direccion;
                     ws.Cells[i, 5].Value = j.Fecha.ToShortDateString();
                     ws.Cells[i, 6].Value = j.Hora;
 
