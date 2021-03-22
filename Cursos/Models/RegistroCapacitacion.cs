@@ -118,6 +118,20 @@ namespace Cursos.Models
             }
         }
 
+        public bool EdicionDatosCapacitadoPermitida
+        {
+            get
+            {
+                if (HttpContext.Current.User.IsInRole("Administrador") || HttpContext.Current.User.IsInRole("InstructorExterno"))
+                    return true;
+                else if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
+                    if (this.UsuarioModificacion == HttpContext.Current.User.Identity.Name && this.Estado == EstadosRegistroCapacitacion.Inscripto)
+                        return true;
+
+                return false;
+            }
+        }
+
         [NotMapped]
         public bool EdicionDocumentacionAdicionalInscripcionPermitida
         {

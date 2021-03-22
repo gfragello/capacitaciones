@@ -128,7 +128,19 @@ namespace Cursos.Helpers.EnvioOVAL
                 byte[] fotoCapacitadoAsArray = null;
 
                 if (r.Capacitado.PathArchivo != null)
-                { 
+                {
+                    if (r.Capacitado.PathArchivo.NombreArchivo.ToLower().Contains(".jpeg"))
+                    {
+                        if (CapacitadoHelper.GetInstance().CambiarExtensionFotoAJPG(r.Capacitado))
+                        {
+                            LogHelper.GetInstance().WriteMessage(module, string.Format("Se modificó la extensión del archivo {0}", r.Capacitado.PathArchivo.NombreArchivo));
+                        }
+                        else
+                        {
+                            LogHelper.GetInstance().WriteMessage(module, string.Format("No se pudo modificar la extensión del archivo {0}", r.Capacitado.PathArchivo.NombreArchivo));
+                        }
+                    }
+
                     //se obtiene el path donde está almacenada la imagen que se enviará al web service
                     string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(r.Capacitado.CapacitadoID);
                     string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);

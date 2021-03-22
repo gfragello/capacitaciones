@@ -34,9 +34,18 @@
         <th>
             @Html.DisplayNameFor(model => model.Capacitado.Empresa)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Nota)
-        </th>
+        @if (User.IsInRole("InscripcionesExternas"))
+        {
+            <th> 
+                &nbsp; <!-- Header vacío para la foto -->
+            </th>
+        }
+        else
+        {
+            <th>
+                @Html.DisplayNameFor(model => model.Nota)
+            </th>
+        }
         <th>
             @Html.DisplayNameFor(model => model.Estado)
         </th>
@@ -85,9 +94,25 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nota)
-            </td>
+            @if (User.IsInRole("InscripcionesExternas"))
+            {
+                <th>
+                @if (item.Capacitado.PathArchivo != null)
+                {
+                    <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=75&height=75&mode=crop&anchor=top" alt="" />
+                }
+                else
+                {
+                    <img src="~/images/sinfoto_75x75.png" />
+                }
+                </th>
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nota)
+                </td>
+            }
             <td>
                 <span class="label @labelClass">@item.Estado</span>
             </td>
@@ -101,6 +126,10 @@
                 @if (item.Jornada.PuedeModificarse())
                 {
                     <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
+                }
+                @if (item.EdicionDatosCapacitadoPermitida)
+                {
+                    <a href="@Url.Action("Edit", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/capacitados_16x16.png")" title="Editar Datos Capacitados" /></a>@:&nbsp;|
                 }
                 @switch (item.TipoEliminacionPermitida)
                 {

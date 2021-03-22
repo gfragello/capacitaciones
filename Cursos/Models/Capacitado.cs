@@ -254,5 +254,18 @@ namespace Cursos.Models
             return false;
         }
 
+        public void CambiarExtensionFotoAJPG()
+        {
+            if (this.PathArchivo != null && this.PathArchivo.NombreArchivo.Contains(".jpeg"))
+            {
+                string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(this.CapacitadoID);
+                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+
+                var pathArchivoImagenAnterior = Path.Combine(pathDirectorio, this.PathArchivo.NombreArchivo);
+                var pathArchivoImagenNuevo = Path.Combine(pathDirectorio, this.PathArchivo.NombreArchivo.Replace(".jpeg", ".jpg"));
+
+                System.IO.File.Move(pathArchivoImagenAnterior, pathArchivoImagenNuevo);
+            }
+        }
     }
 }

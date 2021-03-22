@@ -281,8 +281,9 @@ namespace Cursos.Controllers
         }
 
         // GET: Capacitados/Edit/5
-        [Authorize(Roles = "Administrador,AdministradorExterno")]
-        public ActionResult Edit(int? id)
+        [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
+        public ActionResult Edit(int? id, 
+                                 string previousUrl)
         {
             if (id == null)
             {
@@ -294,16 +295,21 @@ namespace Cursos.Controllers
                 return HttpNotFound();
             }
 
-            if (capacitado.PuedeModificarse())
-            {
-                ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
+            if (string.IsNullOrEmpty(previousUrl))
+                ViewBag.PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer; // get the previous url and store it with view model
+            else
+                ViewBag.PreviousUrl = previousUrl;
+
+            //if (capacitado.PuedeModificarse())
+            //{
+            ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
                 ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
                 return View(capacitado);
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
-            }
+            //}
+            //else
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.Unauthorized);
+            //}
         }
 
         // POST: Capacitados/Edit/5
@@ -311,7 +317,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,Telefono,EmpresaID,TipoDocumentoID,PathArchivoID")] Capacitado capacitado, HttpPostedFileBase upload)
+        public ActionResult Edit([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,Telefono,EmpresaID,TipoDocumentoID,PathArchivoID")] Capacitado capacitado, HttpPostedFileBase upload, string previousUrl)
         {
             if (ModelState.IsValid)
             {
@@ -347,10 +353,20 @@ namespace Cursos.Controllers
 
                 db.Entry(capacitado).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Details", new { id = capacitado.CapacitadoID });
+
+                if (!string.IsNullOrEmpty(previousUrl))
+                {
+                    return Redirect(previousUrl);
+                }
+                else
+                {
+                    return RedirectToAction("Details", new { id = capacitado.CapacitadoID });
+                }
             }
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
+
+            //hubo un error. Se regresa a la pantalla de edición
             return View(capacitado);
         }
 
@@ -430,6 +446,12 @@ namespace Cursos.Controllers
             if (capacitado == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
+            //se conserva la URL previa al ingreso a la edición del capacitado
+            if (string.IsNullOrEmpty(previousUrl))
+                ViewBag.PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer; // get the previous url and store it with view model
+            else
+                ViewBag.PreviousUrl = previousUrl;
+
             var pathFotoCapacitado = capacitado.PathArchivo;
             capacitado.PathArchivo = null;
 
@@ -443,8 +465,9 @@ namespace Cursos.Controllers
 
             db.SaveChanges();
 
+            //20210321 - Este return hace que en el form de CargarFoto quede en loop al seleccionar regresar
             //return Redirect(Request.UrlReferrer.ToString());
-            return RedirectToAction("CargarFoto", new { id = capacitadoId, previousUrl = previousUrl });
+            return RedirectToAction("Edit", new { id = capacitadoId, previousUrl = previousUrl });
         }
 
         private ActionResult ExportDataExcel(List<Capacitado> capacitados, int? CursoID)
