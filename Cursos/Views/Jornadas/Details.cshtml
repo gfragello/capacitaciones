@@ -446,6 +446,7 @@ else
                                         actualizarContenidoTabs();
                                         actualizarDisponibilidadJornada();
                                         actualizarLabelsDocumentacionAdicional();
+                                        //location.reload(true);
                                     }
                                 }
                             });
@@ -506,8 +507,12 @@ else
                     {
                         if (resultadoOK)
                         {
+                            /*
                             actualizarContenidoTabs()
                             actualizarDisponibilidadJornada();
+                            */
+                            //se recarga la página porque se desconfigura visulamente el contenedor de los contorles desde donde se hacen las incripciones
+                            location.reload(true);
                         }
                     }
                 });

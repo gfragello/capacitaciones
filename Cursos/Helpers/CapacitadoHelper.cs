@@ -16,12 +16,10 @@ namespace Cursos.Helpers
             return _instance;
         }
 
-        private CursosDbContext db = new CursosDbContext();
-
-        public bool CambiarExtensionFotoAJPG(Capacitado c)
+        public bool CambiarExtensionFotoAJPG(Capacitado c, CursosDbContext dbContext)
         {
             //var capacitado = db.Capacitados.Where(c => c.CapacitadoID == CapacitadoID).;
-            var pathArchivo = db.PathArchivos.Find(c.PathArchivoID);
+            var pathArchivo = dbContext.PathArchivos.Find(c.PathArchivoID);
 
             if (c.PathArchivo != null && c.PathArchivo.NombreArchivo.ToLower().Contains(".jpeg"))
             {
@@ -34,10 +32,10 @@ namespace Cursos.Helpers
                 System.IO.File.Move(pathArchivoImagenAnterior, pathArchivoImagenNuevo);
 
                 string nuevoNombreArchivo = c.PathArchivo.NombreArchivo.ToLower().Replace(".jpeg", ".jpg");
-                c.PathArchivo.NombreArchivo = nuevoNombreArchivo;
+                //c.PathArchivo.NombreArchivo = nuevoNombreArchivo;
 
                 pathArchivo.NombreArchivo = nuevoNombreArchivo;
-                db.SaveChanges();
+                dbContext.SaveChanges();
             }
             else
                 return false;

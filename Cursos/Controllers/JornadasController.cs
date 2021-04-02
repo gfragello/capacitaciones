@@ -126,6 +126,9 @@ namespace Cursos.Controllers
 
         // GET: Jornadas/Details/5
         //[Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas")]
+        //este atributo indica al navegador que no se cacheé esta página. De esta forma si se navega a otra página (por ejemplo en la 
+        //edición de un capacitado) y se regresa con el "back button", se recarga la página y se ven correctamente los elementos actualizados por JavaScript
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
         public ActionResult Details(int? id,
                                     bool? exportarExcel,
                                     bool? generarActa,

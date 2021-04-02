@@ -14,7 +14,7 @@
     @Html.Partial("_CapacitadoCargarFotoPartial", Model)
 </div>
 
-@using (Html.BeginForm("EliminarFoto", "Capacitados", null, FormMethod.Post, new { name = "frmEliminarFoto", id = "frmEliminarFoto" }))
+@using (Html.BeginForm("EliminarFotoDesdeCargarFoto", "Capacitados", null, FormMethod.Post, new { name = "frmEliminarFoto", id = "frmEliminarFoto" }))
 {
     @Html.AntiForgeryToken()
 

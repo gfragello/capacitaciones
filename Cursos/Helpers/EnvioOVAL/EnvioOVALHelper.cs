@@ -131,13 +131,20 @@ namespace Cursos.Helpers.EnvioOVAL
                 {
                     if (r.Capacitado.PathArchivo.NombreArchivo.ToLower().Contains(".jpeg"))
                     {
-                        if (CapacitadoHelper.GetInstance().CambiarExtensionFotoAJPG(r.Capacitado))
+                        if (bool.Parse(ConfiguracionHelper.GetInstance().GetValue("ForzarExtensionArchivoImagenJPG", "EnvioOVAL")))
                         {
-                            LogHelper.GetInstance().WriteMessage(module, string.Format("Se modificó la extensión del archivo {0}", r.Capacitado.PathArchivo.NombreArchivo));
+                            if (CapacitadoHelper.GetInstance().CambiarExtensionFotoAJPG(r.Capacitado, this.db))
+                            {
+                                LogHelper.GetInstance().WriteMessage(module, string.Format("Se modificó la extensión del archivo {0}", r.Capacitado.PathArchivo.NombreArchivo));
+                            }
+                            else
+                            {
+                                LogHelper.GetInstance().WriteMessage(module, string.Format("No se pudo modificar la extensión del archivo {0}", r.Capacitado.PathArchivo.NombreArchivo));
+                            }
                         }
                         else
                         {
-                            LogHelper.GetInstance().WriteMessage(module, string.Format("No se pudo modificar la extensión del archivo {0}", r.Capacitado.PathArchivo.NombreArchivo));
+                            LogHelper.GetInstance().WriteMessage(module, string.Format("No se modificará la extensión del archivo {0} porque está deshabilitada por configuración", r.Capacitado.PathArchivo.NombreArchivo));
                         }
                     }
 

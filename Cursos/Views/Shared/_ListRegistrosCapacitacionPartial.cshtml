@@ -63,17 +63,22 @@
     @foreach (var item in Model)
     {
         string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(item.Estado);
+
         <tr>
+
             <td>
                 @string.Format("{0}.", numeroLinea++.ToString().PadLeft(2, '0'))
             </td>
+
+        @if (item.EdicionDatosCapacitadoPermitida)
+        {
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
             </td>
-            @if (requiereDocumentacionAdicionalInscripcion)
+            if (requiereDocumentacionAdicionalInscripcion)
             {
                 if (edicionDocumentacionAdicionalInscripcionPermitida)
                 {
@@ -89,23 +94,30 @@
                     <td>
                         @item.DocumentacionAdicionalDatos
                     </td>
+                    }
                 }
-            }
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
             </td>
-            @if (User.IsInRole("InscripcionesExternas"))
+            if (User.IsInRole("InscripcionesExternas"))
             {
-                <th>
-                @if (item.Capacitado.PathArchivo != null)
+                if (item.EdicionDatosCapacitadoPermitida)
                 {
-                    <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=75&height=75&mode=crop&anchor=top" alt="" />
+                    <th>
+                        @if (item.Capacitado.PathArchivo != null)
+                        {
+                            <img src="~/images/FotosCapacitados/@item.Capacitado.PathArchivo.PathCompleto?width=75&height=75&mode=crop&anchor=top" alt="" />
+                        }
+                        else
+                        {
+                            <img src="~/images/sinfoto_75x75.png" />
+                        }
+                    </th>
                 }
                 else
                 {
-                    <img src="~/images/sinfoto_75x75.png" />
+                    <th>&nbsp;</th>
                 }
-                </th>
             }
             else
             {
@@ -116,7 +128,7 @@
             <td>
                 <span class="label @labelClass">@item.Estado</span>
             </td>
-            @if (!User.IsInRole("InscripcionesExternas"))
+            if (!User.IsInRole("InscripcionesExternas"))
             {
                 <td style="text-align:center">
                     @Html.Raw(RegistroCapacitacionHelper.GetInstance().ObtenerImagenEnvioOVALEstado(item))
@@ -126,11 +138,11 @@
                 @if (item.Jornada.PuedeModificarse())
                 {
                     <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
-                }
+                    }
                 @if (item.EdicionDatosCapacitadoPermitida)
                 {
                     <a href="@Url.Action("Edit", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/capacitados_16x16.png")" title="Editar Datos Capacitados" /></a>@:&nbsp;|
-                }
+                    }
                 @switch (item.TipoEliminacionPermitida)
                 {
                     case TipoEliminacionEnum.EliminacionSimple:
@@ -143,7 +155,11 @@
                 }
                 &nbsp;
             </td>
+            }
+            else //los usuarios que no pueden editar los datos del capacitado tampoco pueden ser sus datos
+            {
+                <td colspan="6"><span class="label label-primary">Ocupado por otra empresa</span></td>
+            }
         </tr>
     }
-
 </table>
