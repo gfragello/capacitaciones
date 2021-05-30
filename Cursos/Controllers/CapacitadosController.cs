@@ -452,6 +452,39 @@ namespace Cursos.Controllers
             else
                 ViewBag.PreviousUrl = previousUrl;
 
+            EliminarFoto(capacitado);
+
+            //20210321 - Este return hace que en el form de CargarFoto quede en loop al seleccionar regresar
+            //return Redirect(Request.UrlReferrer.ToString());
+            return RedirectToAction("Edit", new { id = capacitadoId, previousUrl = previousUrl });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EliminarFotoDesdeCargarFoto(int? capacitadoId,
+                                                        string previousUrl)
+        {
+            if (capacitadoId == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            var capacitado = db.Capacitados.Find(capacitadoId);
+
+            if (capacitado == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            //se conserva la URL previa al ingreso a la edición del capacitado
+            if (string.IsNullOrEmpty(previousUrl))
+                ViewBag.PreviousUrl = System.Web.HttpContext.Current.Request.UrlReferrer; // get the previous url and store it with view model
+            else
+                ViewBag.PreviousUrl = previousUrl;
+
+            EliminarFoto(capacitado);
+
+            return RedirectToAction("CargarFoto", new { id = capacitadoId, previousUrl = previousUrl });
+        }
+
+        private void EliminarFoto(Capacitado capacitado)
+        {
             var pathFotoCapacitado = capacitado.PathArchivo;
             capacitado.PathArchivo = null;
 
@@ -464,10 +497,6 @@ namespace Cursos.Controllers
             db.PathArchivos.Remove(pathFotoCapacitado);
 
             db.SaveChanges();
-
-            //20210321 - Este return hace que en el form de CargarFoto quede en loop al seleccionar regresar
-            //return Redirect(Request.UrlReferrer.ToString());
-            return RedirectToAction("Edit", new { id = capacitadoId, previousUrl = previousUrl });
         }
 
         private ActionResult ExportDataExcel(List<Capacitado> capacitados, int? CursoID)
