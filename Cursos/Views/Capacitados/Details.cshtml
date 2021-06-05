@@ -111,6 +111,7 @@
     {
         <tr>
             <td>
+                <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle de jornada" /></a>
                 @Html.DisplayFor(modelItem => item.Jornada.JornadaIdentificacionCompleta)
             </td>
         </tr>

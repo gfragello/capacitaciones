@@ -415,18 +415,26 @@ namespace Cursos.Models
         {
             get
             {
+                return this.PuedeRecibirIncripciones && this.PuedeAccederUsuarioActual;
+            }
+        }
+
+        public bool PuedeAccederUsuarioActual
+        {
+            get
+            {
                 if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
-                    return this.PermiteInscripcionesExternas && this.PuedeRecibirIncripciones;
+                    return this.PermiteInscripcionesExternas;
 
                 else if (HttpContext.Current.User.IsInRole("InstructorExterno"))
                 {
                     var instructor = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(HttpContext.Current.User.Identity.Name);
 
                     if (instructor != null)
-                        return this.PuedeRecibirIncripciones && this.InstructorId == instructor.InstructorID;
+                        return this.InstructorId == instructor.InstructorID;
                 }
                 else if (HttpContext.Current.User.IsInRole("Administrador"))
-                    return this.PuedeRecibirIncripciones;
+                    return true;
 
                 return false;
             }

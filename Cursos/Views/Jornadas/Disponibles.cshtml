@@ -130,9 +130,11 @@
                 }
             </td>
             <td>
-                @if (item.PuedeAgregarInscripcionesUsuarioActual)
+                @if (item.PuedeAccederUsuarioActual)
                 {
-                    <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkRegistrarInscripcion")</a>
+                    string textoLink = item.PuedeAgregarInscripcionesUsuarioActual ? Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkRegistrarInscripcion") : Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkVerJornada");
+
+                    <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@textoLink</a>
                 }
                 else
                 {

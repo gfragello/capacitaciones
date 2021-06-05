@@ -141,4 +141,7 @@
   <data name="lnkRegistrarInscripcion" xml:space="preserve">
     <value>Register</value>
   </data>
+  <data name="lnkVerJornada" xml:space="preserve">
+    <value>View details</value>
+  </data>
 </root>
