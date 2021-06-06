@@ -261,6 +261,9 @@ namespace Cursos.Helpers.EnvioOVAL
                 arr = ms.ToArray();
             }
 
+            //TODO 20210606 - Cuando se usa el archivo queda lockeado. Cambiar esta función
+            //https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
+
             return arr;
         }
     }
