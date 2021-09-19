@@ -4,9 +4,9 @@
       "type": "secrets.user"
     },
     "mssql1": {
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/csldb/databases/certificaciones",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/csldb-desa/databases/certificaciones-desa",
       "type": "mssql.azure",
-      "connectionId": "csldb",
+      "connectionId": "csldb-desa.database.windows.net",
       "secretStore": null
     }
   }

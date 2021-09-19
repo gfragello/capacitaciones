@@ -419,6 +419,15 @@ namespace Cursos.Models
             }
         }
 
+        public bool PuedeEliminarInscripcionesUsuarioActual
+        {
+            get
+            {
+                return this.PuedeRecibirIncripciones && this.PuedeAccederUsuarioActual;
+            }
+        }
+        
+
         public bool PuedeAccederUsuarioActual
         {
             get

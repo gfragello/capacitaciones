@@ -138,20 +138,23 @@
                 @if (item.Jornada.PuedeModificarse())
                 {
                     <a href="@Url.Action("Edit", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/editar_16x16.png")" title="Editar" /></a>@:&nbsp;|
-                    }
+                }
                 @if (item.EdicionDatosCapacitadoPermitida)
                 {
                     <a href="@Url.Action("Edit", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/capacitados_16x16.png")" title="Editar Datos Capacitados" /></a>@:&nbsp;|
-                    }
-                @switch (item.TipoEliminacionPermitida)
+                }
+                @if (item.Jornada.PuedeEliminarInscripcionesUsuarioActual)
                 {
-                    case TipoEliminacionEnum.EliminacionSimple:
-                        <a href="javascript:if (confirm('¿Confirma eliminación del inscripto?')) eliminarRegistroCapacitacion(@item.RegistroCapacitacionID);"><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
-                        break;
+                    switch (item.TipoEliminacionPermitida)
+                    {
+                        case TipoEliminacionEnum.EliminacionSimple:
+                            <a href="javascript:if (confirm('¿Confirma eliminación del inscripto?')) eliminarRegistroCapacitacion(@item.RegistroCapacitacionID);"><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                            break;
 
-                    case TipoEliminacionEnum.EliminacionConRevision:
-                        <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
-                        break;
+                        case TipoEliminacionEnum.EliminacionConRevision:
+                            <a href="@Url.Action("Delete", "RegistrosCapacitacion", new { id = item.RegistroCapacitacionID }) "><img src="@Url.Content("~/images/borrar_16x16.png")" title="Borrar" /></a>
+                            break;
+                    }
                 }
                 &nbsp;
             </td>
