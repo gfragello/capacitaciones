@@ -423,7 +423,10 @@ namespace Cursos.Models
         {
             get
             {
-                return this.PuedeRecibirIncripciones && this.PuedeAccederUsuarioActual;
+                if (HttpContext.Current.User.IsInRole("Administrador"))
+                    return true;
+                else
+                    return this.PuedeRecibirIncripciones && this.PuedeAccederUsuarioActual;
             }
         }
         
