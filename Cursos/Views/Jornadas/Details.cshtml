@@ -59,7 +59,7 @@
                                 @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelTotalInscriptos(Model))
                             </td>
                             @if (Model.TieneMaximoAsistentes)
-                            { 
+                            {
                                 <td id="tdCantidadCuposDisponibles" style="padding-right: 10px">
                                     @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelTotalCuposDisponibles(Model))
                                 </td>
@@ -87,20 +87,20 @@
                     </table>
                 </td>
             </tr>
-     
+
             @*
-            <tr>
-                <td style="vertical-align: bottom; padding-right: 10px" colspan="3">
-                    <label style="font-size:small;color:#000000">@Model.CuposDisponiblesTexto</label>
-                </td>
-            </tr>
+                <tr>
+                    <td style="vertical-align: bottom; padding-right: 10px" colspan="3">
+                        <label style="font-size:small;color:#000000">@Model.CuposDisponiblesTexto</label>
+                    </td>
+                </tr>
             *@
         </table>
     </div>
 
     @*No se muestran los datos de auditoría para los usuarios de inscripción externa*@
     @if (!HttpContext.Current.User.IsInRole("InscripcionesExternas"))
-    { 
+    {
         @Html.Partial("_DatosModificacionPartial", Model)
     }
 
@@ -112,7 +112,7 @@
         string textoAccionJornadaAutorizadas = string.Empty;
     }
 
-    
+
     @if (Model.CuposDisponibles) //si hay cupos disponibles se muestra la opción para deshabilitarlos
     {
         classAccionCuposDisponibles = "glyphicon glyphicon-stop";
@@ -176,44 +176,51 @@
                     @*:&nbsp;&nbsp; &nbsp; &nbsp;*@
                 }
                 @*:&nbsp;&nbsp; &nbsp; &nbsp;
-                <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
+                    <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
                 *@
-                }
+            }
         </p>
 
         <hr />
     }
 
- </div>
+</div>
+
+<br />
+
+@if (Cursos.Helpers.ValidationHelper.GetInstance().EsURL(Model.Direccion))
+{
+    <div class="alert alert-info"><strong>Enlace para acceder a la jornada </strong> @Html.Raw(String.Format("<a href='{0}'>{0}</a>", Model.Direccion))</div>
+}
 
 @if (Model.PuedeAgregarActaUsuarioActual)
 {
     //si aún no se agregó el archivo del acta
     if (Model.PathArchivo == null)
     {
-    <div>
-        <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
-    </div>
+        <div>
+            <button data-toggle="collapse" data-target="#divAgregarActa" class="btn btn-default" onclick="toggleImgAgregarActaChevron();">Agregar Acta&nbsp;&nbsp;<span id="imgAgregarActaChevron" class="glyphicon glyphicon-chevron-down"></span></button>
+        </div>
 
-    <div id="divAgregarActa" class="collapse well" style="background-color: whitesmoke">
-        @using (Html.BeginForm("AgregarActa", "Jornadas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
-        {
-            @Html.AntiForgeryToken()
+        <div id="divAgregarActa" class="collapse well" style="background-color: whitesmoke">
+            @using (Html.BeginForm("AgregarActa", "Jornadas", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
 
-            @Html.HiddenFor(model => model.JornadaID)
+                @Html.HiddenFor(model => model.JornadaID)
 
-            <div class="form-group">
-                <div class="col-md-4">
-                    <input type="file" id="Acta" name="upload" class="btn btn-default" />
+                <div class="form-group">
+                    <div class="col-md-4">
+                        <input type="file" id="Acta" name="upload" class="btn btn-default" />
+                    </div>
+                    <div class="col-md-8">
+                        <input type="submit" value="Agregar" class="btn btn-default" />
+                    </div>
                 </div>
-                <div class="col-md-8">
-                    <input type="submit" value="Agregar" class="btn btn-default" />
-                </div>
-            </div>
-        }
-        <br />
-        <br />
-    </div>
+            }
+            <br />
+            <br />
+        </div>
     }
     else //si ya se agregó el archivo del acta
     {
@@ -242,24 +249,24 @@
 
 <div id="demo" class="collapse well" style="@estilo;background-color: whitesmoke">
     <table>
-    @*Los usuarios con perfil InscripcionesExternas solo tienen acceso al detalle de inscriptos a la jornada*@
-    @if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
-    {
-        <tr>
-            <td><div class="alert alert-warning"><strong>Atención!</strong> Se solicita puntualidad, no se permite el ingreso al aula pasado 15 minutos de la hora fijada de inicio.</div></td>
-        </tr>
-
-        <tr>
-            <td><div class="alert alert-info"><strong>REQUISITO EXCLUYENTE:</strong> Las empresas deben verificar de acuerdo al curso que harán sus trabajadores cuales son en la actualidad los requisitos por Covid que están vigentes, esa información la observan en la columna Características de Jornadas disponibles.</div></td>
-        </tr>
-
-        if (Model.CursoId == 4 || Model.CursoId == 5) //solo se muestra este mensaje para los cursos de Inducción
+        @*Los usuarios con perfil InscripcionesExternas solo tienen acceso al detalle de inscriptos a la jornada*@
+        @if (HttpContext.Current.User.IsInRole("InscripcionesExternas"))
         {
             <tr>
-                <td><div class="alert alert-danger"><strong>RECUERDE QUE SI NO SE ENCUENTRA EN OVAL SERÁ DADO DE BAJA SE LE COMUNICARÁ POR MAIL</strong></div></td>
+                <td><div class="alert alert-warning"><strong>Atención!</strong> Se solicita puntualidad, no se permite el ingreso al aula pasado 15 minutos de la hora fijada de inicio.</div></td>
             </tr>
+
+            <tr>
+                <td><div class="alert alert-info"><strong>REQUISITO EXCLUYENTE:</strong> Las empresas deben verificar de acuerdo al curso que harán sus trabajadores cuales son en la actualidad los requisitos por Covid que están vigentes, esa información la observan en la columna Características de Jornadas disponibles.</div></td>
+            </tr>
+
+            if (Model.CursoId == 4 || Model.CursoId == 5) //solo se muestra este mensaje para los cursos de Inducción
+            {
+                <tr>
+                    <td><div class="alert alert-danger"><strong>RECUERDE QUE SI NO SE ENCUENTRA EN OVAL SERÁ DADO DE BAJA SE LE COMUNICARÁ POR MAIL</strong></div></td>
+                </tr>
+            }
         }
-    }
         <tr>
             <td>
                 <div class="form-inline" style="margin:5px 3px;">
@@ -340,7 +347,7 @@ else
             var linea1 = '<p style="font-weight: bold;">Enviando datos al sistema OVAL</p>'
             var linea2 ='<p style="font-size: small;">@string.Format("Punto de servicio: {0}", Model.Curso.PuntoServicio != null ? Model.Curso.PuntoServicio.Nombre : string.Empty)</p>'
             var linea3 ='<p style="font-weight: bold; color: darkred">No cierre esta ventana</p>'
-            
+
             $("#bodyMensaje").html(linea1.concat(linea2, linea3));
         });
 

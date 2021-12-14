@@ -503,6 +503,10 @@
     <Compile Include="Migrations\202101312347328_DocumentacionAdicionalDatos.Designer.cs">
       <DependentUpon>202101312347328_DocumentacionAdicionalDatos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202111091454580_Tipo_Punto_Servicio.cs" />
+    <Compile Include="Migrations\202111091454580_Tipo_Punto_Servicio.designer.cs">
+      <DependentUpon>202111091454580_Tipo_Punto_Servicio.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -519,6 +523,7 @@
     <Compile Include="Models\Enums\EstadoNotificacionVencimiento.cs" />
     <Compile Include="Models\Enums\EstadosRegistroCapacitacion.cs" />
     <Compile Include="Models\Enums\TipoEliminacionEnum.cs" />
+    <Compile Include="Models\Enums\TipoPuntoServicio.cs" />
     <Compile Include="Models\Enums\TiposArchivo.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Instructor.cs" />
@@ -667,6 +672,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101312347328_DocumentacionAdicionalDatos.resx">
       <DependentUpon>202101312347328_DocumentacionAdicionalDatos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111091454580_Tipo_Punto_Servicio.resx">
+      <DependentUpon>202111091454580_Tipo_Punto_Servicio.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

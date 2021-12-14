@@ -1,6 +1,8 @@
 ﻿using Cursos.Models;
 using Cursos.Models.Enums;
+using Newtonsoft.Json;
 using RestSharp;
+using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -26,70 +28,19 @@ namespace Cursos.Helpers.EnvioOVAL
 
         public RespuestaOVAL EnviarDatosRegistro(RegistroCapacitacion r)
         {
-            const string module = "enviosOVAL";
-
-            DateTime fechaJornada = r.Jornada.Fecha;
-            ServiceEnviarDatosOVAL.WebServiceResponse rOVAL;
-
-            try
+            switch (r.Jornada.Curso.PuntoServicio.Tipo)
             {
-                string mensajelog = string.Format("Iniciando envío de datos\r\n\t{0}\r\n\t{1}\r\n\t{2}\r\n\t{3}",
-                                               r.Capacitado.DocumentoCompleto,
-                                               r.Capacitado.NombreCompleto,
-                                               r.Jornada.JornadaIdentificacionCompleta,
-                                               r.Estado.ToString());
+                case TipoPuntoServicio.SOAP:
+                    return EnviarDatosRegistroSOAP(r);
 
-                LogHelper.GetInstance().WriteMessage(module, mensajelog);
-
-                string direccionServicioEnviarDatosOVAL = ConfiguracionHelper.GetInstance().GetValue("Direccion", "EnvioOVAL");
-
-                LogHelper.GetInstance().WriteMessage(module, string.Format("Conectándose al servicio ubicado en {0}", direccionServicioEnviarDatosOVAL));
-
-                BasicHttpsBinding binding = new BasicHttpsBinding();
-                EndpointAddress address = new EndpointAddress(direccionServicioEnviarDatosOVAL);
-
-                ServiceEnviarDatosOVAL.ServiceSoapClient sOVAL = new ServiceEnviarDatosOVAL.ServiceSoapClient(binding, address);
-                ServiceEnviarDatosOVAL.TokenSucurity token = new ServiceEnviarDatosOVAL.TokenSucurity
-                {
-                    Username = ConfiguracionHelper.GetInstance().GetValue("Usuario", "EnvioOVAL"),
-                    Password = ConfiguracionHelper.GetInstance().GetValue("Password", "EnvioOVAL")
-                };
-
-                //Se invoca el método para validar las credenciaes del usuario (devuelve un string)
-                string responseToken = sOVAL.AuthenticationUser(token);
-
-                token.AuthenToken = responseToken;
-
-                rOVAL = sOVAL.get_induccion(token,
-                                            r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
-                                            r.Capacitado.Documento,
-                                            "CAP_SEG",
-                                            r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
-                                            string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
-                                            string.Empty);
-
-                LogHelper.GetInstance().WriteMessage(module, string.Format("Conexión finalizada\r\n\tResult: {0}\r\n\tErrorMessage: {1}", rOVAL.Result, rOVAL.ErrorMessage));
-
-                //si la propiedad Result tiene contenido, el registro se recibió correctamente
-                if (rOVAL.Result != string.Empty)
-                {
-                    LogHelper.GetInstance().WriteMessage(module, "El registro fue recibido por el sistema OVAL");
-                    return new RespuestaOVAL() { Codigo = 0, Mensaje = rOVAL.Result };
-                }
-                else
-                {
-                    LogHelper.GetInstance().WriteMessage(module, string.Format("El registro fue rechazado por el sistema OVAL ({0})", rOVAL.ErrorMessage));
-                    return new RespuestaOVAL() { Codigo = 1, Mensaje = rOVAL.ErrorMessage };
-                }
+                case TipoPuntoServicio.Rest:
+                    return EnviarDatosRegistroRest(r);
             }
-            catch (Exception e)
-            {
-                LogHelper.GetInstance().WriteMessage(module, e.Message);
-                return new RespuestaOVAL() { Codigo = -1, Mensaje = e.Message };
-            }
+
+            return new RespuestaOVAL() { Codigo = -1, Mensaje = "Tipo de Punto de Servicio NO VÁLIDO" };
         }
 
-        public RespuestaOVAL EnviarDatosRegistroConFoto(RegistroCapacitacion r)
+        private RespuestaOVAL EnviarDatosRegistroSOAP(RegistroCapacitacion r)
         {
             const string module = "enviosOVAL";
 
@@ -192,6 +143,64 @@ namespace Cursos.Helpers.EnvioOVAL
             }
         }
 
+        private RespuestaOVAL EnviarDatosRegistroRest(RegistroCapacitacion r)
+        {
+            //Deprecated
+            //https://67.205.96.181:2443/api/UPM2/1.0.0/get_induccion
+
+            //Vigente desde 20211112
+            //https://67.205.96.181:2443/api/Taurus/1.0.0/get_induccion
+
+            DateTime fechaJornada = r.Jornada.Fecha;
+
+            var client = new RestClient("https://67.205.96.181:2443");
+            var request = new RestRequest("api/Taurus/1.0.0/get_induccion", Method.POST);
+            request.RequestFormat = DataFormat.Json;
+
+            request.AddHeader("Authorization", "Bearer " + ObtenerTokenOAuthOVAL());
+
+            request.AddJsonBody(
+                new {
+                    tipo_doc = r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
+                    rut_trabajador = r.Capacitado.Documento,
+                    nombres_trabajador = r.Capacitado.Nombre,
+                    ape_paterno_trabajador = r.Capacitado.Apellido,
+                    ape_materno_trabajador = string.Empty,
+                    rut_contratista = r.Capacitado.Empresa.RUT,
+                    nombre_contratista = r.Capacitado.Empresa.NombreFantasia,
+                    tipo_induccion = "CAP_SEG",
+                    estado_induccion = r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
+                    fecha_induccion = string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
+                    imagen = string.Empty
+                });
+
+            client.Execute(request);
+
+            return new RespuestaOVAL() { Codigo = -1, Mensaje = string.Empty };
+        }
+
+        private string ObtenerTokenOAuthOVAL()
+        {
+            string url = "http://67.205.96.181:2443/oauth2/token";
+            string client_id = "7gAkfFAVoXzfRZTtOHGowwQSuO4a";
+            string client_secret = "F6rlCnmFNsi10Yb4NTOuHamqUZoa";
+
+            //request token
+            var restclient = new RestClient(url);
+            RestRequest request = new RestRequest("request/oauth") { Method = Method.POST };
+            request.AddHeader("Accept", "application/json");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("client_id", client_id);
+            request.AddParameter("client_secret", client_secret);
+            request.AddParameter("grant_type", "client_credentials");
+
+            var tResponse = restclient.Execute(request);
+            var responseJson = tResponse.Content;
+            var token = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["access_token"].ToString();
+            
+            return token.Length > 0 ? token : null;
+        }
+
         public bool EnviarDatosListaRegistros(List<int> registrosCapacitacionIds, ref int totalAceptados, ref int totalRechazados)
         {
             foreach (var registroCapacitacionId in registrosCapacitacionIds)
@@ -214,7 +223,7 @@ namespace Cursos.Helpers.EnvioOVAL
                 if (registroCapacitacion.ListoParaEnviarOVAL)
                 {
                     EstadosEnvioOVAL estado;
-                    RespuestaOVAL respuesta = this.EnviarDatosRegistroConFoto(registroCapacitacion);
+                    RespuestaOVAL respuesta = this.EnviarDatosRegistro(registroCapacitacion);
 
                     switch (respuesta.Codigo)
                     {

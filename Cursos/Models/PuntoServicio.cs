@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using Cursos.Models.Enums;
 
 namespace Cursos.Models
 {
@@ -21,5 +22,8 @@ namespace Cursos.Models
         public string Usuario { get; set; }
 
         public string Password { get; set; }
+
+        public TipoPuntoServicio Tipo { get; set; }
+
     }
 }

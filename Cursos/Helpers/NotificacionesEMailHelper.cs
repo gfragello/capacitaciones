@@ -87,25 +87,25 @@ namespace Cursos.Helpers
             }
         }
 
-        public bool EnviarEmailsNotificacionEliminacionInscripcionExterna(RegistroCapacitacion registroCapacitacion)
+        public bool EnviarEmailsNotificacionEliminacionInscripcion(RegistroCapacitacion registroCapacitacion)
         {
             if (registroCapacitacion != null)
             {
                 var message = new MailMessage();
 
-                foreach (var emailDestinatario in ConfiguracionHelper.GetInstance().GetValue("EmailInscripcionEDestinatario", "Inscripciones_Externas").Split(','))
+                foreach (var emailDestinatario in ConfiguracionHelper.GetInstance().GetValue("EmailEliminacionInscripcionEDestinatario", "Eliminacion_Inscripcion").Split(','))
                 {
                     message.To.Add(new MailAddress(emailDestinatario));
                 }
 
-                message.From = new MailAddress(ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Inscripciones_Externas"));
+                message.From = new MailAddress(ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Eliminacion_Inscripcion"));
 
                 //en el subject del mail se agrega un valor randómico para evitar que los mensajes se muestren anidados en los clientes web mail
-                message.Subject = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailInscripcionEAsunto", "Inscripciones_Externas"), registroCapacitacion.Jornada.JornadaIdentificacionCompleta, this.GenerateRandomicoSubjectMail());
+                message.Subject = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailEliminacionInscripcionEAsunto", "Eliminacion_Inscripcion"), registroCapacitacion.Jornada.JornadaIdentificacionCompleta, this.GenerateRandomicoSubjectMail());
 
                 UrlHelper url = new UrlHelper(HttpContext.Current.Request.RequestContext);
 
-                message.Body = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailInscripcionECuerpo", "Inscripciones_Externas"),
+                message.Body = string.Format(ConfiguracionHelper.GetInstance().GetValue("EmailEliminacionInscripcionECuerpo", "Eliminacion_Inscripcion"),
                                              System.Web.HttpContext.Current.User.Identity.Name,
                                              registroCapacitacion.Capacitado.NombreCompleto,
                                              registroCapacitacion.Capacitado.TipoDocumento.Abreviacion,
@@ -119,21 +119,21 @@ namespace Cursos.Helpers
                 {
                     var credential = new NetworkCredential
                     {
-                        UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Inscripciones_Externas"),
-                        Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario", "Inscripciones_Externas")
+                        UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Eliminacion_Inscripcion"),
+                        Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario", "Eliminacion_Inscripcion")
                     };
 
                     smtp.Credentials = credential;
-                    smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost", "Inscripciones_Externas");
-                    smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort", "Inscripciones_Externas"));
-                    smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL", "Inscripciones_Externas"));
+                    smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost", "Eliminacion_Inscripcion");
+                    smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort", "Eliminacion_Inscripcion"));
+                    smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL", "Eliminacion_Inscripcion"));
 
                     try
                     {
                         smtp.Send(message);
                         return true;
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         return false;
                     }

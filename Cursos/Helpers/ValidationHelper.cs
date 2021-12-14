@@ -107,5 +107,11 @@ namespace Cursos.Helpers
             return rgx.IsMatch(multipleEmails);
         }
 
+        public bool EsURL(string url)
+        {
+            Uri uriResult;
+            return Uri.TryCreate(url, UriKind.Absolute, out uriResult) && 
+                   (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        }
     }
 }
