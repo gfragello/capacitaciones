@@ -153,7 +153,8 @@ namespace Cursos.Helpers.EnvioOVAL
 
             DateTime fechaJornada = r.Jornada.Fecha;
 
-            var client = new RestClient("https://67.205.96.181:2443");
+            //var client = new RestClient("https://67.205.96.181:2443");
+            var client = new RestClient("https://api.oval.com.uy:2443");
             var request = new RestRequest("api/Taurus/1.0.0/get_induccion", Method.POST);
             request.RequestFormat = DataFormat.Json;
 
@@ -181,7 +182,8 @@ namespace Cursos.Helpers.EnvioOVAL
 
         private string ObtenerTokenOAuthOVAL()
         {
-            string url = "http://67.205.96.181:2443/oauth2/token";
+            //string url = "https://67.205.96.181:2443/oauth2/token";
+            string url = "https://api.oval.com.uy:2443/oauth2/token";
             string client_id = "7gAkfFAVoXzfRZTtOHGowwQSuO4a";
             string client_secret = "F6rlCnmFNsi10Yb4NTOuHamqUZoa";
 
