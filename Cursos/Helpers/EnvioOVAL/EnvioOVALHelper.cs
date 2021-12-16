@@ -145,18 +145,13 @@ namespace Cursos.Helpers.EnvioOVAL
 
         private RespuestaOVAL EnviarDatosRegistroRest(RegistroCapacitacion r)
         {
-            //Deprecated
-            //https://67.205.96.181:2443/api/UPM2/1.0.0/get_induccion
-
-            //Vigente desde 20211112
-            //https://67.205.96.181:2443/api/Taurus/1.0.0/get_induccion
-
             DateTime fechaJornada = r.Jornada.Fecha;
 
-            //var client = new RestClient("https://67.205.96.181:2443");
             var client = new RestClient("https://api.oval.com.uy:2443");
-            var request = new RestRequest("api/Taurus/1.0.0/get_induccion", Method.POST);
-            request.RequestFormat = DataFormat.Json;
+            var request = new RestRequest("api/Taurus/1.0.0/get_induccion", Method.POST)
+            {
+                RequestFormat = DataFormat.Json
+            };
 
             request.AddHeader("Authorization", "Bearer " + ObtenerTokenOAuthOVAL());
 
@@ -175,9 +170,20 @@ namespace Cursos.Helpers.EnvioOVAL
                     imagen = string.Empty
                 });
 
-            client.Execute(request);
+            var tResponse = client.Execute(request);
 
-            return new RespuestaOVAL() { Codigo = -1, Mensaje = string.Empty };
+            if (tResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                string respuestaServicio = ObtenerRespuestaServicioREST(tResponse.Content);
+                int codigoRet = 0; //0 es el código correspondiente a envío exitoso
+
+                if (respuestaServicio != "ok")
+                    codigoRet = 1; //indica que hubo un error al invocar el servicio
+                    
+                return new RespuestaOVAL() { Codigo = codigoRet, Mensaje = respuestaServicio };
+            }
+            else
+                return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio" };
         }
 
         private string ObtenerTokenOAuthOVAL()
@@ -189,7 +195,7 @@ namespace Cursos.Helpers.EnvioOVAL
 
             //request token
             var restclient = new RestClient(url);
-            RestRequest request = new RestRequest("request/oauth") { Method = Method.POST };
+            RestRequest request = new RestRequest() { Method = Method.POST };
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("client_id", client_id);
@@ -276,6 +282,21 @@ namespace Cursos.Helpers.EnvioOVAL
             //https://stackoverflow.com/questions/6576341/open-image-from-file-then-release-lock
 
             return arr;
+        }
+
+        private string ObtenerRespuestaServicioREST(string content)
+        {
+            var respuestaArray = content.Split(':');
+
+            if (respuestaArray.Length == 2)
+            {
+                string contentRet = respuestaArray[1].Replace("\"", string.Empty);
+                contentRet = contentRet.Replace("}", "");
+
+                return contentRet;
+            }
+
+            return content;
         }
     }
 }
