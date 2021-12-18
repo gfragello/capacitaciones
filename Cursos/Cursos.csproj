@@ -507,6 +507,10 @@
     <Compile Include="Migrations\202111091454580_Tipo_Punto_Servicio.designer.cs">
       <DependentUpon>202111091454580_Tipo_Punto_Servicio.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202112181345450_PuntoServicio_Rest.cs" />
+    <Compile Include="Migrations\202112181345450_PuntoServicio_Rest.designer.cs">
+      <DependentUpon>202112181345450_PuntoServicio_Rest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -675,6 +679,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202111091454580_Tipo_Punto_Servicio.resx">
       <DependentUpon>202111091454580_Tipo_Punto_Servicio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112181345450_PuntoServicio_Rest.resx">
+      <DependentUpon>202112181345450_PuntoServicio_Rest.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

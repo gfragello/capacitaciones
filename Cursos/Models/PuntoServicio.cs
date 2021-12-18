@@ -25,5 +25,9 @@ namespace Cursos.Models
 
         public TipoPuntoServicio Tipo { get; set; }
 
+        public string DireccionRequest { get; set; }
+
+        public string DireccionToken { get; set; }
+
     }
 }

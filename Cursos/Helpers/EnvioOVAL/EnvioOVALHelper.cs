@@ -147,13 +147,30 @@ namespace Cursos.Helpers.EnvioOVAL
         {
             DateTime fechaJornada = r.Jornada.Fecha;
 
-            var client = new RestClient("https://api.oval.com.uy:2443");
-            var request = new RestRequest("api/Taurus/1.0.0/get_induccion", Method.POST)
+            string fotoCapacitadoAsBase64 = String.Empty;
+
+            if (r.Capacitado.PathArchivo != null)
+            {
+                //se obtiene el path donde está almacenada la imagen que se enviará al web service
+                string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(r.Capacitado.CapacitadoID);
+                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+
+                var pathArchivoImagen = Path.Combine(pathDirectorio, r.Capacitado.PathArchivo.NombreArchivo);
+
+                //byte[] fotoCapacitadoAsArray = null;
+                byte[] fotoCapacitadoAsArray = this.GetImageAsByteArray(pathArchivoImagen);
+                fotoCapacitadoAsBase64 = Convert.ToBase64String(fotoCapacitadoAsArray); 
+            }
+
+            PuntoServicio puntoServicioRest = r.Jornada.Curso.PuntoServicio;
+
+            var client = new RestClient(puntoServicioRest.Direccion);
+            var request = new RestRequest(puntoServicioRest.DireccionRequest, Method.POST)
             {
                 RequestFormat = DataFormat.Json
             };
 
-            request.AddHeader("Authorization", "Bearer " + ObtenerTokenOAuthOVAL());
+            request.AddHeader("Authorization", "Bearer " + ObtenerTokenOAuthOVAL(puntoServicioRest));
 
             request.AddJsonBody(
                 new {
@@ -167,7 +184,7 @@ namespace Cursos.Helpers.EnvioOVAL
                     tipo_induccion = "CAP_SEG",
                     estado_induccion = r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
                     fecha_induccion = string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
-                    imagen = string.Empty
+                    imagen = fotoCapacitadoAsBase64
                 });
 
             var tResponse = client.Execute(request);
@@ -186,12 +203,11 @@ namespace Cursos.Helpers.EnvioOVAL
                 return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio" };
         }
 
-        private string ObtenerTokenOAuthOVAL()
+        private string ObtenerTokenOAuthOVAL(PuntoServicio puntoServicioRest)
         {
-            //string url = "https://67.205.96.181:2443/oauth2/token";
-            string url = "https://api.oval.com.uy:2443/oauth2/token";
-            string client_id = "7gAkfFAVoXzfRZTtOHGowwQSuO4a";
-            string client_secret = "F6rlCnmFNsi10Yb4NTOuHamqUZoa";
+            string url = puntoServicioRest.DireccionToken;
+            string client_id = puntoServicioRest.Usuario;
+            string client_secret = puntoServicioRest.Password;
 
             //request token
             var restclient = new RestClient(url);
