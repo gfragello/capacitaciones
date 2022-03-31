@@ -286,6 +286,10 @@ namespace Cursos.Controllers
         {
             List<NotificacionVencimiento> notificacionVencimientosRet = new List<NotificacionVencimiento>();
 
+            //TODO: NotificacionesVencimiento-Update
+            //las actualizaciones de las notificaciones se realizan dentro de esta función
+            //se debería en este punto crear las notificaciones en estado EstadoNotificacionVencimiento.NoNotificarYaActualizado
+            //en los casos en los que corresponda
             ActualizarNotificacionesVencimientos();
 
             int antelacionNotificacion = int.Parse(ConfiguracionHelper.GetInstance().GetValue("AntelacionNotificacion", "Notificaciones"));

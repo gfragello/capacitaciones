@@ -170,37 +170,44 @@ namespace Cursos.Helpers.EnvioOVAL
                 RequestFormat = DataFormat.Json
             };
 
-            request.AddHeader("Authorization", "Bearer " + ObtenerTokenOAuthOVAL(puntoServicioRest));
+            string tokenOAuthOVAL = ObtenerTokenOAuthOVAL(puntoServicioRest);
 
-            request.AddJsonBody(
-                new {
-                    tipo_doc = r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
-                    rut_trabajador = r.Capacitado.Documento,
-                    nombres_trabajador = r.Capacitado.Nombre,
-                    ape_paterno_trabajador = r.Capacitado.Apellido,
-                    ape_materno_trabajador = string.Empty,
-                    rut_contratista = r.Capacitado.Empresa.RUT,
-                    nombre_contratista = r.Capacitado.Empresa.NombreFantasia,
-                    tipo_induccion = "CAP_SEG",
-                    estado_induccion = r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
-                    fecha_induccion = string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
-                    imagen = fotoCapacitadoAsBase64
-                });
-
-            var tResponse = client.Execute(request);
-
-            if (tResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            if (tokenOAuthOVAL != null)
             {
-                string respuestaServicio = ObtenerRespuestaServicioREST(tResponse.Content);
-                int codigoRet = 0; //0 es el código correspondiente a envío exitoso
+                request.AddHeader("Authorization", "Bearer " + tokenOAuthOVAL);
 
-                if (respuestaServicio != "ok")
-                    codigoRet = 1; //indica que hubo un error al invocar el servicio
+                request.AddJsonBody(
+                    new {
+                        tipo_doc = r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
+                        rut_trabajador = r.Capacitado.Documento,
+                        nombres_trabajador = r.Capacitado.Nombre,
+                        ape_paterno_trabajador = r.Capacitado.Apellido,
+                        ape_materno_trabajador = string.Empty,
+                        rut_contratista = r.Capacitado.Empresa.RUT,
+                        nombre_contratista = r.Capacitado.Empresa.NombreFantasia,
+                        tipo_induccion = "CAP_SEG",
+                        estado_induccion = r.Estado == EstadosRegistroCapacitacion.Aprobado ? "APR" : "REC",
+                        fecha_induccion = string.Format("{0}-{1}-{2}", fechaJornada.Day.ToString().PadLeft(2, '0'), fechaJornada.Month.ToString().PadLeft(2, '0'), fechaJornada.Year.ToString()),
+                        imagen = fotoCapacitadoAsBase64
+                    });
+
+                var tResponse = client.Execute(request);
+
+                if (tResponse.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    string respuestaServicio = ObtenerRespuestaServicioREST(tResponse.Content);
+                    int codigoRet = 0; //0 es el código correspondiente a envío exitoso
+
+                    if (respuestaServicio != "ok")
+                        codigoRet = 1; //indica que hubo un error al invocar el servicio
                     
-                return new RespuestaOVAL() { Codigo = codigoRet, Mensaje = respuestaServicio };
+                    return new RespuestaOVAL() { Codigo = codigoRet, Mensaje = respuestaServicio };
+                }
+                else
+                    return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio" };
             }
             else
-                return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio" };
+                return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio de autenticación (token)" };
         }
 
         private string ObtenerTokenOAuthOVAL(PuntoServicio puntoServicioRest)
@@ -219,10 +226,17 @@ namespace Cursos.Helpers.EnvioOVAL
             request.AddParameter("grant_type", "client_credentials");
 
             var tResponse = restclient.Execute(request);
-            var responseJson = tResponse.Content;
-            var token = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["access_token"].ToString();
+
+            if (tResponse.IsSuccessful)
+            {
+                var responseJson = tResponse.Content;
+                var token = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["access_token"].ToString();
+
+                return token.Length > 0 ? token : null;
+            }
+            else
+                return null;
             
-            return token.Length > 0 ? token : null;
         }
 
         public bool EnviarDatosListaRegistros(List<int> registrosCapacitacionIds, ref int totalAceptados, ref int totalRechazados)

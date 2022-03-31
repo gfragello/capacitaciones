@@ -12,6 +12,8 @@ namespace Cursos.Models.Enums
         NotificacionPendiente = 0, //valor por defecto
         Notificado,
         [Display(Name = "No Notificar")]
-        NoNotificar
+        NoNotificar,
+        [Display(Name = "No Notificar (Ya actualizado)")]
+        NoNotificarYaActualizado
     }
 }

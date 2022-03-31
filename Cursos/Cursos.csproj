@@ -857,6 +857,7 @@
     <None Include="Service References\ServiceEnviarDatosOVAL\Service.wsdl" />
     <Content Include="Views\Shared\_ArchivoFechaHoraPartial.cshtml" />
     <Content Include="Views\Jornadas\UltimasCargarFotos.cshtml" />
+    <Content Include="Views\Shared\_ListNotificacionesVencimientosCapacitado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
