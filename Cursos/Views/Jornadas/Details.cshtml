@@ -338,7 +338,7 @@ else
     @Scripts.Render("~/Scripts/enviarOval.js")
     @Scripts.Render("~/Scripts/documentacionAdicional.js")
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
         //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
         $('#modalMensaje').on('hidden.bs.modal', function () {
@@ -349,6 +349,51 @@ else
             var linea3 ='<p style="font-weight: bold; color: darkred">No cierre esta ventana</p>'
 
             $("#bodyMensaje").html(linea1.concat(linea2, linea3));
+        });
+
+        $(document).on("click", '.btnSeleccionarCapacitado', function(event) {
+
+            var capacitadoId = $(this).data("capacitadoid");
+
+            $("#tdSeleccionarCapacitado").load('@(Url.Action("ObtenerCargandoMini", "CustomTools"))');
+
+            var jornadaId = @Model.JornadaID;
+
+            $.ajax({
+                url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
+                type: "GET",
+                dataType: "JSON",
+                data: { JornadaId: jornadaId},
+                success: function (datosDisponiblidadCupos)
+                {
+                    if (datosDisponiblidadCupos.QuedanCuposDisponibles)
+                    {
+                        $.ajax({
+                            url: '/Jornadas/AgregarRegistroCapacitacion',
+                            type: "GET",
+                            dataType: "JSON",
+                            data: { jornadaId: jornadaId,
+                                capacitadoId: capacitadoId },
+                            success: function (resultadoOK)
+                            {
+                                if (resultadoOK)
+                                {
+                                    actualizarContenidoTabs();
+                                    actualizarDisponibilidadJornada();
+                                    actualizarLabelsDocumentacionAdicional();
+                                    //location.reload(true);
+                                }
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alert('Ya no quedan cupos disponibles. No es posible realizar la inscripción.');
+                        location.reload(true); //se recarga la página para que se actualice la no disponibilidad de cupos
+                    }
+                }
+            });
+
         });
 
         $("#fotoCapacitado").change(function (e) {
@@ -411,131 +456,89 @@ else
             if (documento != '')
             {
                 $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerCargando", "CustomTools"))');
-                    $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerSelecionarCapacitados", "Capacitados",null, Request.Url.Scheme))?documento=' + documento + '&jornadaIdExcluir=' + @Model.JornadaID);
-                }
-                else
+                $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerSelecionarCapacitados", "Capacitados",null, Request.Url.Scheme))?documento=' + documento + '&jornadaIdExcluir=' + @Model.JornadaID);
+            }
+            else
+            {
+                $("#dvSeleccionarCapacitados").html('<div class="alert alert-warning"><strong>Atención!</strong> Debe ingresar un documento para hacer la búsqueda.</div>');
+            }
+        }
+
+        function crearCapacitado()
+        {
+            location.href='@Url.Action("Create", "Capacitados", new { jornadaId = Model.JornadaID })'
+        }
+
+        function actualizarDisponibilidadJornada()
+        {
+            var jornadaId = @Model.JornadaID;
+            $.ajax({
+                url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
+                type: "GET",
+                dataType: "JSON",
+                data: { JornadaId: jornadaId},
+                success: function (datosDisponiblidadCupos)
                 {
-                    $("#dvSeleccionarCapacitados").html('<div class="alert alert-warning"><strong>Atención!</strong> Debe ingresar un documento para hacer la búsqueda.</div>');
+                    $("#tdCantidadInscriptos").html(datosDisponiblidadCupos.LabelTotalInscriptos);
+                    $("#tdCantidadCuposDisponibles").html(datosDisponiblidadCupos.LabelTotalCuposDisponibles);
+
+                    if (datosDisponiblidadCupos.QuedanCuposDisponibles)
+                    {
+                        if ($("#documento").val() != "")
+                            buscarCapacitados();
+
+                        //alert("Aún quedan cupos disponibles");
+                        $("#dvBotonAgregarCapacitado").show();
+                        $("#demo").show();
+                    }
+                    else
+                    {
+                        //se ocultan las opciones para agregar nuevos incriptos
+                        $("#dvBotonAgregarCapacitado").hide();
+                        $("#demo").hide();
+
+                        //se vacía el contenido del DIV que incluye los resultados de búsqueda y el cuadro de texto de búsqueda por documento
+                        $("#documento").val("");
+                        $("#dvSeleccionarCapacitados").html("");
+                    }
                 }
-            }
+            });
+        }
 
-            function crearCapacitado()
-            {
-                location.href='@Url.Action("Create", "Capacitados", new { jornadaId = Model.JornadaID })'
-            }
-
-            function seleccionarCapacitado(capacitadoId)
-            {
-                $("#tdSeleccionarCapacitado").load('@(Url.Action("ObtenerCargandoMini", "CustomTools"))');
-
-                var jornadaId = @Model.JornadaID;
-
-                $.ajax({
-                    url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
-                    type: "GET",
-                    dataType: "JSON",
-                    data: { JornadaId: jornadaId},
-                    success: function (datosDisponiblidadCupos)
+        function eliminarRegistroCapacitacion(registroCapacitacionId)
+        {
+            $.ajax({
+                url: '/RegistrosCapacitacion/EliminarRegistroCapacitacion',
+                type: "GET",
+                dataType: "JSON",
+                data: { registroCapacitacionId: registroCapacitacionId },
+                success: function (resultadoOK)
+                {
+                    if (resultadoOK)
                     {
-                        if (datosDisponiblidadCupos.QuedanCuposDisponibles)
-                        {
-                            $.ajax({
-                                url: '/Jornadas/AgregarRegistroCapacitacion',
-                                type: "GET",
-                                dataType: "JSON",
-                                data: { jornadaId: jornadaId,
-                                    capacitadoId: capacitadoId },
-                                success: function (resultadoOK)
-                                {
-                                    if (resultadoOK)
-                                    {
-                                        actualizarContenidoTabs();
-                                        actualizarDisponibilidadJornada();
-                                        actualizarLabelsDocumentacionAdicional();
-                                        //location.reload(true);
-                                    }
-                                }
-                            });
-                        }
-                        else
-                        {
-                            alert('Ya no quedan cupos disponibles. No es posible realizar la inscripción.');
-                            location.reload(true); //se recarga la página para que se actualice la no disponibilidad de cupos
-                        }
+                        /*
+                        actualizarContenidoTabs()
+                        actualizarDisponibilidadJornada();
+                        */
+                        //se recarga la página porque se desconfigura visulamente el contenedor de los contorles desde donde se hacen las incripciones
+                        location.reload(true);
                     }
-                });
-            }
+                }
+            });
+        }
 
-            function actualizarDisponibilidadJornada()
-            {
-                var jornadaId = @Model.JornadaID;
-                $.ajax({
-                    url: '/Jornadas/ObtenerDatosDisponibilidadCupos',
-                    type: "GET",
-                    dataType: "JSON",
-                    data: { JornadaId: jornadaId},
-                    success: function (datosDisponiblidadCupos)
-                    {
-                        $("#tdCantidadInscriptos").html(datosDisponiblidadCupos.LabelTotalInscriptos);
-                        $("#tdCantidadCuposDisponibles").html(datosDisponiblidadCupos.LabelTotalCuposDisponibles);
+        function actualizarContenidoTabs()
+        {
+            $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
 
-                        if (datosDisponiblidadCupos.QuedanCuposDisponibles)
-                        {
-                            if ($("#documento").val() != "")
-                                buscarCapacitados();
+            //se verifica y el tab de detalle de fotos está visible
+            if ($("#tabFotos").length)
+                $("#tabFotos").load('@(Url.Action("ObtenerRegistrosCapacitacionFotos", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
 
-                            //alert("Aún quedan cupos disponibles");
-                            $("#dvBotonAgregarCapacitado").show();
-                            $("#demo").show();
-                        }
-                        else
-                        {
-                            //se ocultan las opciones para agregar nuevos incriptos
-                            $("#dvBotonAgregarCapacitado").hide();
-                            $("#demo").hide();
+            //se verifica y el tab de detalle de envíos OVAL está visible
+            if ($("#tabEnviosOVAL").length)
+                $("#tabEnviosOVAL").load('@(Url.Action("ObtenerRegistrosCapacitacionOVAL", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
+        }
 
-                            //se vacía el contenido del DIV que incluye los resultados de búsqueda y el cuadro de texto de búsqueda por documento
-                            $("#documento").val("");
-                            $("#dvSeleccionarCapacitados").html("");
-                        }
-                    }
-                });
-            }
-
-            function eliminarRegistroCapacitacion(registroCapacitacionId)
-            {
-                $.ajax({
-                    url: '/RegistrosCapacitacion/EliminarRegistroCapacitacion',
-                    type: "GET",
-                    dataType: "JSON",
-                    data: { registroCapacitacionId: registroCapacitacionId },
-                    success: function (resultadoOK)
-                    {
-                        if (resultadoOK)
-                        {
-                            /*
-                            actualizarContenidoTabs()
-                            actualizarDisponibilidadJornada();
-                            */
-                            //se recarga la página porque se desconfigura visulamente el contenedor de los contorles desde donde se hacen las incripciones
-                            location.reload(true);
-                        }
-                    }
-                });
-            }
-
-            function actualizarContenidoTabs()
-            {
-                $("#tabRegistrosCapacitacion").load('@(Url.Action("ObtenerRegistrosCapacitacionJornada", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
-
-                //se verifica y el tab de detalle de fotos está visible
-                if ($("#tabFotos").length)
-                    $("#tabFotos").load('@(Url.Action("ObtenerRegistrosCapacitacionFotos", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
-
-                //se verifica y el tab de detalle de envíos OVAL está visible
-                if ($("#tabEnviosOVAL").length)
-                    $("#tabEnviosOVAL").load('@(Url.Action("ObtenerRegistrosCapacitacionOVAL", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
-            }
-
-    </script>
+</script>
 }
