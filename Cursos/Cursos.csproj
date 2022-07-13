@@ -282,6 +282,7 @@
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
     <Compile Include="Helpers\CSSHelper.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
+    <Compile Include="Helpers\EnvioOVAL\DatosTokenSeguridadOVAL.cs" />
     <Compile Include="Helpers\EnvioOVAL\EnvioOVALHelper.cs" />
     <Compile Include="Helpers\GlobalHelper.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
@@ -857,7 +858,6 @@
     <None Include="Service References\ServiceEnviarDatosOVAL\Service.wsdl" />
     <Content Include="Views\Shared\_ArchivoFechaHoraPartial.cshtml" />
     <Content Include="Views\Jornadas\UltimasCargarFotos.cshtml" />
-    <Content Include="Views\Shared\_ListNotificacionesVencimientosCapacitado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

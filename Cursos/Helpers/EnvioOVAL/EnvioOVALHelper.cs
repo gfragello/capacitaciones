@@ -9,6 +9,7 @@ using System.Data.Entity;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.ServiceModel;
 using System.Threading;
 using System.Web;
@@ -170,11 +171,16 @@ namespace Cursos.Helpers.EnvioOVAL
                 RequestFormat = DataFormat.Json
             };
 
-            string tokenOAuthOVAL = ObtenerTokenOAuthOVAL(puntoServicioRest);
+            DatosTokenSeguridadOVAL datosTokenOAuthOVAL = ObtenerTokenOAuthOVAL(puntoServicioRest);
 
-            if (tokenOAuthOVAL != null)
+            if (datosTokenOAuthOVAL != null)
             {
-                request.AddHeader("Authorization", "Bearer " + tokenOAuthOVAL);
+                //request.AddHeader("Authorization", "Bearer " + tokenOAuthOVAL);
+
+                request.AddHeader("cliente", datosTokenOAuthOVAL.cliente);
+                request.AddHeader("api_key", datosTokenOAuthOVAL.api_key);
+
+                request.AddHeader("Content-type", "application/json");
 
                 request.AddJsonBody(
                     new {
@@ -198,7 +204,7 @@ namespace Cursos.Helpers.EnvioOVAL
                     string respuestaServicio = ObtenerRespuestaServicioREST(tResponse.Content);
                     int codigoRet = 0; //0 es el código correspondiente a envío exitoso
 
-                    if (respuestaServicio != "ok")
+                    if (respuestaServicio != string.Empty)
                         codigoRet = 1; //indica que hubo un error al invocar el servicio
                     
                     return new RespuestaOVAL() { Codigo = codigoRet, Mensaje = respuestaServicio };
@@ -210,29 +216,40 @@ namespace Cursos.Helpers.EnvioOVAL
                 return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio de autenticación (token)" };
         }
 
-        private string ObtenerTokenOAuthOVAL(PuntoServicio puntoServicioRest)
+        private DatosTokenSeguridadOVAL ObtenerTokenOAuthOVAL(PuntoServicio puntoServicioRest)
         {
+            DatosTokenSeguridadOVAL ret = null;
+
             string url = puntoServicioRest.DireccionToken;
-            string client_id = puntoServicioRest.Usuario;
-            string client_secret = puntoServicioRest.Password;
+            string usuario = puntoServicioRest.Usuario;
+            string password = puntoServicioRest.Password;
 
             //request token
             var restclient = new RestClient(url);
             RestRequest request = new RestRequest() { Method = Method.POST };
-            request.AddHeader("Accept", "application/json");
-            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.AddParameter("client_id", client_id);
-            request.AddParameter("client_secret", client_secret);
-            request.AddParameter("grant_type", "client_credentials");
+            request.AddHeader("accept", "application/json");
+            request.AddHeader("content-type", "application/x-www-form-urlencoded");
+            request.AddParameter("user", usuario);
+            request.AddParameter("passwd", password);
 
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var tResponse = restclient.Execute(request);
 
             if (tResponse.IsSuccessful)
             {
                 var responseJson = tResponse.Content;
-                var token = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["access_token"].ToString();
+                var status = bool.Parse(JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["status"].ToString());
 
-                return token.Length > 0 ? token : null;
+                if (status == true)
+                {
+                    ret = new DatosTokenSeguridadOVAL
+                    {
+                        cliente = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["cliente"].ToString(),
+                        api_key = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["api_key"].ToString()
+                    };
+                }
+
+                return ret;
             }
             else
                 return null;
@@ -314,19 +331,19 @@ namespace Cursos.Helpers.EnvioOVAL
             return arr;
         }
 
-        private string ObtenerRespuestaServicioREST(string content)
+        private string ObtenerRespuestaServicioREST(string responseJson)
         {
-            var respuestaArray = content.Split(':');
+            string respuestaServicio = string.Empty;
+            
+            var nombreCampo = responseJson.Contains("data") ? "data": "status";
+            var envioCorrecto = bool.Parse(JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)[nombreCampo].ToString());
 
-            if (respuestaArray.Length == 2)
+            if (!envioCorrecto)
             {
-                string contentRet = respuestaArray[1].Replace("\"", string.Empty);
-                contentRet = contentRet.Replace("}", "");
-
-                return contentRet;
+                respuestaServicio = JsonConvert.DeserializeObject<Dictionary<string, object>>(responseJson)["error"].ToString();
             }
 
-            return content;
+            return respuestaServicio;
         }
     }
 }
