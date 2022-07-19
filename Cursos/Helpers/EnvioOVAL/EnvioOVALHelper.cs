@@ -146,9 +146,19 @@ namespace Cursos.Helpers.EnvioOVAL
 
         private RespuestaOVAL EnviarDatosRegistroRest(RegistroCapacitacion r)
         {
+            const string module = "enviosOVAL";
+
             DateTime fechaJornada = r.Jornada.Fecha;
 
             string fotoCapacitadoAsBase64 = String.Empty;
+
+            string mensajelog = string.Format("Iniciando envío de datos\r\n\t{0}\r\n\t{1}\r\n\t{2}\r\n\t{3}",
+                                               r.Capacitado.DocumentoCompleto,
+                                               r.Capacitado.NombreCompleto,
+                                               r.Jornada.JornadaIdentificacionCompleta,
+                                               r.Estado.ToString());
+
+            LogHelper.GetInstance().WriteMessage(module, mensajelog);
 
             if (r.Capacitado.PathArchivo != null)
             {
@@ -165,17 +175,20 @@ namespace Cursos.Helpers.EnvioOVAL
 
             PuntoServicio puntoServicioRest = r.Jornada.Curso.PuntoServicio;
 
+            LogHelper.GetInstance().WriteMessage(module, string.Format("Punto servicio: {0}", puntoServicioRest.Nombre));
+
             var client = new RestClient(puntoServicioRest.Direccion);
             var request = new RestRequest(puntoServicioRest.DireccionRequest, Method.POST)
             {
                 RequestFormat = DataFormat.Json
             };
 
+            LogHelper.GetInstance().WriteMessage(module, "Obteniendo datos de seguridad");
             DatosTokenSeguridadOVAL datosTokenOAuthOVAL = ObtenerTokenOAuthOVAL(puntoServicioRest);
 
             if (datosTokenOAuthOVAL != null)
             {
-                //request.AddHeader("Authorization", "Bearer " + tokenOAuthOVAL);
+                LogHelper.GetInstance().WriteMessage(module, "Datos de seguridad obtenidos correctamente");
 
                 request.AddHeader("cliente", datosTokenOAuthOVAL.cliente);
                 request.AddHeader("api_key", datosTokenOAuthOVAL.api_key);
@@ -183,7 +196,8 @@ namespace Cursos.Helpers.EnvioOVAL
                 request.AddHeader("Content-type", "application/json");
 
                 request.AddJsonBody(
-                    new {
+                    new
+                    {
                         tipo_doc = r.Capacitado.TipoDocumento.TipoDocumentoOVAL,
                         rut_trabajador = r.Capacitado.Documento,
                         nombres_trabajador = r.Capacitado.Nombre,
@@ -197,23 +211,36 @@ namespace Cursos.Helpers.EnvioOVAL
                         imagen = fotoCapacitadoAsBase64
                     });
 
+                LogHelper.GetInstance().WriteMessage(module, string.Format("Ejecutando el envío de datos a la siguiente dirección: {0}/{1}", puntoServicioRest.Direccion, puntoServicioRest.DireccionRequest));
                 var tResponse = client.Execute(request);
 
                 if (tResponse.StatusCode == System.Net.HttpStatusCode.OK)
                 {
+                    LogHelper.GetInstance().WriteMessage(module, "El servicio fue invocado correctamente. Evaluando la respuesta recibida.");
+                    LogHelper.GetInstance().WriteMessage(module, string.Format("Respuesta recibida (RAW): {0}", tResponse.Content));
+
                     string respuestaServicio = ObtenerRespuestaServicioREST(tResponse.Content);
                     int codigoRet = 0; //0 es el código correspondiente a envío exitoso
 
                     if (respuestaServicio != string.Empty)
+                    {
+                        LogHelper.GetInstance().WriteMessage(module, string.Format("Ocurrió el siguiente error en el envío de datos: {0}", respuestaServicio));
                         codigoRet = 1; //indica que hubo un error al invocar el servicio
-                    
+                    }
+
                     return new RespuestaOVAL() { Codigo = codigoRet, Mensaje = respuestaServicio };
                 }
                 else
+                {
+                    LogHelper.GetInstance().WriteMessage(module, "Error al invocar el servicio");
                     return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio" };
+                }
             }
             else
+            {
+                LogHelper.GetInstance().WriteMessage(module, "Error al invocar el servicio de autenticación (token)");
                 return new RespuestaOVAL() { Codigo = -1, Mensaje = "Error al invocar el servicio de autenticación (token)" };
+            }
         }
 
         private DatosTokenSeguridadOVAL ObtenerTokenOAuthOVAL(PuntoServicio puntoServicioRest)
