@@ -299,9 +299,9 @@ namespace Cursos.Controllers
             //MarcarRegistrosYaActualizados(proximaFechaVencimientoNotificar);
 
             //TODO 20181214 - Agregar un atributo en los cursos indicando si se notifican los vencimientos
-            //No se notifican los vencimientos de las certificaciones correpondientes a cursos de refresh (CursoId != 2)
+            //No se notifican los vencimientos de las certificaciones correpondientes a cursos de Refresh (CursoId != 2), Inducción (CursoId != 4) y Viveros (CursoId != 5)
             var notificacionVencimientos = db.NotificacionVencimientos
-                                             .Where(n => n.RegistroCapacitacion.Jornada.CursoId != 2)
+                                             .Where(n => n.RegistroCapacitacion.Jornada.CursoId != 2 && n.RegistroCapacitacion.Jornada.CursoId != 4 && n.RegistroCapacitacion.Jornada.CursoId != 5)
                                              .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
                                              .Where(n => n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar)
                                              .OrderBy(n => n.RegistroCapacitacion.Jornada.Curso.CursoID)
@@ -310,6 +310,30 @@ namespace Cursos.Controllers
 
             if (empresaId != null)
                 notificacionVencimientos = notificacionVencimientos.Where(n => n.RegistroCapacitacion.Capacitado.EmpresaID == empresaId);
+
+            //int totalRegistros = notificacionVencimientos.Count();
+            bool generarArchivoIds = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("GenerarArchivoIds", "Notificaciones"));
+
+            if (generarArchivoIds)
+            {
+                LogHelper.GetInstance().WriteMessage("notificaciones", "------------------------------------");
+
+                //se escriben los ids de las notificaciones
+                LogHelper.GetInstance().WriteMessage("notificaciones", "NotificacionVencimientoID:");
+                foreach (NotificacionVencimiento n in notificacionVencimientos)
+                {
+                    LogHelper.GetInstance().WriteMessage("notificaciones", n.NotificacionVencimientoID.ToString());
+                }
+
+                //se escriben los ids de los registros de capacitación
+                LogHelper.GetInstance().WriteMessage("notificaciones", "RegistroCapacitacionID:");
+                foreach (NotificacionVencimiento n in notificacionVencimientos)
+                {
+                    LogHelper.GetInstance().WriteMessage("notificaciones", n.RegistroCapacitacionID.ToString());
+                }
+
+                LogHelper.GetInstance().WriteMessage("notificaciones", "------------------------------------");
+            }
 
             return notificacionVencimientos.ToList();
         }
@@ -328,9 +352,26 @@ namespace Cursos.Controllers
                 {
                     foreach (var r in rcSinNotificacioneAsociadas)
                     {
+                        EstadoNotificacionVencimiento estadoNotificacion =
+                        VerificarCursoYaActualizado(r) ? EstadoNotificacionVencimiento.NoNotificarYaActualizado : EstadoNotificacionVencimiento.NotificacionPendiente;
+
+                        if (estadoNotificacion == EstadoNotificacionVencimiento.NoNotificarYaActualizado)
+                        {
+                            Capacitado c = r.Capacitado;
+                            Jornada jv = r.Jornada; //jornada vencida
+
+                            string mensajelog =
+                            string.Format("{0} - {1}. No se notificará el vecimiento de la jornada {2} porque el Capacitado ya tiene una jornada posterior correspondiente a ese curso.",
+                            c.DocumentoCompleto,
+                            c.NombreCompleto,
+                            jv.JornadaIdentificacionCompleta);
+
+                            LogHelper.GetInstance().WriteMessage("notificaciones", mensajelog);
+                        }
+
                         var n = new NotificacionVencimiento
                         {
-                            Estado = EstadoNotificacionVencimiento.NotificacionPendiente,
+                            Estado = estadoNotificacion,
                             RegistroCapacitacion = r,
                             Fecha = DateTime.Now
                         };
@@ -360,6 +401,16 @@ namespace Cursos.Controllers
             }
 
             return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        private bool VerificarCursoYaActualizado(RegistroCapacitacion registroAnalizado)
+        {
+            //para ese capacitado se buscan los registros las jornadas de cursos iguales que se hayan realizado en fechas posteriores
+            var registrosPosteriores =
+            registroAnalizado.Capacitado.RegistrosCapacitacion.Where(r => r.Jornada.CursoId == registroAnalizado.Jornada.CursoId &&
+                                                                               r.Jornada.Fecha > registroAnalizado.Jornada.Fecha);
+
+            return registrosPosteriores.Count() > 0;
         }
 
         //se marcan para no enviar aquellos registros de cursos que los capacitados ya actualizaron

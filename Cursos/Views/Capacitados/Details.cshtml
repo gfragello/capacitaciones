@@ -84,19 +84,24 @@
 
     @Html.Partial("_DatosModificacionPartial", Model)
 
-    <p style="vertical-align: middle;">
-        <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
-        @if (Model.PuedeModificarse())
-        {
-            @:&nbsp; &nbsp; &nbsp;
-            <a href="@Url.Action("Edit", new { id = Model.CapacitadoID })"><span class="glyphicon glyphicon-edit" style="font-size: 25px; color: #017d49"></span>&nbsp;Editar</a>
-        }
-        @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
-        {
-            @:&nbsp; &nbsp; &nbsp;
-            <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><span class="glyphicon glyphicon-log-in" style="font-size: 25px; color: #017d49"></span>&nbsp;&nbsp;Agregar Registro de capacitación</a>
-        }
-    </p>
+<p style="vertical-align: middle;">
+    <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
+    @if (Model.PuedeModificarse())
+    {
+        @:&nbsp; &nbsp; &nbsp;
+        <a href="@Url.Action("Edit", new { id = Model.CapacitadoID })"><span class="glyphicon glyphicon-edit" style="font-size: 25px; color: #017d49"></span>&nbsp;Editar</a>
+    }
+    @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
+    {
+        @:&nbsp; &nbsp; &nbsp;
+        <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><span class="glyphicon glyphicon-log-in" style="font-size: 25px; color: #017d49"></span>&nbsp;&nbsp;Agregar Registro de capacitación</a>
+    }
+    @if (User.IsInRole("Administrador2"))
+    {
+        @:&nbsp; &nbsp; &nbsp;
+        <a href="@Url.Action("Details", new { id = Model.CapacitadoID, generarCertificado = true })"><span class="glyphicon glyphicon-save" style="font-size: 25px; color: #017d49"></span>&nbsp;Descargar certificado</a>
+    }
+</p>
 
     <hr />
 

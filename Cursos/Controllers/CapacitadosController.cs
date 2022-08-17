@@ -13,6 +13,10 @@ using System.IO;
 using System.Drawing;
 using Cursos.Helpers;
 using Cursos.Models.Enums;
+using PdfSharp;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 
 namespace Cursos.Controllers
 {
@@ -150,21 +154,23 @@ namespace Cursos.Controllers
 
         // GET: Capacitados/Details/5
         [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InstructorExterno")]
-        public ActionResult Details(int? id)
+        public ActionResult Details(int? id, bool? generarCertificado)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
 
             var capacitados = db.Capacitados.Include(c => c.RegistrosCapacitacion);
             var capacitado = capacitados.Where(c => c.CapacitadoID == (int)id).First();
 
             if (capacitado == null)
-            {
                 return HttpNotFound();
-            }
-            return View(capacitado);
+
+            bool generar = generarCertificado != null ? (bool)generarCertificado : false;
+
+            if (!generar)
+                return View(capacitado);
+            else
+                return GenerarCertificado((int)id);
         }
 
         // GET: Capacitados/Create 
@@ -603,6 +609,38 @@ namespace Cursos.Controllers
 
                 string fileName = "capacitados.xlsx";
                 string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
+        }
+
+        public ActionResult GenerarCertificado(int capacitadoId)
+        {
+            var capacitado = db.Capacitados.Find(capacitadoId);
+
+            if (capacitado == null)
+                return new HttpStatusCodeResult(HttpStatusCode.NotFound);
+
+            using (PdfDocument pdfDocument = new PdfDocument())
+            {
+                PdfPage page = pdfDocument.AddPage();
+
+                XGraphics gfx = XGraphics.FromPdfPage(page);
+
+                XFont font = new XFont("Verdana", 20, XFontStyle.Bold);
+
+                gfx.DrawString("Hello, World!", font, XBrushes.Black,
+                                new XRect(0, 0, page.Width, page.Height),
+                                XStringFormats.Center);
+
+                var stream = new MemoryStream();
+                pdfDocument.Save(stream, false);
+
+                string fileName = String.Format("{0}_{1}_{2}.pdf", capacitado.Documento.ToString(),
+                                                                   capacitado.Nombre,
+                                                                   capacitado.Apellido);
+                string contentType = "application/pdf";
 
                 stream.Position = 0;
                 return File(stream, contentType, fileName);
