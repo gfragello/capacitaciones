@@ -622,18 +622,8 @@ namespace Cursos.Controllers
             if (capacitado == null)
                 return new HttpStatusCodeResult(HttpStatusCode.NotFound);
 
-            using (PdfDocument pdfDocument = new PdfDocument())
+            using (PdfDocument pdfDocument = CertificadoHelper.GetInstance().GenerarCertificado(capacitado))
             {
-                PdfPage page = pdfDocument.AddPage();
-
-                XGraphics gfx = XGraphics.FromPdfPage(page);
-
-                XFont font = new XFont("Verdana", 20, XFontStyle.Bold);
-
-                gfx.DrawString("Hello, World!", font, XBrushes.Black,
-                                new XRect(0, 0, page.Width, page.Height),
-                                XStringFormats.Center);
-
                 var stream = new MemoryStream();
                 pdfDocument.Save(stream, false);
 

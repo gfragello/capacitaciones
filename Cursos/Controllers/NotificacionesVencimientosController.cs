@@ -284,7 +284,7 @@ namespace Cursos.Controllers
 
         private List<NotificacionVencimiento> ObtenerNotificacionesVencimiento(int? empresaId)
         {
-            List<NotificacionVencimiento> notificacionVencimientosRet = new List<NotificacionVencimiento>();
+            //List<NotificacionVencimiento> notificacionVencimientosRet = new List<NotificacionVencimiento>();
 
             //TODO: NotificacionesVencimiento-Update
             //las actualizaciones de las notificaciones se realizan dentro de esta función
@@ -335,7 +335,40 @@ namespace Cursos.Controllers
                 LogHelper.GetInstance().WriteMessage("notificaciones", "------------------------------------");
             }
 
-            return notificacionVencimientos.ToList();
+            //GF - 20220828 - Esta parte del código deberá ser eliminada /////////////////////////////////////////
+            /*
+            foreach (var n in notificacionVencimientos)
+            {
+                //var registroCapacitacion = db.RegistroCapacitacion.Find(n.RegistroCapacitacionID);
+
+                if (VerificarCursoYaActualizado(n.RegistroCapacitacion))
+                {
+                    db.Entry(n).State = EntityState.Modified;
+                    n.Estado = EstadoNotificacionVencimiento.NoNotificarYaActualizado;
+
+                    Capacitado c = n.RegistroCapacitacion.Capacitado;
+                    Jornada j = n.RegistroCapacitacion.Jornada; //jornada vencida
+
+                    string mensajelog =
+                    string.Format("{0} {1} - {2}. SE ELIMINÓ la notifición del vecimiento de la jornada {3} porque el Capacitado ya tiene una jornada posterior correspondiente a ese curso.",
+                    n.NotificacionVencimientoID,
+                    c.DocumentoCompleto,
+                    c.NombreCompleto,
+                    j.JornadaIdentificacionCompleta);
+
+                    LogHelper.GetInstance().WriteMessage("notificaciones", n.NotificacionVencimientoID.ToString());
+                }
+            }
+
+
+            db.SaveChanges();
+            */
+            //GF - 20220828 - Fin de la parte del código deberá ser eliminada /////////////////////////////////////////
+
+            var notificacionVencimientosRet = notificacionVencimientos.ToList();
+            notificacionVencimientosRet.RemoveAll(n => n.Estado == EstadoNotificacionVencimiento.NoNotificarYaActualizado);
+
+            return notificacionVencimientosRet;
         }
 
         //Las notificaciones asociadas a los registros no se crean al crear el registro
@@ -361,7 +394,8 @@ namespace Cursos.Controllers
                             Jornada jv = r.Jornada; //jornada vencida
 
                             string mensajelog =
-                            string.Format("{0} - {1}. No se notificará el vecimiento de la jornada {2} porque el Capacitado ya tiene una jornada posterior correspondiente a ese curso.",
+                            string.Format("{0} {1} - {2}. No se notificará el vecimiento de la jornada {3} porque el Capacitado ya tiene una jornada posterior correspondiente a ese curso.",
+                            r.RegistroCapacitacionID,
                             c.DocumentoCompleto,
                             c.NombreCompleto,
                             jv.JornadaIdentificacionCompleta);
@@ -405,12 +439,17 @@ namespace Cursos.Controllers
 
         private bool VerificarCursoYaActualizado(RegistroCapacitacion registroAnalizado)
         {
-            //para ese capacitado se buscan los registros las jornadas de cursos iguales que se hayan realizado en fechas posteriores
-            var registrosPosteriores =
-            registroAnalizado.Capacitado.RegistrosCapacitacion.Where(r => r.Jornada.CursoId == registroAnalizado.Jornada.CursoId &&
-                                                                               r.Jornada.Fecha > registroAnalizado.Jornada.Fecha);
+            using (CursosDbContext db = new CursosDbContext())
+            {
+                Capacitado c = db.Capacitados.Where(cap => cap.CapacitadoID == registroAnalizado.CapacitadoID).Include(cap => cap.RegistrosCapacitacion).FirstOrDefault(); //Find(registroAnalizado.CapacitadoID);
 
-            return registrosPosteriores.Count() > 0;
+                //para ese capacitado se buscan los registros las jornadas de cursos iguales que se hayan realizado en fechas posteriores
+                var registrosPosteriores =
+                c.RegistrosCapacitacion.Where(r => r.Jornada.CursoId == registroAnalizado.Jornada.CursoId &&
+                                                                        r.Jornada.Fecha > registroAnalizado.Jornada.Fecha);
+
+                return registrosPosteriores.Count() > 0;
+            }
         }
 
         //se marcan para no enviar aquellos registros de cursos que los capacitados ya actualizaron
