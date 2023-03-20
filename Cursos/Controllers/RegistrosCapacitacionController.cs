@@ -104,7 +104,8 @@ namespace Cursos.Controllers
             cursosDD.Insert(0, new Curso { CursoID = -1, Descripcion = "Todos" });
             ViewBag.CursoID = new SelectList(cursosDD, "CursoID", "Descripcion", cursoID);
 
-            registrosCapacitacion = registrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha);
+            //se orden por fecha y luego por jornada id para agrupar todas las jornadas de una misma fecha
+            registrosCapacitacion = registrosCapacitacion.OrderByDescending(r => r.Jornada.Fecha).ThenBy(r => r.JornadaID);
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);

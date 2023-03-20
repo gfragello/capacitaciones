@@ -56,6 +56,9 @@ namespace Cursos.Controllers
             else
                 fechaFin = currentFechaFin;
 
+            //se agrega la hora 23:59:59 para que en el filtro de fecha final se contample todo el día completo
+            DateTime fechaFinFiltro = fechaFin != null ? fechaFin.Value.AddMinutes(1439) : DateTime.MinValue;
+
             ViewBag.CurrentFechaFin = fechaFin;
 
             if (creadasOtrosUsuarios != null)
@@ -84,8 +87,9 @@ namespace Cursos.Controllers
             if (fechaInicio != null)
                 jornadas = jornadas.Where(j => j.Fecha >= fechaInicio.Value);
 
-            if (fechaFin != null)
-                jornadas = jornadas.Where(j => j.Fecha <= fechaFin.Value);
+            //el valor indica que no se ingreso un valor correspondiente a la fecha fin para aplicar en el filtro
+            if (fechaFinFiltro != DateTime.MinValue)
+                jornadas = jornadas.Where(j => j.Fecha <= fechaFinFiltro);
 
             if (User.IsInRole("InstructorExterno")) //si es un instructor externo, solo se muestran las jornadas asignadas al instructor asociado al usuario actual
             {
