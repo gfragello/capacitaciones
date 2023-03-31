@@ -8,15 +8,15 @@
 @*Sólo se muestran los logos cuando se accede desde jornadas.csl.uy*@
 @if (Request.Url.Host == "jornadas.csl.uy")
 {
-<div class="row">
-    <div class="col-sm-6">
-        <img src="~/images/logos/CSL_logo_main_h_300.png" class="img-responsive" alt="UPM The Biofore Company">
+    <div class="row">
+        <div class="col-sm-6">
+            <img src="~/images/logos/CSL_logo_main_h_300.png" class="img-responsive" alt="UPM The Biofore Company">
+        </div>
+        <div class="col-sm-6">
+            <img src="~/images/logos/UPM_logo_main_h_300.png" class="img-responsive" alt="UPM The Biofore Company">
+        </div>
     </div>
-    <div class="col-sm-6">
-        <img src="~/images/logos/UPM_logo_main_h_300.png" class="img-responsive" alt="UPM The Biofore Company">
-    </div>
-</div>
-<hr />
+    <hr />
 }
 
 <div id="modalMensaje" class="modal" role="dialog">
@@ -35,16 +35,35 @@
                     <p class="text-left"><b>RECORDATORIO para ASISTENTES:</b> Deben estar 15 minutos antes del horario de comienzo, no será posible ingresar al curso pasados 15 minutos de la hora pautada de inicio. No se permite el uso de celular durante el curso y al finalizar el mismo deben realizar una prueba eliminatoria.</p>
                 </div>
                 @*
-                <div class="well">
-                    <p class="text-left"><b>REQUISITO EXCLUYENTE:</b> Las empresas deben verificar de acuerdo al curso que harán sus trabajadores cuales son en la actualidad los requisitos por Covid que están vigentes, esa información la observan en la columna Características de Jornadas disponibles.</p>
-                </div>
+                    <div class="well">
+                        <p class="text-left"><b>REQUISITO EXCLUYENTE:</b> Las empresas deben verificar de acuerdo al curso que harán sus trabajadores cuales son en la actualidad los requisitos por Covid que están vigentes, esa información la observan en la columna Características de Jornadas disponibles.</p>
+                    </div>
                 *@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
+    </div>
+</div>
 
+<div id="modalMensajeT2" class="modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Atención</h4>
+            </div>
+            <div id="bodyMensaje" class="modal-body" style="text-align: center;">
+                <div class="well">
+                    <p class="text-left">Las tarjetas verdes para ingreso a <b>Paso de los Toros y Terminal Puerto Montevideo</b> ahora son las identificadas como T2 - Tarjeta verde UPM2.</p>
+                    <p class="text-left" style="background-color: aquamarine;">Los nuevos cursos <b>T2 - Tarjeta verde UPM2</b> se muestran en color aguamarina.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -53,7 +72,7 @@
 <hr />
 
 @using (Html.BeginForm())
-{                                }
+{ }
 <table class="table table-striped">
     <tr>
         <th>
@@ -148,10 +167,17 @@
 
 @section Scripts {
 
-<script type="text/javascript">
-        $(window).on('load', function() {
+    <script type="text/javascript">
+
+        $(window).on('load', function () {
+            $('#modalMensajeT2').modal('show');
+            //$('#modalMensaje').modal('show');
+        });
+
+        $('#modalMensajeT2').on('hidden.bs.modal', function (event) {
             $('#modalMensaje').modal('show');
         });
-</script>
+
+    </script>
 
 }

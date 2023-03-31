@@ -291,7 +291,6 @@
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\EnvioOVAL\DatosTokenSeguridadOVAL.cs" />
     <Compile Include="Helpers\EnvioOVAL\EnvioOVALHelper.cs" />
-    <Compile Include="Helpers\FontHelper.cs" />
     <Compile Include="Helpers\GlobalHelper.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
@@ -693,10 +692,6 @@
     <EmbeddedResource Include="Migrations\202112181345450_PuntoServicio_Rest.resx">
       <DependentUpon>202112181345450_PuntoServicio_Rest.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="fonts\AnonymousPro-Regular.ttf" />
-    <EmbeddedResource Include="fonts\AnonymousPro-Bold.ttf" />
-    <EmbeddedResource Include="fonts\AnonymousPro-BoldItalic.ttf" />
-    <EmbeddedResource Include="fonts\AnonymousPro-Italic.ttf" />
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
