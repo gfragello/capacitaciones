@@ -216,5 +216,8 @@ ModelManifest.xml
 /Cursos/App_Data/cache
 /Cursos/images/FotosCapacitadosImportar
 /Cursos/logs
-/Cursos/fonts
+/Cursos/fonts/AnonymousPro-Regular.ttf
+/Cursos/fonts/AnonymousPro-Italic.ttf
+/Cursos/fonts/AnonymousPro-BoldItalic.ttf
+/Cursos/fonts/AnonymousPro-Bold.ttf
 /Cursos/Helpers/FontHelper.cs
