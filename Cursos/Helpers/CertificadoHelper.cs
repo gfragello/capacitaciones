@@ -10,6 +10,7 @@ using PdfSharp.Pdf;
 using PdfSharp.Charting;
 using PdfSharp.Drawing.Layout;
 using System.Web.UI;
+using PdfSharp.Fonts;
 
 namespace Cursos.Helpers
 {
@@ -27,6 +28,12 @@ namespace Cursos.Helpers
 
         public PdfDocument GenerarCertificado(Capacitado c)
         {
+            //se verifica que el custom font resolver no esté seteado previamente
+            if (!(GlobalFontSettings.FontResolver is FontResolver))
+            {
+                GlobalFontSettings.FontResolver = new FontResolver();
+            }
+            
             using (PdfDocument pdfDocument = new PdfDocument())
             {
                 this.PdfDocument = pdfDocument;
@@ -38,16 +45,16 @@ namespace Cursos.Helpers
 
                 IniciarContenedorConFondo(gfx);
 
-                var fuenteTexto = new XFont("Times New Roman", 36, XFontStyle.Bold);
+                var fuenteTexto = new XFont("DMMono", 36, XFontStyle.Bold);
                 AgregarTextoCertificado("CERTIFICADO", gfx, page.Width, 50, 50, fuenteTexto, XParagraphAlignment.Center, false);
 
-                fuenteTexto = new XFont("Times New Roman", 38, XFontStyle.Bold);
+                fuenteTexto = new XFont("DMMono", 38, XFontStyle.Bold);
                 AgregarTextoCertificado(c.NombreCompleto, gfx, page.Width, 130, 60, fuenteTexto, XParagraphAlignment.Center, false);
 
-                fuenteTexto = new XFont("Times New Roman", 20, XFontStyle.Regular);
+                fuenteTexto = new XFont("DMMono", 20, XFontStyle.Regular);
                 AgregarTextoCertificado(c.DocumentoCompleto, gfx, page.Width, 190, 30, fuenteTexto, XParagraphAlignment.Center, false);
 
-                fuenteTexto = new XFont("Times New Roman", 18, XFontStyle.Regular);
+                fuenteTexto = new XFont("DMMono", 18, XFontStyle.Regular);
                 AgregarTextoCertificado("Por haber realizado a satisfacción los cursos:", gfx, page.Width, 230, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 //primero se calcula el largo máximo de los nombres de curso que se va a mostrar
@@ -58,7 +65,6 @@ namespace Cursos.Helpers
                         largoMaximo = r.Jornada.Curso.Descripcion.Length;
                 }
 
-                fuenteTexto = new XFont("Lucida Sans Typewriter", 16, XFontStyle.Regular);
                 const int posicionYInicial = 270;
                 int item = 0;
                 int alturaItem = 20;
@@ -67,9 +73,11 @@ namespace Cursos.Helpers
                 string texoCabezal =
                 string.Format("   {0, -25} {1, -12} {2, -12}", "Curso", "Realizado", "Vencimiento");
                 int posicionY = posicionYInicial + (alturaItem * item);
+                fuenteTexto = new XFont("DMMono", 16, XFontStyle.Bold); //se pone fuente negrita para el encabezado de los cursos realizados
                 AgregarTextoCertificado(texoCabezal, gfx, page.Width, posicionY, alturaItem, fuenteTexto, XParagraphAlignment.Left, false);
                 item++;
 
+                fuenteTexto = new XFont("DMMono", 16, XFontStyle.Regular);
                 foreach (var r in c.ObtenerRegistrosCapacitacionVigentes())
                 {
                     string textoRegistro =
@@ -83,7 +91,7 @@ namespace Cursos.Helpers
                     item++;
                 }
 
-                fuenteTexto = new XFont("Times New Roman", 18, XFontStyle.Regular);
+                fuenteTexto = new XFont("DMMono", 18, XFontStyle.Regular);
                 posicionY += 40;
                 AgregarTextoCertificado("cumpliendo con los requisitos académicos y de asistencia", gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
@@ -91,7 +99,7 @@ namespace Cursos.Helpers
                 AgregarTextoCertificado("exigidos para su aprobación.", gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 posicionY += 50;
-                fuenteTexto = new XFont("Times New Roman", 22, XFontStyle.Regular);
+                fuenteTexto = new XFont("DMMono", 22, XFontStyle.Regular);
                 AgregarTextoCertificado(DateTime.Today.ToString("dd/MM/yyyy"), gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 posicionY += 40;
@@ -189,7 +197,7 @@ namespace Cursos.Helpers
         private void AgregarMarcaDeAgua(string texto, PdfPage page, XGraphics gfx)
         {
             // Create the font for drawing the watermark.
-            var font = new XFont("Times New Roman", 80, XFontStyle.BoldItalic);
+            var font = new XFont("DMMono", 80, XFontStyle.BoldItalic);
 
             // Get the size (in points) of the text.
             var size = gfx.MeasureString(texto, font);

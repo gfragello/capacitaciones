@@ -291,6 +291,8 @@
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Helpers\EnvioOVAL\DatosTokenSeguridadOVAL.cs" />
     <Compile Include="Helpers\EnvioOVAL\EnvioOVALHelper.cs" />
+    <Compile Include="Helpers\FontHelper.cs" />
+    <Compile Include="Helpers\FontResolver.cs" />
     <Compile Include="Helpers\GlobalHelper.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\ImagenEstadoRegistroHelper.cs" />
@@ -665,6 +667,12 @@
       <LastGenOutput>PartialViewListCapacitados.en-US.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="fonts\DMMono\DMMono-Italic.ttf" />
+    <EmbeddedResource Include="fonts\DMMono\DMMono-Light.ttf" />
+    <EmbeddedResource Include="fonts\DMMono\DMMono-LightItalic.ttf" />
+    <EmbeddedResource Include="fonts\DMMono\DMMono-Medium.ttf" />
+    <EmbeddedResource Include="fonts\DMMono\DMMono-MediumItalic.ttf" />
+    <EmbeddedResource Include="fonts\DMMono\DMMono-Regular.ttf" />
     <EmbeddedResource Include="Migrations\202007081209497_Jornada_DescripcionEnIngles.resx">
       <DependentUpon>202007081209497_Jornada_DescripcionEnIngles.cs</DependentUpon>
     </EmbeddedResource>
@@ -1075,6 +1083,9 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
