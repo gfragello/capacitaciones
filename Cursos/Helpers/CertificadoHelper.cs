@@ -115,7 +115,7 @@ namespace Cursos.Helpers
 
                 AgregarLogo(gfx);
 
-                AgregarMarcaDeAgua("NO VÁLIDO - Prueba", page, gfx);
+                //AgregarMarcaDeAgua("NO VÁLIDO - Prueba", page, gfx);
 
                 this.PdfDocument = null;
                 return pdfDocument;
