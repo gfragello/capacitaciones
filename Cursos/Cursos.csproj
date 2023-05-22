@@ -667,12 +667,6 @@
       <LastGenOutput>PartialViewListCapacitados.en-US.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="fonts\DMMono\DMMono-Italic.ttf" />
-    <EmbeddedResource Include="fonts\DMMono\DMMono-Light.ttf" />
-    <EmbeddedResource Include="fonts\DMMono\DMMono-LightItalic.ttf" />
-    <EmbeddedResource Include="fonts\DMMono\DMMono-Medium.ttf" />
-    <EmbeddedResource Include="fonts\DMMono\DMMono-MediumItalic.ttf" />
-    <EmbeddedResource Include="fonts\DMMono\DMMono-Regular.ttf" />
     <EmbeddedResource Include="Migrations\202007081209497_Jornada_DescripcionEnIngles.resx">
       <DependentUpon>202007081209497_Jornada_DescripcionEnIngles.cs</DependentUpon>
     </EmbeddedResource>
@@ -700,6 +694,8 @@
     <EmbeddedResource Include="Migrations\202112181345450_PuntoServicio_Rest.resx">
       <DependentUpon>202112181345450_PuntoServicio_Rest.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="fonts\NotoSansMono\NotoSansMono-Regular.ttf" />
+    <EmbeddedResource Include="fonts\NotoSansMono\NotoSansMono-Bold.ttf" />
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />

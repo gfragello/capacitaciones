@@ -24,37 +24,36 @@ namespace Cursos.Helpers
             return _instance;
         }
 
-        private PdfDocument PdfDocument { get; set; }
-
         public PdfDocument GenerarCertificado(Capacitado c)
         {
             //se verifica que el custom font resolver no esté seteado previamente
             if (!(GlobalFontSettings.FontResolver is FontResolver))
             {
                 GlobalFontSettings.FontResolver = new FontResolver();
+                GlobalFontSettings.DefaultFontEncoding = PdfFontEncoding.WinAnsi;
             }
             
             using (PdfDocument pdfDocument = new PdfDocument())
             {
-                this.PdfDocument = pdfDocument;
-
                 PdfPage page = pdfDocument.AddPage();
                 page.Size = PageSize.A4;
 
                 XGraphics gfx = XGraphics.FromPdfPage(page);
 
+                //XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.WinAnsi);
+
                 IniciarContenedorConFondo(gfx);
 
-                var fuenteTexto = new XFont("DMMono", 36, XFontStyle.Bold);
+                var fuenteTexto = new XFont("NotoSansMono", 36, XFontStyle.Bold);
                 AgregarTextoCertificado("CERTIFICADO", gfx, page.Width, 50, 50, fuenteTexto, XParagraphAlignment.Center, false);
 
-                fuenteTexto = new XFont("DMMono", 38, XFontStyle.Bold);
+                fuenteTexto = new XFont("NotoSansMono", 38, XFontStyle.Bold);
                 AgregarTextoCertificado(c.NombreCompleto, gfx, page.Width, 130, 60, fuenteTexto, XParagraphAlignment.Center, false);
 
-                fuenteTexto = new XFont("DMMono", 20, XFontStyle.Regular);
+                fuenteTexto = new XFont("NotoSansMono", 20, XFontStyle.Regular);
                 AgregarTextoCertificado(c.DocumentoCompleto, gfx, page.Width, 190, 30, fuenteTexto, XParagraphAlignment.Center, false);
 
-                fuenteTexto = new XFont("DMMono", 18, XFontStyle.Regular);
+                fuenteTexto = new XFont("NotoSansMono", 18, XFontStyle.Regular, XPdfFontOptions.UnicodeDefault);
                 AgregarTextoCertificado("Por haber realizado a satisfacción los cursos:", gfx, page.Width, 230, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 //primero se calcula el largo máximo de los nombres de curso que se va a mostrar
@@ -73,11 +72,11 @@ namespace Cursos.Helpers
                 string texoCabezal =
                 string.Format("   {0, -25} {1, -12} {2, -12}", "Curso", "Realizado", "Vencimiento");
                 int posicionY = posicionYInicial + (alturaItem * item);
-                fuenteTexto = new XFont("DMMono", 16, XFontStyle.Bold); //se pone fuente negrita para el encabezado de los cursos realizados
+                fuenteTexto = new XFont("NotoSansMono", 16, XFontStyle.Bold); //se pone fuente negrita para el encabezado de los cursos realizados
                 AgregarTextoCertificado(texoCabezal, gfx, page.Width, posicionY, alturaItem, fuenteTexto, XParagraphAlignment.Left, false);
                 item++;
 
-                fuenteTexto = new XFont("DMMono", 16, XFontStyle.Regular);
+                fuenteTexto = new XFont("NotoSansMono", 16, XFontStyle.Regular);
                 foreach (var r in c.ObtenerRegistrosCapacitacionVigentes())
                 {
                     string textoRegistro =
@@ -91,15 +90,15 @@ namespace Cursos.Helpers
                     item++;
                 }
 
-                fuenteTexto = new XFont("DMMono", 18, XFontStyle.Regular);
+                fuenteTexto = new XFont("NotoSansMono", 18, XFontStyle.Regular);
                 posicionY += 40;
-                AgregarTextoCertificado("cumpliendo con los requisitos académicos y de asistencia", gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
+                AgregarTextoCertificado("Cumpliendo con los requisitos académicos y de", gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 posicionY += 20;
-                AgregarTextoCertificado("exigidos para su aprobación.", gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
+                AgregarTextoCertificado("asistencia exigidos para su aprobación.", gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 posicionY += 50;
-                fuenteTexto = new XFont("DMMono", 22, XFontStyle.Regular);
+                fuenteTexto = new XFont("NotoSansMono", 22, XFontStyle.Regular);
                 AgregarTextoCertificado(DateTime.Today.ToString("dd/MM/yyyy"), gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 posicionY += 40;
@@ -117,7 +116,6 @@ namespace Cursos.Helpers
 
                 //AgregarMarcaDeAgua("NO VÁLIDO - Prueba", page, gfx);
 
-                this.PdfDocument = null;
                 return pdfDocument;
             }
         }
@@ -126,17 +124,21 @@ namespace Cursos.Helpers
         {
             XColor ShadowColor = XColors.Gainsboro;
 
-            XColor backColor = XColors.Ivory;
-            XColor BackColor2 = XColors.WhiteSmoke;
-
-            //borde que rodea el certificado
+            //ancho de los bordes que rodean el certificado
             const double borderWidth = 4.5;
-            XPen borderPen = new XPen(XColor.FromArgb(0, 163, 108), borderWidth);
+
+            XPen borderGreen = new XPen(XColor.FromArgb(0, 163, 108), borderWidth);
+            var rectGreen = new XRect(7, 7, 580, 820);
+
+            XPen borderBlue = new XPen(XColor.FromArgb(0, 112, 192), borderWidth);
+            var rectBlue = new XRect(12, 12, 570, 810);
+
+            XPen borderSky = new XPen(XColor.FromArgb(156, 194, 229), borderWidth);
+            var rectSky = new XRect(17, 17, 560, 800);
 
             const int dEllipse = 15;
-            var rect = new XRect(7, 7, 580, 820);
-
-            var rect2 = rect;
+            
+            var rect2 = rectGreen;
             rect2.Offset(borderWidth, borderWidth);
 
             gfx.DrawRoundedRectangle(new XSolidBrush(ShadowColor), rect2, new XSize(dEllipse + 8, dEllipse + 8));
@@ -151,15 +153,17 @@ namespace Cursos.Helpers
             //var brushRecuadroPrincipal = new XLinearGradientBrush(rect2, XColor.FromArgb(175, 225, 175), XColor.FromArgb(236, 255, 220), XLinearGradientMode.Vertical);
             //gfx.DrawRoundedRectangle(brushRecuadroPrincipal, rect, new XSize(dEllipse, dEllipse));
 
-            gfx.DrawRoundedRectangle(borderPen, new XSolidBrush(XColors.WhiteSmoke), rect, new XSize(dEllipse, dEllipse));
+            gfx.DrawRoundedRectangle(borderGreen, new XSolidBrush(XColors.White), rectGreen, new XSize(dEllipse, dEllipse));
+            gfx.DrawRoundedRectangle(borderBlue, new XSolidBrush(XColors.White), rectBlue, new XSize(dEllipse, dEllipse));
+            gfx.DrawRoundedRectangle(borderSky, new XSolidBrush(XColors.White), rectSky, new XSize(dEllipse, dEllipse));
 
-            rect.Inflate(-5, -5);
-            rect.Inflate(-10, -5);
-            rect.Y += 20;
-            rect.Height -= 20;
+            rectGreen.Inflate(-5, -5);
+            rectGreen.Inflate(-10, -5);
+            rectGreen.Y += 20;
+            rectGreen.Height -= 20;
 
             _state = gfx.Save();
-            gfx.TranslateTransform(rect.X, rect.Y);
+            gfx.TranslateTransform(rectGreen.X, rectGreen.Y);
         }
 
         private void CerrarContenedorConFondo(XGraphics gfx)
@@ -197,7 +201,7 @@ namespace Cursos.Helpers
         private void AgregarMarcaDeAgua(string texto, PdfPage page, XGraphics gfx)
         {
             // Create the font for drawing the watermark.
-            var font = new XFont("DMMono", 80, XFontStyle.BoldItalic);
+            var font = new XFont("NotoSansMono", 80, XFontStyle.Bold);
 
             // Get the size (in points) of the text.
             var size = gfx.MeasureString(texto, font);
