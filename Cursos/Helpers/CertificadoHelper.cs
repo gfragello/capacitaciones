@@ -101,10 +101,12 @@ namespace Cursos.Helpers
                 fuenteTexto = new XFont("NotoSansMono", 22, XFontStyle.Regular);
                 AgregarTextoCertificado(DateTime.Today.ToString("dd/MM/yyyy"), gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
-                posicionY += 40;
+                posicionY += 60;
                 AgregarFirma(gfx, posicionY);
 
-                posicionY += 80;
+                fuenteTexto = new XFont("NotoSansMono", 16, XFontStyle.Regular);
+
+                posicionY += 60;
                 AgregarTextoCertificado("Alejandro Lacruz", gfx, page.Width, posicionY, 20, fuenteTexto, XParagraphAlignment.Center, false);
 
                 posicionY += 20;
@@ -143,16 +145,6 @@ namespace Cursos.Helpers
 
             gfx.DrawRoundedRectangle(new XSolidBrush(ShadowColor), rect2, new XSize(dEllipse + 8, dEllipse + 8));
 
-            //rgb(175, 225, 175)
-
-            //var brushSombreado = new XLinearGradientBrush(rect, backColor, BackColor2, XLinearGradientMode.Vertical);
-            //var brushRecuadroPrincipal = new XLinearGradientBrush(rect2, XColors.LightSeaGreen, XColors.LightGreen, XLinearGradientMode.Vertical);
-            //gfx.DrawRoundedRectangle(borderPen, brushRecuadroPrincipal, rect, new XSize(dEllipse, dEllipse));
-
-            //recuadro con fondos en degradé de verdes
-            //var brushRecuadroPrincipal = new XLinearGradientBrush(rect2, XColor.FromArgb(175, 225, 175), XColor.FromArgb(236, 255, 220), XLinearGradientMode.Vertical);
-            //gfx.DrawRoundedRectangle(brushRecuadroPrincipal, rect, new XSize(dEllipse, dEllipse));
-
             gfx.DrawRoundedRectangle(borderGreen, new XSolidBrush(XColors.White), rectGreen, new XSize(dEllipse, dEllipse));
             gfx.DrawRoundedRectangle(borderBlue, new XSolidBrush(XColors.White), rectBlue, new XSize(dEllipse, dEllipse));
             gfx.DrawRoundedRectangle(borderSky, new XSolidBrush(XColors.White), rectSky, new XSize(dEllipse, dEllipse));
@@ -187,7 +179,7 @@ namespace Cursos.Helpers
             string pathArchivo = HttpContext.Current.Server.MapPath("~/images/certificados/firma-alejandro-lacruz.png");
             XImage image = XImage.FromFile(pathArchivo);
 
-            gfx.DrawImage(image, 180, posicionY, 209, 106);
+            gfx.DrawImage(image, 220, posicionY, 157, 79);
         }
 
         private void AgregarLogo(XGraphics gfx)
