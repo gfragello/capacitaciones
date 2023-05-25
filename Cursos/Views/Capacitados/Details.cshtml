@@ -96,7 +96,7 @@
         @:&nbsp; &nbsp; &nbsp;
         <a href="@Url.Action("CreateWithCapacitado", "RegistrosCapacitacion", new { id = Model.CapacitadoID }, null)"><span class="glyphicon glyphicon-log-in" style="font-size: 25px; color: #017d49"></span>&nbsp;&nbsp;Agregar Registro de capacitación</a>
     }
-    @if (User.IsInRole("Administrador") && Model.ObtenerRegistrosCapacitacionVigentes().Count > 0)
+    @if ((User.IsInRole("Administrador") || User.IsInRole("ConsultaEmpresa")) && Model.ObtenerRegistrosCapacitacionVigentes().Count > 0)
     {
         @:&nbsp; &nbsp; &nbsp;
         <a href="@Url.Action("Details", new { id = Model.CapacitadoID, generarCertificado = true })"><span class="glyphicon glyphicon-save" style="font-size: 25px; color: #017d49"></span>&nbsp;Descargar certificado</a>
