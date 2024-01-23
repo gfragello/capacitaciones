@@ -406,7 +406,9 @@ namespace Cursos.Models
         {
             get
             {
-                return this.PuedeModificarse() && this.Autorizada;
+                //20230714 - Se agrega la posiblidad de que el instructor externo pueda cargar el acta
+                //este requerimiento surge por la necesidad de independizar el dictado de los cursos de seguridad que no son impartidos por CSL
+                return (this.PuedeModificarse() && this.Autorizada) || HttpContext.Current.User.IsInRole("InstructorExterno");
             }
         }
 
