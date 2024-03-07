@@ -284,6 +284,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ArchivosFSHelper.cs" />
     <Compile Include="Helpers\CapacitadoHelper.cs" />
     <Compile Include="Helpers\CertificadoHelper.cs" />
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
@@ -521,6 +522,10 @@
     <Compile Include="Migrations\202112181345450_PuntoServicio_Rest.designer.cs">
       <DependentUpon>202112181345450_PuntoServicio_Rest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202401231308309_Empresa_EmailFacturacion.cs" />
+    <Compile Include="Migrations\202401231308309_Empresa_EmailFacturacion.designer.cs">
+      <DependentUpon>202401231308309_Empresa_EmailFacturacion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -696,6 +701,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="fonts\NotoSansMono\NotoSansMono-Regular.ttf" />
     <EmbeddedResource Include="fonts\NotoSansMono\NotoSansMono-Bold.ttf" />
+    <EmbeddedResource Include="Migrations\202401231308309_Empresa_EmailFacturacion.resx">
+      <DependentUpon>202401231308309_Empresa_EmailFacturacion.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
@@ -876,6 +884,7 @@
     <Folder Include="images\Actas\" />
     <Folder Include="images\FotosCapacitadosImportar\" />
     <Folder Include="images\FotosCapacitados\" />
+    <Folder Include="logs\customTools\" />
     <Folder Include="logs\enviosOVAL\" />
     <Folder Include="logs\notificaciones\" />
   </ItemGroup>

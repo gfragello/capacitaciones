@@ -60,6 +60,9 @@
         <th>
             Email
         </th>
+        <th>
+            Email Facturación
+        </th>
         <th></th>
     </tr>
 
@@ -76,6 +79,16 @@
                 @if (!string.IsNullOrEmpty(item.Email))
                 {
                     foreach (var email in item.Email.Split(','))
+                    {
+                        <a href='mailto:@email'>@email</a>
+                        <br />
+                    }
+                }
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.EmailFacturacion))
+                {
+                    foreach (var email in item.EmailFacturacion.Split(','))
                     {
                         <a href='mailto:@email'>@email</a>
                         <br />

@@ -87,7 +87,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,Telefono")] Empresa empresa)
+        public ActionResult Create([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,EmailFacturacion,Telefono")] Empresa empresa)
         {
             if (ModelState.IsValid)
             {
@@ -133,7 +133,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,Telefono")] Empresa empresa)
+        public ActionResult Edit([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,EmailFacturacion,Telefono")] Empresa empresa)
         {
             if (ModelState.IsValid)
             {
@@ -197,8 +197,9 @@ namespace Cursos.Controllers
                 ws.Cells[rowInicial, 6].Value = "Localidad";
                 ws.Cells[rowInicial, 7].Value = "Código Postal";
                 ws.Cells[rowInicial, 8].Value = "Email";
+                ws.Cells[rowInicial, 9].Value = "Email Facturación";
 
-                ws.Cells[rowInicial, 1, rowInicial, 8].Style.Font.Bold = true;
+                ws.Cells[rowInicial, 1, rowInicial, 9].Style.Font.Bold = true;
 
                 var bgColor = Color.White;
 
@@ -212,16 +213,17 @@ namespace Cursos.Controllers
                     ws.Cells[i, 6].Value = e.Localidad;
                     ws.Cells[i, 7].Value = e.CodigoPostal;
                     ws.Cells[i, 8].Value = e.Email;
+                    ws.Cells[i, 9].Value = e.EmailFacturacion;
 
                     //se seleccionan las columnas con datos del capacitado para setear el background color.
                     if (bgColor != Color.White)
                     {
-                        ws.Cells[i - 1, 1, i - 1, 8].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws.Cells[i - 1, 1, i - 1, 8].Style.Fill.BackgroundColor.SetColor(bgColor);
+                        ws.Cells[i - 1, 1, i - 1, 9].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        ws.Cells[i - 1, 1, i - 1, 9].Style.Fill.BackgroundColor.SetColor(bgColor);
                     }
 
                     //se pone un borde alrededor del renglón
-                    ws.Cells[i - 1, 1, i - 1, 8].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
+                    ws.Cells[i - 1, 1, i - 1, 9].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
 
                     bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
 

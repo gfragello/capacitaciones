@@ -39,6 +39,9 @@ namespace Cursos.Models
         [MultipleMailValidator]
         public string Email { get; set; }
 
+        [Display(Name = "Email Facturación")]
+        public string EmailFacturacion { get; set; }
+
         [Display(Name = "Teléfono")]
         public string Telefono { get; set; }
 

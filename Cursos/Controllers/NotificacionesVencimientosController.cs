@@ -11,6 +11,8 @@ using Cursos.Helpers;
 using Cursos.Models.Enums;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using OfficeOpenXml;
+using System.IO;
 
 namespace Cursos.Controllers
 {
@@ -19,9 +21,14 @@ namespace Cursos.Controllers
         private CursosDbContext db = new CursosDbContext();
 
         // GET: NotificacionesVencimientos
-        public ActionResult Index()
+        public ActionResult Index(bool? reporteVencimientos)
         {
-            return View(ObtenerNotificacionesVencimiento(null));
+            bool reporte = reporteVencimientos != null ? (bool)reporteVencimientos : false;
+
+            if (!reporte)
+                return View(ObtenerNotificacionesVencimiento(null));
+            else
+                return GenerarReporteVencimientos();
         }
 
         // GET: NotificacionesVencimientos/Details/5
@@ -335,36 +342,6 @@ namespace Cursos.Controllers
                 LogHelper.GetInstance().WriteMessage("notificaciones", "------------------------------------");
             }
 
-            //GF - 20220828 - Esta parte del código deberá ser eliminada /////////////////////////////////////////
-            /*
-            foreach (var n in notificacionVencimientos)
-            {
-                //var registroCapacitacion = db.RegistroCapacitacion.Find(n.RegistroCapacitacionID);
-
-                if (VerificarCursoYaActualizado(n.RegistroCapacitacion))
-                {
-                    db.Entry(n).State = EntityState.Modified;
-                    n.Estado = EstadoNotificacionVencimiento.NoNotificarYaActualizado;
-
-                    Capacitado c = n.RegistroCapacitacion.Capacitado;
-                    Jornada j = n.RegistroCapacitacion.Jornada; //jornada vencida
-
-                    string mensajelog =
-                    string.Format("{0} {1} - {2}. SE ELIMINÓ la notifición del vecimiento de la jornada {3} porque el Capacitado ya tiene una jornada posterior correspondiente a ese curso.",
-                    n.NotificacionVencimientoID,
-                    c.DocumentoCompleto,
-                    c.NombreCompleto,
-                    j.JornadaIdentificacionCompleta);
-
-                    LogHelper.GetInstance().WriteMessage("notificaciones", n.NotificacionVencimientoID.ToString());
-                }
-            }
-
-
-            db.SaveChanges();
-            */
-            //GF - 20220828 - Fin de la parte del código deberá ser eliminada /////////////////////////////////////////
-
             var notificacionVencimientosRet = notificacionVencimientos.ToList();
             notificacionVencimientosRet.RemoveAll(n => n.Estado == EstadoNotificacionVencimiento.NoNotificarYaActualizado);
 
@@ -540,6 +517,114 @@ namespace Cursos.Controllers
                 }
             }
             */
+        }
+
+        public ActionResult GenerarReporteVencimientos()
+        {
+            DateTime fechaDesde = DateTime.Now.AddDays(-30);
+
+            var resultadoTemporal = (from rc in db.RegistroCapacitacion
+                                     join c in db.Capacitados on rc.CapacitadoID equals c.CapacitadoID
+                                     join nv in db.NotificacionVencimientos on rc.RegistroCapacitacionID equals nv.RegistroCapacitacionID
+                                     join j in db.Jornada on rc.JornadaID equals j.JornadaID
+                                     join cu in db.Cursos on j.CursoId equals cu.CursoID
+                                     join e in db.Empresas on c.EmpresaID equals e.EmpresaID
+                                     where rc.FechaVencimiento > fechaDesde && !new int[] { 2, 4, 5 }.Contains(cu.CursoID)
+                                     orderby j.Fecha
+                                     select new
+                                     {
+                                         c.Documento,
+                                         c.Nombre,
+                                         c.Apellido,
+                                         Empresa = e.NombreFantasia,
+                                         Curso = cu.Descripcion,
+                                         Cursado = j.Fecha,
+                                         Vencimiento = rc.FechaVencimiento,
+                                         EstadoNotificacion = nv.Estado,
+                                         Actualizacion = (from j2 in db.Jornada
+                                                          join rc2 in db.RegistroCapacitacion on j2.JornadaID equals rc2.JornadaID
+                                                          where rc2.CapacitadoID == c.CapacitadoID && j2.Fecha > j.Fecha && j2.CursoId == j.CursoId
+                                                          orderby j2.Fecha
+                                                          select j2.Fecha).FirstOrDefault(),
+                                         rc.RegistroCapacitacionID,
+                                         nv.NotificacionVencimientoID
+                                     }).ToList();
+
+            var resultado = resultadoTemporal.Select(r => new
+            {
+                r.Documento,
+                r.Nombre,
+                r.Apellido,
+                r.Empresa,
+                r.Curso,
+                Cursado = r.Cursado.ToString("dd/MM/yyyy"),
+                Vencimiento = r.Vencimiento.ToString("dd/MM/yyyy"),
+                r.EstadoNotificacion,
+                Actualizacion = r.Actualizacion.ToString("dd/MM/yyyy") != "01/01/0001" ? r.Actualizacion.ToString("dd/MM/yyyy") : "",
+                r.RegistroCapacitacionID,
+                r.NotificacionVencimientoID
+            }).ToList();
+
+            const int COL_DOCUMENTO = 1;
+            const int COL_NOMBRE = 2;
+            const int COL_APELLIDO = 3;
+            const int COL_EMPRESA = 4;
+            const int COL_CURSO = 5;
+            const int COL_CURSADO = 6;
+            const int COL_VENCIMIENTO = 7;
+            const int COL_ESTADO_NOTIFICACION = 8;
+            const int COL_ACTUALIZACION = 9;
+            const int COL_REGISTRO_CAPACITACION_ID = 10;
+            const int COL_NOTIFICACION_VENCIMIENTO_ID = 11;
+
+            using (ExcelPackage excel = new ExcelPackage())
+            {
+                // Agregando una hoja de trabajo
+                var workSheet = excel.Workbook.Worksheets.Add("Resultados");
+
+                // Encabezados
+                workSheet.Cells[1, COL_DOCUMENTO].Value = "Documento";
+                workSheet.Cells[1, COL_NOMBRE].Value = "Nombre";
+                workSheet.Cells[1, COL_APELLIDO].Value = "Apellido";
+                workSheet.Cells[1, COL_EMPRESA].Value = "Empresa";
+                workSheet.Cells[1, COL_CURSO].Value = "Curso";
+                workSheet.Cells[1, COL_CURSADO].Value = "Cursado";
+                workSheet.Cells[1, COL_VENCIMIENTO].Value = "Vencimiento";
+                workSheet.Cells[1, COL_ESTADO_NOTIFICACION].Value = "Estado Notificación";
+                workSheet.Cells[1, COL_ACTUALIZACION].Value = "Actualización";
+                workSheet.Cells[1, COL_REGISTRO_CAPACITACION_ID].Value = "Registro Capacitación ID";
+                workSheet.Cells[1, COL_NOTIFICACION_VENCIMIENTO_ID].Value = "Notificación Vencimiento ID";
+
+                int row = 2;
+
+                foreach (var item in resultado)
+                {
+                    workSheet.Cells[row, COL_DOCUMENTO].Value = item.Documento;
+                    workSheet.Cells[row, COL_NOMBRE].Value = item.Nombre;
+                    workSheet.Cells[row, COL_APELLIDO].Value = item.Apellido;
+                    workSheet.Cells[row, COL_EMPRESA].Value = item.Empresa;
+                    workSheet.Cells[row, COL_CURSO].Value = item.Curso;
+                    workSheet.Cells[row, COL_CURSADO].Value = item.Cursado;
+                    workSheet.Cells[row, COL_VENCIMIENTO].Value = item.Vencimiento;
+                    workSheet.Cells[row, COL_ESTADO_NOTIFICACION].Value = item.EstadoNotificacion;
+                    workSheet.Cells[row, COL_ACTUALIZACION].Value = item.Actualizacion;
+                    workSheet.Cells[row, COL_REGISTRO_CAPACITACION_ID].Value = item.RegistroCapacitacionID;
+                    workSheet.Cells[row, COL_NOTIFICACION_VENCIMIENTO_ID].Value = item.NotificacionVencimientoID;
+
+                    row++;
+                }
+
+                workSheet.Cells[workSheet.Dimension.Address].AutoFitColumns();
+
+                var stream = new MemoryStream();
+                excel.SaveAs(stream);
+
+                string fileName = "vencimientos.xlsx";
+                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
         }
 
         protected override void Dispose(bool disposing)

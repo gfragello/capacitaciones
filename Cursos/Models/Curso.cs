@@ -103,5 +103,7 @@ namespace Cursos.Models
         public bool RequiereDocumentacionAdicionalInscripcionObligatoria { get; set; }
 
         public virtual List<Jornada> Jornadas { get; set; }
+
+        //public virtual List<Instructor> Instructores { get; set; }
     }
 }

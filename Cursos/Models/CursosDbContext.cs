@@ -36,6 +36,11 @@ namespace Cursos.Models
             //configura la relación entre el Capacitado y el PathArchivo
             modelbuilder.Entity<Jornada>().HasOptional(j => j.PathArchivo); //se marca el acta como opcional
 
+            //configura la relación entre el Instructor y los cursos
+            //modelbuilder.Entity<Instructor>().HasMany(i => i.Cursos).WithMany(c => c.Instructores).Map(ic => ic.MapLeftKey("IntructorId")
+            //                                                                                                   .MapRightKey("CursoId")
+            //                                                                                                   .ToTable("InstructoresCursos"));
+
             base.OnModelCreating(modelbuilder);
         }
 

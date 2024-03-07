@@ -852,7 +852,7 @@ namespace Cursos.Controllers
 
         private ActionResult ExportDataExcel(List<ApplicationUser> usuarios)
         {
-             using (ExcelPackage package = new ExcelPackage())
+            using (ExcelPackage package = new ExcelPackage())
             {
                 var ws = package.Workbook.Worksheets.Add("Usuarios");
 

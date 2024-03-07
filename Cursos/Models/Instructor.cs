@@ -57,5 +57,8 @@ namespace Cursos.Models
         public virtual List<Jornada> Jornadas { get; set; }
 
         public virtual List<InstructorUsuario> Usuarios { get; set; }
+
+        //cursos para los que está autorizado un instructor
+        //public virtual List<Curso> Cursos { get; set; }
     }
 }

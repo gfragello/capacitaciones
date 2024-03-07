@@ -95,6 +95,21 @@
         </dd>
 
         <dt>
+            @Html.DisplayNameFor(model => model.EmailFacturacion)
+        </dt>
+
+        <dd>
+            @if (!string.IsNullOrEmpty(Model.EmailFacturacion))
+            {
+                foreach (var email in Model.EmailFacturacion.Split(','))
+                {
+                    <a href='mailto:@email'>@email</a>
+                    <br />
+                }
+            }
+        </dd>
+
+        <dt>
             @Html.DisplayNameFor(model => model.Telefono)
         </dt>
 

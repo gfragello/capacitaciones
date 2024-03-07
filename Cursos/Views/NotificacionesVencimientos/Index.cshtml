@@ -6,12 +6,17 @@
 
 <h4>Notificación de vencimientos</h4>
 
+<p style="vertical-align: middle;">
+    @if (Model.Count() > 0)
+    {
+    <a href="#" onclick="enviarNotificaciones();"><span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar todas las notificaciones pendientes</a>
+    @:&nbsp;&nbsp;
+    }
+    <a href="@Url.Action("Index", "NotificacionesVencimientos", new { reporteVencimientos = true })"><span class="glyphicon glyphicon-save-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Reporte de Vencimientos</a>
+</p>
+
 @if (Model.Count() > 0)
 {
-    <p style="vertical-align: middle;">
-        <a href="#" onclick="enviarNotificaciones();"><span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar todas las notificaciones pendientes</a>
-    </p>
-
     <div id="modalMensaje" class="modal" role="dialog">
         <div class="modal-dialog">
 
@@ -52,7 +57,8 @@
             <a href="javascript:if (confirm('¿Cancelar la notificaciones de esta empresa?')) cancelarNotificacionesEmpresa(@notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.Empresa.EmpresaID)" title="Cancelar estas notificaciones a la empresa"><span class="glyphicon glyphicon-remove" style="font-size: 25px; color: #ff6a00"></span></a>
         }
 
-        <br /><br />
+        <br />
+        <br />
 
         <table class="table table-striped">
 
@@ -88,7 +94,8 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.RegistroCapacitacion.FechaVencimiento)
                     </td>
-                </tr>   
+                </tr>
+
             }
         </table>
     }
@@ -130,8 +137,7 @@ else
                                         //alert('enviado');
                                         counterSuccess++;
                                     }
-                                    else
-                                    {
+                                    else {
                                         counterError++;
                                         //ver que se hace en estos casos
                                     }
@@ -153,17 +159,14 @@ else
             }
         }
 
-        function cancelarNotificacionesEmpresa(empresasID)
-        {
+        function cancelarNotificacionesEmpresa(empresasID) {
             $.ajax({
                 url: '/NotificacionesVencimientos/MarcarNotificacionesPendientesEmpresaNoNotificar',
                 type: "GET",
                 dataType: "JSON",
                 data: { EmpresaID: empresasID },
-                success: function (resultadoOK)
-                {
-                    if (resultadoOK)
-                    {
+                success: function (resultadoOK) {
+                    if (resultadoOK) {
                         location.reload();
                     }
                 }
@@ -171,8 +174,8 @@ else
         }
 
         $('#modalMensaje').on('hidden.bs.modal', function () {
-                    location.reload();
-                })
+            location.reload();
+        })
 
     </script>
 }
