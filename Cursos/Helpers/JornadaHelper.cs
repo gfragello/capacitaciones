@@ -26,7 +26,12 @@ namespace Cursos.Helpers
             string cantidadCuposDisponiblesTexto = j.CantidadCuposDisponiblesTexto;
 
             if (j.QuedanCuposDisponibles)
-                return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", cantidadCuposDisponiblesTexto);
+            { 
+                if (j.AlertaCuposDisponibles)
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-warning\">{0}</span></h5>", cantidadCuposDisponiblesTexto);
+                else
+                    return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-success\">{0}</span></h5>", cantidadCuposDisponiblesTexto);
+            }
             else
                 return string.Format("<h5><span id=\"spanCantidadCuposDisponibles\" class=\"label label-danger\">{0}</span></h5>", cantidadCuposDisponiblesTexto);
         }

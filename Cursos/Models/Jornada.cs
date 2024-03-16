@@ -246,6 +246,14 @@ namespace Cursos.Models
             }
         }
 
+        public bool AlertaCuposDisponibles 
+        { 
+            get
+            {
+                return this.TieneMaximoAsistentes && this.CantidadCuposDisponibles <= 5;
+            }
+        }
+
         [NotMapped]
         public DateTime FechaCierreInscripcion
         {

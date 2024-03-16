@@ -43,6 +43,7 @@ namespace Cursos.Helpers
                                              registroCapacitacion.Capacitado.NombreCompleto,
                                              registroCapacitacion.Capacitado.TipoDocumento.Abreviacion,
                                              registroCapacitacion.Capacitado.Documento,
+                                             registroCapacitacion.Capacitado.Empresa.NombreFantasia,
                                              registroCapacitacion.Jornada.JornadaIdentificacionCompleta,
                                              url.Action("Details", "Jornadas", new { id = registroCapacitacion.JornadaID }, "http"));
 
