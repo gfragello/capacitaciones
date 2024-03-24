@@ -526,6 +526,10 @@
     <Compile Include="Migrations\202401231308309_Empresa_EmailFacturacion.designer.cs">
       <DependentUpon>202401231308309_Empresa_EmailFacturacion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.cs" />
+    <Compile Include="Migrations\202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.Designer.cs">
+      <DependentUpon>202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -541,6 +545,7 @@
     <Compile Include="Models\Enums\EstadosEnvioOVAL.cs" />
     <Compile Include="Models\Enums\EstadoNotificacionVencimiento.cs" />
     <Compile Include="Models\Enums\EstadosRegistroCapacitacion.cs" />
+    <Compile Include="Models\Enums\TipoAlmacenamiento.cs" />
     <Compile Include="Models\Enums\TipoEliminacionEnum.cs" />
     <Compile Include="Models\Enums\TipoPuntoServicio.cs" />
     <Compile Include="Models\Enums\TiposArchivo.cs" />
@@ -703,6 +708,9 @@
     <EmbeddedResource Include="fonts\NotoSansMono\NotoSansMono-Bold.ttf" />
     <EmbeddedResource Include="Migrations\202401231308309_Empresa_EmailFacturacion.resx">
       <DependentUpon>202401231308309_Empresa_EmailFacturacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.resx">
+      <DependentUpon>202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

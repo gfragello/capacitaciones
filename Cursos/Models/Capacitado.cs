@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 using Cursos.Models.Enums;
 using Cursos.Helpers;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Cursos.Models.Enums;
 
 namespace Cursos.Models
 {
@@ -92,6 +92,8 @@ namespace Cursos.Models
         [Display(Name = "Foto")]
         public int? PathArchivoID { get; set; }
         public virtual PathArchivo PathArchivo { get; set; }
+        public TipoAlmacenamiento? TipoArchivoFoto { get; set; }
+        public string BlobStorageUri { get; set; }
 
         [NotMapped]
         public int Edad
