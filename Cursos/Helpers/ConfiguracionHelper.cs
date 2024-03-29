@@ -1,4 +1,5 @@
 ﻿using Cursos.Models;
+using Cursos.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,18 @@ namespace Cursos.Helpers
             }
 
             return string.Empty;
+        }
+
+        public TipoAlmacenamiento GetCapacitado_TipoAlmacenamientoFotoDefecto()
+        {
+            string tipoAlmacenamiento = GetValue("TipoAlmacenamientoFotoDefecto", "Capacitados");
+
+            if (tipoAlmacenamiento == "FileSystem")
+                return TipoAlmacenamiento.FileSystem;
+            else if (tipoAlmacenamiento == "BlobStorage")
+                return TipoAlmacenamiento.BlobStorage;
+
+            return TipoAlmacenamiento.FileSystem;
         }
     }
 }

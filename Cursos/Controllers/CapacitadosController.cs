@@ -223,23 +223,77 @@ namespace Cursos.Controllers
                 db.Capacitados.Add(capacitado);
                 db.SaveChanges();
 
-                if (upload != null && upload.ContentLength > 0)
+                TipoAlmacenamiento tipoAlmacenamientoFotoDefecto = ConfiguracionHelper.GetInstance().GetCapacitado_TipoAlmacenamientoFotoDefecto();
+
+                switch (tipoAlmacenamientoFotoDefecto)
                 {
-                    string nombreArchivo = PathArchivoHelper.GetInstance().ObtenerNombreFotoCapacitado(capacitado.CapacitadoID,
-                                                                                                       System.IO.Path.GetExtension(upload.FileName));
+                    case TipoAlmacenamiento.FileSystem:
 
-                    string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
+                        if (upload != null && upload.ContentLength > 0)
+                        {
+                            string nombreArchivo = PathArchivoHelper.GetInstance().ObtenerNombreFotoCapacitado(capacitado.CapacitadoID,
+                                                                                                                                              System.IO.Path.GetExtension(upload.FileName));
 
-                    string pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
+                            string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
 
-                    capacitado.PathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
-                                                                                                carpetaArchivo,
-                                                                                                pathDirectorio,
-                                                                                                upload,
-                                                                                                TiposArchivo.FotoCapacitado);
+                            string pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
 
-                    db.Entry(capacitado).State = EntityState.Modified;
-                    db.SaveChanges();
+                            capacitado.PathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
+                                                                                                        carpetaArchivo,
+                                                                                                        pathDirectorio,
+                                                                                                        upload,
+                                                                                                        TiposArchivo.FotoCapacitado);
+
+                            db.Entry(capacitado).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+
+                        break;
+
+                    case TipoAlmacenamiento.BlobStorage:
+
+                        if (upload != null && upload.ContentLength > 0)
+                        {
+                            // IMPORTANTE:
+                            // ESTE EJEMPLO HACE USO DE LA LIBRERÍA AZURE STORAGE BLOBS (Azure.Storage.Blobs)
+                            // instalarla desde NuGet: Install-Package Azure.Storage.Blobs
+
+                            //// Construir el nombre del archivo para asegurar unicidad, podrías querer incluir el ID del capacitado
+                            //var fileName = $"capacitados/{capacitado.CapacitadoID}-{Guid.NewGuid()}{Path.GetExtension(upload.FileName)}";
+
+                            //// Aquí debes poner tu cadena de conexión a Azure Storage
+                            //string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=your_account_name;AccountKey=your_account_key;EndpointSuffix=core.windows.net";
+
+                            //// Inicializar el cliente de BlobService
+                            //var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(storageConnectionString);
+
+                            //// El nombre de tu contenedor de blobs
+                            //var containerName = "fotoscapacitados";
+
+                            //// Obtener una referencia al contenedor y crearlo si no existe
+                            //var blobContainer = blobServiceClient.GetBlobContainerClient(containerName);
+                            //await blobContainer.CreateIfNotExistsAsync();
+
+                            //// Establecer el acceso público del contenedor, si es necesario
+                            //await blobContainer.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+
+                            //// Obtener una referencia al blob usando el nombre de archivo
+                            //var blobClient = blobContainer.GetBlobClient(fileName);
+
+                            //// Subir el archivo al blob
+                            //using (var stream = upload.InputStream)
+                            //{
+                            //    await blobClient.UploadAsync(stream, new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = upload.ContentType });
+                            //}
+
+                            //// Guardar la URL del blob en la base de datos, si es necesario
+                            //capacitado.PathArchivo = blobClient.Uri.ToString();
+
+                            //db.Entry(capacitado).State = EntityState.Modified;
+                            //db.SaveChanges();
+                        }
+
+                        break;
                 }
 
                 //si durante la cración se recibe un id de jornada, el capacitado es agregado a esa jornada

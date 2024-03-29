@@ -15,28 +15,26 @@
 
 <table class="table table-striped">
     <tr>
-        <th>
-            Datos
-        </th>
+        <th><!--Número de línea--></th>
         <th>
             Foto
         </th>
+        <th>
+            Datos
+        </th>
         @*<th>&nbsp;</th><!--Actions-->*@
     </tr>
+
+    @{ int numeroLinea = 1; }
 
     @foreach (var item in Model.RegistrosCapacitacion)
     {
         string labelClass = EstadosRegistroCapacitacionHelper.GetInstance().ObtenerLabelClassEstado(item.Estado);
         <tr class="clickable-row" data-href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID })" style="cursor: pointer; user-select: none;">
             <td>
-                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
-                <br />
-                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
-                <br />
-                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
+                @string.Format("{0}.", numeroLinea++.ToString().PadLeft(2, '0'))
             </td>
             <td>
-                @*<a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) ">*@
                 @if (item.Capacitado.PathArchivo != null)
                 {
                     <table>
@@ -58,10 +56,17 @@
                 }
                 @*</a>*@
             </td>
-            @*
             <td>
-                <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/tomarFoto.png")" title="Tomar Foto" /></a>
+                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+                <br />
+                @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)
+                <br />
+                @Html.DisplayFor(modelItem => item.Capacitado.Empresa.NombreFantasia)
             </td>
+            @*
+                <td>
+                    <a href="@Url.Action("CargarFoto", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/tomarFoto.png")" title="Tomar Foto" /></a>
+                </td>
             *@
         </tr>
     }

@@ -530,6 +530,10 @@
     <Compile Include="Migrations\202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.Designer.cs">
       <DependentUpon>202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202403281900482_Capacitado_TipoAlmacenamientoFoto.cs" />
+    <Compile Include="Migrations\202403281900482_Capacitado_TipoAlmacenamientoFoto.Designer.cs">
+      <DependentUpon>202403281900482_Capacitado_TipoAlmacenamientoFoto.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -711,6 +715,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.resx">
       <DependentUpon>202403170357593_AgregarTipoArchivoFotoYBlobStorageUri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202403281900482_Capacitado_TipoAlmacenamientoFoto.resx">
+      <DependentUpon>202403281900482_Capacitado_TipoAlmacenamientoFoto.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

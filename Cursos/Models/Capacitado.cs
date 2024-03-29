@@ -92,7 +92,7 @@ namespace Cursos.Models
         [Display(Name = "Foto")]
         public int? PathArchivoID { get; set; }
         public virtual PathArchivo PathArchivo { get; set; }
-        public TipoAlmacenamiento? TipoArchivoFoto { get; set; }
+        public TipoAlmacenamiento? TipoAlmacenamientoFoto { get; set; }
         public string BlobStorageUri { get; set; }
 
         [NotMapped]

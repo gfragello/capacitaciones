@@ -490,21 +490,34 @@ namespace Cursos.Models
             }
         }
 
+        //hay un error en esta función cuando this.Fecha es 29 de febrero
         public DateTime ObtenerFechaVencimiento(bool copiaJornada = false)
         {
-            //TODO: hacer que esto sea configurable
-            //que se pueda especificar en el curso que vence el último día del año
-            //Tener en cuenta que al usar esta función desde la funcionalidad Copiar Jornada, this.Curso
-            //no estará instanciado
+            //Tener en cuenta que al usar esta función desde la funcionalidad Copiar Jornada, this.Curso no estará instanciado
+            int aniosIncremento = copiaJornada ? 3 : (this.CursoId == 2 ? 0 : this.Curso.Vigencia);
+            int targetYear = this.Fecha.Year + aniosIncremento;
+            int targetMonth = this.Fecha.Month;
+            int targetDay = this.Fecha.Day;
+
+            //TODO: hacer que esto sea configurable, que se pueda especificar en el curso que vence el último día del año
             if (this.CursoId == 2)
-                return new DateTime(this.Fecha.Year, 12, 31);
-            else
+                return new DateTime(targetYear, 12, 31);
+            else //para el resto de los cursos
             {
-                if (!copiaJornada)
-                    return new DateTime(this.Fecha.Year + this.Curso.Vigencia, this.Fecha.Month, this.Fecha.Day);
-                else
-                    return new DateTime(this.Fecha.Year + 3, this.Fecha.Month, this.Fecha.Day);
+                // Especialmente manejar 29 de febrero
+                if (targetMonth == 2 && targetDay == 29)
+                {
+                    // Verificar si el año resultante es bisiesto
+                    if (!DateTime.IsLeapYear(targetYear))
+                    {
+                        // Ajustar la fecha, a 28 de febrero
+                        targetDay = 28;
+                    }
+                }
             }
+
+            // Retornar la fecha de vencimiento calculada
+            return new DateTime(targetYear, targetMonth, targetDay);
         }
 
         public void ToggleAutorizada()
