@@ -259,7 +259,7 @@ namespace Cursos.Controllers
                             // instalarla desde NuGet: Install-Package Azure.Storage.Blobs
 
                             //// Construir el nombre del archivo para asegurar unicidad, podrías querer incluir el ID del capacitado
-                            //var fileName = $"capacitados/{capacitado.CapacitadoID}-{Guid.NewGuid()}{Path.GetExtension(upload.FileName)}";
+                            var fileName = $"capacitados/{capacitado.CapacitadoID}-{Guid.NewGuid()}{Path.GetExtension(upload.FileName)}";
 
                             //// Aquí debes poner tu cadena de conexión a Azure Storage
                             //string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=your_account_name;AccountKey=your_account_key;EndpointSuffix=core.windows.net";
