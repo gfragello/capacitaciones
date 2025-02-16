@@ -1,0 +1,66 @@
+﻿@model Cursos.Models.ViewModels.EditMensajesUsuariosViewModel
+@{
+    ViewBag.Title = "Editar Mensajes";
+}
+
+<h2>Mensajes a Usuarios en Jornadas Disponibles</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Definición de las pestañas -->
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tabMensaje1" data-toggle="tab">Mensaje 1</a></li>
+        <li><a href="#tabMensaje2" data-toggle="tab">Mensaje 2</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Pestaña para el primer mensaje -->
+        <div id="tabMensaje1" class="tab-pane fade in active">
+            <div class="form-group">
+                <!--@Html.LabelFor(model => model.Mensaje1.Cuerpo, "Contenido del Mensaje 1")-->
+                @Html.TextAreaFor(model => model.Mensaje1.Cuerpo, new { @class = "form-control summernote", rows = 10 })
+                @Html.ValidationMessageFor(model => model.Mensaje1.Cuerpo)
+            </div>
+        </div>
+        <!-- Pestaña para el segundo mensaje -->
+        <div id="tabMensaje2" class="tab-pane fade">
+            <div class="form-group">
+                <!--@Html.LabelFor(model => model.Mensaje2.Cuerpo, "Contenido del Mensaje 2")-->
+                @Html.TextAreaFor(model => model.Mensaje2.Cuerpo, new { @class = "form-control summernote", rows = 10 })
+                @Html.ValidationMessageFor(model => model.Mensaje2.Cuerpo)
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        @Html.ActionLink("Cancelar", "Index", "Capacitados", null, new { @class = "btn btn-default" })
+    }
+
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+
+        <!-- Incluir Summernote desde un CDN -->
+                <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.css" rel="stylesheet">
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.js"></script>
+
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        // Inicializar Summernote en todos los elementos con la clase "summernote"
+                        $('.summernote').summernote({
+                            height: 300,
+                            placeholder: 'Escribe el contenido en formato HTML...',
+                            tabsize: 2
+                        });
+                    });
+                </script>
+            }
+

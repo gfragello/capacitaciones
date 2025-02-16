@@ -1,0 +1,18 @@
+﻿namespace Cursos.Migrations
+{
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class Curso_ActaEmailCuerpo : DbMigration
+    {
+        public override void Up()
+        {
+            AddColumn("dbo.Cursos", "ActaEmailCuerpo", c => c.String());
+        }
+        
+        public override void Down()
+        {
+            DropColumn("dbo.Cursos", "ActaEmailCuerpo");
+        }
+    }
+}

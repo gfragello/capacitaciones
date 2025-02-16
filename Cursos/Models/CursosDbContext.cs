@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Web;
 
 namespace Cursos.Models
@@ -73,5 +74,7 @@ namespace Cursos.Models
         public DbSet<Configuracion> Configuracion { get; set; }
 
         public DbSet<PuntoServicio> PuntoServicio { get; set; }
+
+        public DbSet<MensajeUsuario> MensajesUsuarios { get; set; }
     }
 }

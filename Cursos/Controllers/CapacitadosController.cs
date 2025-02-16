@@ -13,10 +13,8 @@ using System.IO;
 using System.Drawing;
 using Cursos.Helpers;
 using Cursos.Models.Enums;
-using PdfSharp;
-using PdfSharp.Drawing;
 using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
+using Azure.Storage.Blobs;
 
 namespace Cursos.Controllers
 {
@@ -224,6 +222,7 @@ namespace Cursos.Controllers
                 db.SaveChanges();
 
                 TipoAlmacenamiento tipoAlmacenamientoFotoDefecto = ConfiguracionHelper.GetInstance().GetCapacitado_TipoAlmacenamientoFotoDefecto();
+                capacitado.TipoAlmacenamientoFoto = tipoAlmacenamientoFotoDefecto;
 
                 switch (tipoAlmacenamientoFotoDefecto)
                 {
@@ -251,47 +250,49 @@ namespace Cursos.Controllers
                         break;
 
                     case TipoAlmacenamiento.BlobStorage:
-
+                        /*
                         if (upload != null && upload.ContentLength > 0)
                         {
-                            // IMPORTANTE:
-                            // ESTE EJEMPLO HACE USO DE LA LIBRERÍA AZURE STORAGE BLOBS (Azure.Storage.Blobs)
-                            // instalarla desde NuGet: Install-Package Azure.Storage.Blobs
-
-                            //// Construir el nombre del archivo para asegurar unicidad, podrías querer incluir el ID del capacitado
+                            // Construir el nombre del archivo para asegurar unicidad, podrías querer incluir el ID del capacitado
                             var fileName = $"capacitados/{capacitado.CapacitadoID}-{Guid.NewGuid()}{Path.GetExtension(upload.FileName)}";
 
-                            //// Aquí debes poner tu cadena de conexión a Azure Storage
-                            //string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=your_account_name;AccountKey=your_account_key;EndpointSuffix=core.windows.net";
+                            string storageConnectionString =
+                            "DefaultEndpointsProtocol=https;AccountName=csldesastorageaccount;AccountKey=klhsxOGH4VjOCJNF3y3PH+jMCBE2Ge4LxsKs7ZrqSHX2wusZPHH7prKDP+X25iGBhzu8hVdYQ70BwIbYulYuFw==;EndpointSuffix=core.windows.net";
 
-                            //// Inicializar el cliente de BlobService
-                            //var blobServiceClient = new Azure.Storage.Blobs.BlobServiceClient(storageConnectionString);
+                            // Inicializar el cliente de BlobService
+                            var blobServiceClient = new BlobServiceClient(storageConnectionString);
 
-                            //// El nombre de tu contenedor de blobs
-                            //var containerName = "fotoscapacitados";
+                            // El nombre de tu contenedor de blobs
+                            var containerName = "fotoscapacitados";
 
-                            //// Obtener una referencia al contenedor y crearlo si no existe
-                            //var blobContainer = blobServiceClient.GetBlobContainerClient(containerName);
+                            // Obtener una referencia al contenedor y crearlo si no existe
+                            var blobContainer = blobServiceClient.GetBlobContainerClient(containerName);
                             //await blobContainer.CreateIfNotExistsAsync();
+                            //blobContainer.CreateIfNotExists();
 
-                            //// Establecer el acceso público del contenedor, si es necesario
+                            // Establecer el acceso público del contenedor, si es necesario
                             //await blobContainer.SetAccessPolicyAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+                            blobContainer.SetAccessPolicy(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
 
-                            //// Obtener una referencia al blob usando el nombre de archivo
-                            //var blobClient = blobContainer.GetBlobClient(fileName);
+                            // Obtener una referencia al blob usando el nombre de archivo
+                            var blobClient = blobContainer.GetBlobClient(fileName);
 
-                            //// Subir el archivo al blob
-                            //using (var stream = upload.InputStream)
-                            //{
-                            //    await blobClient.UploadAsync(stream, new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = upload.ContentType });
-                            //}
+                            // Subir el archivo al blob
+                            using (var stream = upload.InputStream)
+                            {
+                                //await blobClient.UploadAsync(stream, new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = upload.ContentType });
+                                blobClient.Upload(stream, new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = upload.ContentType });
+                            }
 
-                            //// Guardar la URL del blob en la base de datos, si es necesario
-                            //capacitado.PathArchivo = blobClient.Uri.ToString();
+                            // Guardar la URL del blob en la base de datos
+                            capacitado.BlobStorageUri = blobClient.Uri.ToString();
 
-                            //db.Entry(capacitado).State = EntityState.Modified;
-                            //db.SaveChanges();
+                            db.Entry(capacitado).State = EntityState.Modified;
+                            db.SaveChanges();
                         }
+                        */
+
+                        throw new NotImplementedException("El almacenamiento de fotos en BlobStorage no está implementado");
 
                         break;
                 }
@@ -305,7 +306,7 @@ namespace Cursos.Controllers
                         return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
                     //se vuelve a cargar el capacitado para leer entidades asociadas
-                    capacitado = db.Capacitados.Where(c => c.CapacitadoID == capacitado.CapacitadoID).Include(c => c.TipoDocumento).FirstOrDefault();
+                    capacitado = db.Capacitados.Where(c => c.CapacitadoID == capacitado.CapacitadoID).Include(c => c.TipoDocumento).Include(c => c.Empresa).FirstOrDefault();
 
                     var nuevoRC = new RegistroCapacitacion();
                     nuevoRC.SetearAtributosControl();

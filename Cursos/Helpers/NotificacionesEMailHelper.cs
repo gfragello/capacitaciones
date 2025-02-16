@@ -201,6 +201,76 @@ namespace Cursos.Helpers
             }
         }
 
+        public bool EnviarEmailJornadaActa(Jornada jornada)
+        {
+            if (jornada != null && jornada.Curso != null)
+            {
+                var message = new MailMessage();
+
+                // Obtener destinatarios desde la propiedad ActaEmail del curso
+                if (!string.IsNullOrEmpty(jornada.Curso.ActaEmail))
+                {
+                    foreach (var emailDestinatario in jornada.Curso.ActaEmail.Split(','))
+                    {
+                        message.To.Add(new MailAddress(emailDestinatario.Trim()));
+                    }
+                }
+
+                // Configurar remitente del correo
+                message.From = new MailAddress(ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Envio_Actas"));
+
+                // Asunto del correo
+                message.Subject = string.Format("Acta de la Jornada {0} - {1}", jornada.Curso.Descripcion, jornada.Fecha.ToShortDateString());
+
+                // Cuerpo del correo
+                message.Body = jornada.Curso.ActaEmailCuerpo;
+
+                message.IsBodyHtml = true;
+
+                // Adjuntar el archivo del acta generado por GenerarJornadaExcelStream
+                var stream = ExportarExcelHelper.GetInstance().GenerarJornadaExcelStream(jornada);
+                if (stream != null)
+                {
+                    stream.Position = 0; // Asegurarse de que el stream esté al inicio
+                    var attachment = new Attachment(stream, $"{jornada.JornadaIdentificacionCompleta}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    message.Attachments.Add(attachment);
+                }
+                else
+                {
+                    return false; // Si el stream es nulo, no se puede generar el archivo adjunto
+                }
+
+                // Configurar el cliente SMTP
+                using (var smtp = new SmtpClient())
+                {
+                    var credential = new NetworkCredential
+                    {
+                        UserName = ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Envio_Actas"),
+                        Password = ConfiguracionHelper.GetInstance().GetValue("PasswordUsuario", "Envio_Actas")
+                    };
+
+                    smtp.Credentials = credential;
+                    smtp.Host = ConfiguracionHelper.GetInstance().GetValue("SMPTHost", "Envio_Actas");
+                    smtp.Port = int.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPPort", "Envio_Actas"));
+                    smtp.EnableSsl = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("SMTPSSL", "Envio_Actas"));
+
+                    try
+                    {
+                        smtp.Send(message);
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private string GenerateRandomicoSubjectMail()
         {
             int _min = 0;

@@ -158,6 +158,13 @@
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
                 <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })"><span class="glyphicon glyphicon-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Generar Acta</a>
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
+                if (Model.Curso.EnviarActaEmail)
+                {
+                    <a href="@Url.Action("Details", new { id = Model.JornadaID, enviarActaEmail = true })">
+                        <span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar Acta por Email
+                    </a>
+                    @:&nbsp;&nbsp; &nbsp; &nbsp;
+                }
                 <a href="@Url.Action("IngresarCalificaciones", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-list-alt" style="font-size: 25px; color: #017d49"></span>&nbsp;Ingresar calificaciones</a>
                 @:&nbsp;&nbsp; &nbsp; &nbsp;
                 if (Model.PermiteEnviosOVAL)
@@ -187,6 +194,29 @@
 </div>
 
 <br />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        @TempData["SuccessMessage"]
+    </div>
+    TempData["SuccessMessage"] = null;
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        @TempData["ErrorMessage"]
+    </div>
+    TempData["ErrorMessage"] = null;
+}
+
 
 @if (Cursos.Helpers.ValidationHelper.GetInstance().EsURL(Model.Direccion))
 {
@@ -261,9 +291,9 @@
             </tr>
 
             @*
-            <tr>
-                <td><div class="alert alert-info"><strong>REQUISITO EXCLUYENTE:</strong> Las empresas deben verificar de acuerdo al curso que harán sus trabajadores cuales son en la actualidad los requisitos por Covid que están vigentes, esa información la observan en la columna Características de Jornadas disponibles.</div></td>
-            </tr>
+                <tr>
+                    <td><div class="alert alert-info"><strong>REQUISITO EXCLUYENTE:</strong> Las empresas deben verificar de acuerdo al curso que harán sus trabajadores cuales son en la actualidad los requisitos por Covid que están vigentes, esa información la observan en la columna Características de Jornadas disponibles.</div></td>
+                </tr>
             *@
 
             if (Model.CursoId == 4 || Model.CursoId == 5) //solo se muestra este mensaje para los cursos de Inducción
@@ -344,7 +374,7 @@ else
     @Scripts.Render("~/Scripts/enviarOval.js")
     @Scripts.Render("~/Scripts/documentacionAdicional.js")
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
         //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
         $('#modalMensaje').on('hidden.bs.modal', function () {
@@ -546,5 +576,5 @@ else
                 $("#tabEnviosOVAL").load('@(Url.Action("ObtenerRegistrosCapacitacionOVAL", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
         }
 
-</script>
+    </script>
 }

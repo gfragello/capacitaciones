@@ -1,11 +1,10 @@
-﻿@model IEnumerable<Cursos.Models.Jornada>
+﻿@model Cursos.Models.ViewModels.JornadasDisponiblesViewModel
 @using Cursos.Helpers;
 
 @{
     ViewBag.Title = "Jornadas Disponibles";
 }
 
-@*Sólo se muestran los logos cuando se accede desde jornadas.csl.uy*@
 @if (Request.Url.Host == "jornadas.csl.uy")
 {
     <div class="row">
@@ -19,21 +18,16 @@
     <hr />
 }
 
+<!-- Modal para el primer mensaje -->
 <div id="modalMensaje" class="modal" role="dialog">
     <div class="modal-dialog">
-        <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Atención</h4>
+                <h4 class="modal-title">Atenci&oacute;n</h4>
             </div>
             <div id="bodyMensaje" class="modal-body" style="text-align: center;">
-                <div class="well">
-                    <p class="text-left"><b>RESPONSABILIDAD de las EMPRESAS:</b> Verificar las jornadas a las que han inscripto a su personal, esto incluye el tipo de curso, la dirección, día y horario. No se emiten recordatorios de las jornadas. La inscripción de su personal a una jornada es un compromiso de asistencia, la no concurrencia de un trabajador inscripto puede generar la multa correspondiente por no asistir.</p>
-                </div>
-                <div class="well">
-                    <p class="text-left"><b>RECORDATORIO para ASISTENTES:</b> Deben estar 10 minutos antes del horario de comienzo, no será posible ingresar al curso pasados 15 minutos de la hora pautada de inicio. No se permite el uso de celular durante el curso y al finalizar el mismo deben realizar una prueba eliminatoria.</p>
-                </div>
+                @Html.Raw(Model.MensajeDisponibles1.Cuerpo)
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -42,23 +36,16 @@
     </div>
 </div>
 
+<!-- Modal para el segundo mensaje -->
 <div id="modalMensajeT2" class="modal" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Atención</h4>
+                <h4 class="modal-title">Atenci&oacute;n</h4>
             </div>
-            <div id="bodyMensaje" class="modal-body" style="text-align: center;">
-                <div class="well">
-                    <p class="text-left">A partir del 15/11 pueden tomar las capacitaciones en cualquier de los tres lugares (Paso de los Toros, Montevideo o Fray Bentos) indistintamente a qué sitio ingresarán. Existe un único curso de tarjeta verde, identificado como <span style="background-color: darkseagreen;"><b>TV – Tarjeta verde</b></span> que habilita para el ingreso a los tres sitios y tienen vigencia de tres años.</p>
-                </div>
-                <div class="well">
-                    <p class="text-left">Todas las capacitaciones tienen costo a cargo de los contratistas. Solicite información de los costos exclusivamente por mail a <a href="mailto:administracion@csl.uy">administracion@csl.uy</a>.</p>
-                </div>
-                <div class="well">
-                    <p class="text-left">Aquellos capacitados que hayan realizado en el pasado <span style="background-color: darkseagreen;"><b>(TV) UPM Fray Bentos</b></span> o la de <span style="background-color: lightseagreen;"><b>(T2) UPM Paso de los Toros o Puerto MVD</b></span> y la tengan vigente podrán ingresar a los tres sitios con esa habilitación. Solo que, si no hicieron el curso referido a la Planta o Terminal al que ingresarán, deberán asistir, en los respectivos accesos, previo al ingreso a una presentación de un video o similar para informarles sobre las condiciones particulares de dicho sitio.</p>
-                </div>
+            <div id="bodyMensajeT2" class="modal-body" style="text-align: center;">
+                @Html.Raw(Model.MensajeDisponibles2.Cuerpo)
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -68,66 +55,33 @@
 </div>
 
 <h2>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblProximasJornadasDisponibles")</h2>
-
 <hr />
 
 @using (Html.BeginForm())
 { }
 <table class="table table-striped">
     <tr>
-        <th>
-            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblFecha")
-        </th>
-        <th>
-            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblHora")
-        </th>
-        <th>
-            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblCurso")
-        </th>
-        <th>
-            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblLugar")
-        </th>
-        <th>
-            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblDireccion")
-        </th>
-        <th>
-            @Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblCaracteristicas")
-        </th>
-        <th>
-            &nbsp;
-        </th>
-        <th>
-            &nbsp;
-        </th>
-        <th>
-            &nbsp;
-        </th>
+        <th>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblFecha")</th>
+        <th>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblHora")</th>
+        <th>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblCurso")</th>
+        <th>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblLugar")</th>
+        <th>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblDireccion")</th>
+        <th>@Resources.ViewJornadasDisponibles.ResourceManager.GetString("lblCaracteristicas")</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Jornadas)
     {
-        //si la jornada no tiene cupos disponibles se muestra el texto en colo rojo
         string textColor = item.CuposDisponibles ? "black" : "red";
-
         <tr style="color: @textColor;">
-            <td style="vertical-align: middle;">
-                @Html.DisplayFor(modelItem => item.Fecha)
-            </td>
-            <td style="vertical-align: middle;">
-                @Html.DisplayFor(modelItem => item.Hora)
-            </td>
-            <td style="vertical-align: middle;">
-                @Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCurso(item))
-            </td>
-            <td style="vertical-align: middle;">
-                @Html.DisplayFor(modelItem => item.Lugar.NombreLugar)
-            </td>
-            <td style="vertical-align: middle;">
-                @Html.DisplayFor(modelItem => item.Direccion)
-            </td>
-            <td style="vertical-align: middle;">
-                @Html.DisplayFor(modelItem => item.Caracteristicas)
-            </td>
+            <td style="vertical-align: middle;">@Html.DisplayFor(modelItem => item.Fecha)</td>
+            <td style="vertical-align: middle;">@Html.DisplayFor(modelItem => item.Hora)</td>
+            <td style="vertical-align: middle;">@Html.Raw(JornadaHelper.GetInstance().ObtenerLabelCurso(item))</td>
+            <td style="vertical-align: middle;">@Html.DisplayFor(modelItem => item.Lugar.NombreLugar)</td>
+            <td style="vertical-align: middle;">@Html.DisplayFor(modelItem => item.Direccion)</td>
+            <td style="vertical-align: middle;">@Html.DisplayFor(modelItem => item.Caracteristicas)</td>
             <td style="font-weight: bold;">
                 @if (item.TieneMaximoAsistentes)
                 {
@@ -151,9 +105,11 @@
             <td>
                 @if (item.PuedeAccederUsuarioActual)
                 {
-                    string textoLink = item.PuedeAgregarInscripcionesUsuarioActual ? Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkRegistrarInscripcion") : Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkVerJornada");
+                    string textoLink = item.PuedeAgregarInscripcionesUsuarioActual ?
+                        Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkRegistrarInscripcion") :
+                        Resources.ViewJornadasDisponibles.ResourceManager.GetString("lnkVerJornada");
 
-                    <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID }) ">@textoLink</a>
+                    <a href="@Url.Action("Details", "Jornadas", new { id = item.JornadaID })">@textoLink</a>
                 }
                 else
                 {
@@ -162,22 +118,15 @@
             </td>
         </tr>
     }
-
 </table>
 
 @section Scripts {
-
     <script type="text/javascript">
-
         $(window).on('load', function () {
-            $('#modalMensajeT2').modal('show');
-            //$('#modalMensaje').modal('show');
-        });
-
-        $('#modalMensajeT2').on('hidden.bs.modal', function (event) {
             $('#modalMensaje').modal('show');
         });
-
+        $('#modalMensaje').on('hidden.bs.modal', function (event) {
+            $('#modalMensajeT2').modal('show');
+        });
     </script>
-
 }

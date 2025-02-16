@@ -16,6 +16,7 @@ using Cursos.Models.Enums;
 using Cursos.Helpers;
 using System.Net.Mail;
 using Cursos.Helpers.EnvioOVAL;
+using Cursos.Models.ViewModels;
 
 namespace Cursos.Controllers
 {
@@ -136,7 +137,8 @@ namespace Cursos.Controllers
         public ActionResult Details(int? id,
                                     bool? exportarExcel,
                                     bool? generarActa,
-                                    bool? generarReporteOVAL)
+                                    bool? generarReporteOVAL,
+                                    bool? enviarActaEmail)
         {
             if (id == null)
             {
@@ -151,6 +153,7 @@ namespace Cursos.Controllers
             bool excel = exportarExcel != null ? (bool)exportarExcel : false;
             bool acta = generarActa != null ? (bool)generarActa : false;
             bool reporteOVAL = generarReporteOVAL != null ? (bool)generarReporteOVAL : false;
+            bool enviarActa = enviarActaEmail ?? false;
 
             if (excel)
                 return ExportDataExcel(jornada);
@@ -160,6 +163,15 @@ namespace Cursos.Controllers
 
             if (reporteOVAL)
                 return GenerarReporteOVAL(jornada);
+
+            if (enviarActa && jornada.Curso.EnviarActaEmail)
+            {
+                bool emailEnviado = NotificacionesEMailHelper.GetInstance().EnviarEmailJornadaActa(jornada);
+                if (emailEnviado)
+                    TempData["SuccessMessage"] = "El acta ha sido enviada por correo electrónico.";
+                else
+                    TempData["ErrorMessage"] = "Hubo un error al enviar el acta por correo electrónico.";
+            }
 
             return View(jornada);
 
@@ -718,72 +730,15 @@ namespace Cursos.Controllers
 
         private ActionResult ExportDataExcel(Jornada j)
         {
-            using (ExcelPackage package = new ExcelPackage())
-            {
-                var ws = package.Workbook.Worksheets.Add("Jornada");
+            // Llamada a la función del helper para generar el archivo Excel en un MemoryStream
+            var stream = ExportarExcelHelper.GetInstance().GenerarJornadaExcelStream(j);
 
-                ws.Cells[1, 1].Value = "Curso";
-                ws.Cells[1, 2].Value = j.Curso.Descripcion;
+            string fileName = $"{j.JornadaIdentificacionCompleta}.xlsx";
+            string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
-                ws.Cells[2, 1].Value = "Instructor";
-                ws.Cells[2, 2].Value = j.Instructor.NombreCompleto;
-
-                ws.Cells[3, 1].Value = "Lugar";
-                ws.Cells[3, 2].Value = j.Lugar.NombreLugar;
-
-                ws.Cells[4, 1].Value = "Fecha";
-                ws.Cells[4, 2].Value = j.Fecha.ToShortDateString();
-
-                ws.Cells[5, 1].Value = "Hora";
-                ws.Cells[5, 2].Value = j.Hora;
-
-                ws.Cells[1, 1, 5, 1].Style.Font.Bold = true;
-
-                const int rowInicial = 7;
-                int i = rowInicial + 1;
-
-                ws.Cells[rowInicial, 1].Value = "Documento";
-                ws.Cells[rowInicial, 2].Value = "Nombre";
-                ws.Cells[rowInicial, 3].Value = "Empresa";
-                ws.Cells[rowInicial, 4].Value = "Nota previa";
-                ws.Cells[rowInicial, 5].Value = "Nota";
-
-                ws.Cells[rowInicial, 1, rowInicial, 5].Style.Font.Bold = true;
-
-                var bgColor = Color.White;
-
-                foreach (var r in j.RegistrosCapacitacion)
-                {
-                    ws.Cells[i, 1].Value = r.Capacitado.DocumentoCompleto;
-                    ws.Cells[i, 2].Value = r.Capacitado.NombreCompleto;
-                    ws.Cells[i, 3].Value = r.Capacitado.Empresa.NombreFantasia;
-                    ws.Cells[i, 4].Value = r.NotaPrevia;
-                    ws.Cells[i, 5].Value = r.Nota;
-
-                    if (bgColor != Color.White) //blanco es el color del renglón por defecto, por lo que no es necesario hacer nada si corresponde ese color
-                    {
-                        ws.Cells[i, 1, i, 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        ws.Cells[i, 1, i, 5].Style.Fill.BackgroundColor.SetColor(bgColor);
-                    }
-
-                    ws.Cells[i, 1, i, 5].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thin);
-
-                    bgColor = bgColor == Color.White ? Color.WhiteSmoke : Color.White;
-                    i++;
-                }
-
-                ws.Cells[ws.Dimension.Address].AutoFitColumns();
-
-                var stream = new MemoryStream();
-                package.SaveAs(stream);
-
-                string fileName = String.Format("{0}.xlsx", j.JornadaIdentificacionCompleta);
-                string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-                stream.Position = 0;
-                return File(stream, contentType, fileName);
-            }
+            return File(stream, contentType, fileName);
         }
+
 
         private ActionResult GenerarActa(Jornada j)
         {
@@ -1292,13 +1247,28 @@ namespace Cursos.Controllers
         {
             TimeZoneInfo montevideoStandardTime = TimeZoneInfo.FindSystemTimeZoneById("Montevideo Standard Time");
             DateTime dateTime_Montevideo = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, montevideoStandardTime);
-
-            //se muestran las jornadas hasta una hora después de iniciadas (si la jornada empieza a 8am, la jornada se muestra en la grilla hasta las 9am)
             dateTime_Montevideo = dateTime_Montevideo.AddHours(-1);
 
-            var jornadas = db.Jornada.Where(j => j.Fecha >= dateTime_Montevideo && j.Autorizada).OrderBy(j => j.Fecha).ThenBy(j => j.HoraFormatoNumerico).Include(j => j.Curso).Include(j => j.Instructor).Include(j => j.Lugar);
+            var jornadas = db.Jornada.Where(j => j.Fecha >= dateTime_Montevideo && j.Autorizada)
+                                      .OrderBy(j => j.Fecha)
+                                      .ThenBy(j => j.HoraFormatoNumerico)
+                                      .Include(j => j.Curso)
+                                      .Include(j => j.Instructor)
+                                      .Include(j => j.Lugar)
+                                      .ToList();
 
-            return View(jornadas.ToList());
-        }   
+            // Se consultan los mensajes específicos para esta vista filtrando por IdentificadorInterno
+            var mensaje1 = db.MensajesUsuarios.FirstOrDefault(m => m.IdentificadorInterno == "DisponiblesMensaje1");
+            var mensaje2 = db.MensajesUsuarios.FirstOrDefault(m => m.IdentificadorInterno == "DisponiblesMensaje2");
+
+            var viewModel = new JornadasDisponiblesViewModel
+            {
+                Jornadas = jornadas,
+                MensajeDisponibles1 = mensaje1,
+                MensajeDisponibles2 = mensaje2
+            };
+
+            return View(viewModel);
+        }
     }
 }

@@ -8,7 +8,7 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Curso - Editar</h4>
         <hr />
@@ -68,6 +68,37 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.ColorDeFondo, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.ColorDeFondo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EnviarActaEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.EnviarActaEmail, new { htmlAttributes = new { @onclick = "toggleActaEmailFields();" } })
+                    @Html.ValidationMessageFor(model => model.EnviarActaEmail, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor con los campos ActaEmail y ActaEmailCuerpo -->
+        @{ string estiloActaEmail = Model.EnviarActaEmail ? "display:block" : "display:none"; }
+
+        <div id="actaEmailContainer" class="form-group" style="@estiloActaEmail; border: 1px solid #ccc; border-radius: 10px; padding: 15px; background-color: #f8f9fa;">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ActaEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ActaEmail, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ActaEmail, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ActaEmailCuerpo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    <textarea id="ActaEmailCuerpo" name="ActaEmailCuerpo" class="form-control">@Model.ActaEmailCuerpo</textarea>
+                    @Html.ValidationMessageFor(model => model.ActaEmailCuerpo, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 
@@ -245,15 +276,38 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
-<script type="text/javascript">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.js"></script>
 
-        function togglePuntajes()
-        {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            // Inicializar Summernote en el textarea de ActaEmailCuerpo
+            $('#ActaEmailCuerpo').summernote({
+                height: 300,
+                placeholder: 'Escribe el cuerpo del email en formato HTML...',
+                tabsize: 2
+            });
+
+            // Mostrar/ocultar campos de ActaEmail al cargar la página
+            toggleActaEmailFields();
+        });
+
+        function toggleActaEmailFields() {
+            if ($('#EnviarActaEmail').is(':checked')) {
+                $('#actaEmailContainer').show();
+            } else {
+                $('#actaEmailContainer').hide();
+                $('#ActaEmailCuerpo').summernote && $('#ActaEmailCuerpo').summernote('reset');
+                $('#ActaEmail').val('');
+            }
+        }
+
+        function togglePuntajes() {
             $("#grpPuntajeMinimo").toggle();
             $("#grpPuntajeMaximo").toggle();
 
-            if (!$("#EvaluacionConNota").is(":checked"))
-            {
+            if (!$("#EvaluacionConNota").is(":checked")) {
                 //si se desmarca el checkbox y se ocultan los campos,
                 //se setea 0 como valor por defecto para prevenir que los validadores lo indiquen como un error
                 $("#PuntajeMinimo").val("0");
@@ -261,8 +315,7 @@
             }
         }
 
-        function toggleMinimoAsistentes()
-        {
+        function toggleMinimoAsistentes() {
             $("#grpMinimoAsistentes").toggle();
 
             if (!$("#TieneMinimoAsistentes").is(":checked")) {
@@ -272,8 +325,7 @@
             }
         }
 
-        function toggleMaximoAsistentes()
-        {
+        function toggleMaximoAsistentes() {
             $("#grpMaximoAsistentes").toggle();
 
             if (!$("#TieneMaximoAsistentes").is(":checked")) {
@@ -283,8 +335,7 @@
             }
         }
 
-        function toggleHorasCierreInscripcion()
-        {
+        function toggleHorasCierreInscripcion() {
             $("#grpHorasCierreInscripcion").toggle();
 
             if (!$("#TieneCierreIncripcion").is(":checked")) {
@@ -303,5 +354,5 @@
             $("#grpRequiereDocumentacionAdicionalInscripcionObligatoria").toggle();
         }
 
-</script>
+    </script>
 }

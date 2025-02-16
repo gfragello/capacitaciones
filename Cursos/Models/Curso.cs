@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Cursos.Models
 {
@@ -48,6 +49,16 @@ namespace Cursos.Models
         [Required(ErrorMessage = "Debe ingresar el color asociado al curso")]
         [Display(Name = "Color")]
         public string ColorDeFondo { get; set; }
+
+        [Display(Name = "Enviar Acta por Email")]
+        public bool EnviarActaEmail { get; set; }
+
+        [Display(Name = "Emails para Acta")]
+        public string ActaEmail { get; set; }
+
+        [AllowHtml]
+        [Display(Name = "Cuerpo del Email para Acta")]
+        public string ActaEmailCuerpo { get; set; }
 
         [Required(AllowEmptyStrings = false)]
         [Display(Name = "Evaluación con nota")]

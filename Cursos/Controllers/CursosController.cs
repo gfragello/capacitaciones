@@ -40,7 +40,11 @@ namespace Cursos.Controllers
         public ActionResult Create()
         {
             //se inicializa la propiedad EvaluacionConNota para que esté chequeado por defecto
-            var c = new Curso { EvaluacionConNota = true };
+            var c = new Curso
+            {
+                EvaluacionConNota = true,
+                EnviarActaEmail = false // Se inicializa en false
+            };
 
             ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre");
 
@@ -48,22 +52,31 @@ namespace Cursos.Controllers
         }
 
         // POST: Cursos/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // To protect from overposting attacks, por favor habilita las propiedades específicas que quieres enlazar.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
         {
             if (ModelState.IsValid)
             {
+                // Si no se permite el envío de OVAL, se debe limpiar el PuntoServicioId
                 if (!curso.PermiteEnviosOVAL)
                     curso.PuntoServicioId = null;
+
+                // Si no se activa EnviarActaEmail, se deben limpiar los campos relacionados
+                if (!curso.EnviarActaEmail)
+                {
+                    curso.ActaEmail = null;
+                    curso.ActaEmailCuerpo = null; // Se asegura que se limpie ActaEmailCuerpo
+                }
 
                 db.Cursos.Add(curso);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
+            // Si hay errores de validación, se debe retornar la vista con los datos del curso
+            ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre", curso.PuntoServicioId);
             return View(curso);
         }
 
@@ -86,23 +99,33 @@ namespace Cursos.Controllers
         }
 
         // POST: Cursos/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
         {
             if (ModelState.IsValid)
             {
+                // Si no se permite el envío de OVAL, se debe limpiar el PuntoServicioId
                 if (!curso.PermiteEnviosOVAL)
                     curso.PuntoServicioId = null;
+
+                // Si no se activa EnviarActaEmail, se deben limpiar los campos relacionados
+                if (!curso.EnviarActaEmail)
+                {
+                    curso.ActaEmail = null;
+                    curso.ActaEmailCuerpo = null; // Se asegura que se limpie ActaEmailCuerpo
+                }
 
                 db.Entry(curso).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
+
+            // Si hay errores de validación, se debe retornar la vista con los datos del curso
+            ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre", curso.PuntoServicioId);
             return View(curso);
         }
+
 
         // GET: Cursos/Delete/5
         public ActionResult Delete(int? id)

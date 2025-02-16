@@ -4,221 +4,253 @@
     ViewBag.Title = "Create";
 }
 
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Curso - Crear</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Descripcion, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Descripcion, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
-            </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.DescripcionEnIngles, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.DescripcionEnIngles, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DescripcionEnIngles, "", new { @class = "text-danger" })
-            </div>
+<div class="form-horizontal">
+    <h4>Curso - Crear</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.Descripcion, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Descripcion, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Costo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Costo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Costo, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.DescripcionEnIngles, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DescripcionEnIngles, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.DescripcionEnIngles, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Horas, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Horas, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Horas, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Costo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Costo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Costo, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Vigencia, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Vigencia, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Vigencia, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Horas, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Horas, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Horas, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Modulo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Modulo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Modulo, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Vigencia, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Vigencia, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Vigencia, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.ColorDeFondo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ColorDeFondo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ColorDeFondo, "", new { @class = "text-danger" })
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Modulo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Modulo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Modulo, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.EvaluacionConNota, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.EvaluacionConNota, new { htmlAttributes = new { @onclick = "togglePuntajes();" } })
-                    @Html.ValidationMessageFor(model => model.EvaluacionConNota, "", new { @class = "text-danger" })
-                </div>
-            </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ColorDeFondo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ColorDeFondo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ColorDeFondo, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group" id="grpPuntajeMinimo">
-            @Html.LabelFor(model => model.PuntajeMinimo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.PuntajeMinimo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PuntajeMinimo, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group" id="grpPuntajeMaximo">
-            @Html.LabelFor(model => model.PuntajeMaximo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.PuntajeMaximo, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PuntajeMaximo, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.RequiereAutorizacion, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.RequiereAutorizacion)
-                    @Html.ValidationMessageFor(model => model.RequiereAutorizacion, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.TieneMinimoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.TieneMinimoAsistentes, new { htmlAttributes = new { @onclick = "toggleMinimoAsistentes();" } })
-                    @Html.ValidationMessageFor(model => model.TieneMinimoAsistentes, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group" id="grpMinimoAsistentes" style="display:none;">
-            @Html.LabelFor(model => model.MinimoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.MinimoAsistentes, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.MinimoAsistentes, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.TieneMaximoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.TieneMaximoAsistentes, new { htmlAttributes = new { @onclick = "toggleMaximoAsistentes();" } })
-                    @Html.ValidationMessageFor(model => model.TieneMaximoAsistentes, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group" id="grpMaximoAsistentes" style="display:none;">
-            @Html.LabelFor(model => model.MaximoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.MaximoAsistentes, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.MaximoAsistentes, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.TieneCierreIncripcion, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.TieneCierreIncripcion, new { htmlAttributes = new { @onclick = "toggleHorasCierreInscripcion();" } })
-                    @Html.ValidationMessageFor(model => model.TieneCierreIncripcion, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group" id="grpHorasCierreInscripcion" style="display:none;">
-            @Html.LabelFor(model => model.HorasCierreInscripcion, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.HorasCierreInscripcion, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.HorasCierreInscripcion, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.PermiteInscripcionesExternas, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.PermiteInscripcionesExternas)
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.PermiteEnviosOVAL, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.PermiteEnviosOVAL, new { htmlAttributes = new { @onclick = "togglePuntoServicio();" } } )
-                </div>
-            </div>
-        </div>
-
-        @*La sección donde se selecciona el punto de servicio, se inicializará como
-          no visible porque el checkbox "PermiteEnviosOVAL" no será el primero en mostrarse *@
-        <div class="form-group" style="display:none" id="SeccionDatosEmpresa">
-            @Html.Label("Punto de servicio", new { @class = "col-md-2 control-label" })
-            <div class="col-md-10">
-                @Html.DropDownList("PuntoServicioId", null, htmlAttributes: new { @class = "form-control" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.RequiereDocumentacionAdicionalInscripcion, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.RequiereDocumentacionAdicionalInscripcion, new { htmlAttributes = new { @onclick = "toggleDocumentacionAdicional();" } })
-                    @Html.ValidationMessageFor(model => model.RequiereDocumentacionAdicionalInscripcion, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group" style="display:none" id="grpDocumentacionAdicionalIdentificador">
-            @Html.LabelFor(model => model.DocumentacionAdicionalIdentificador, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.DocumentacionAdicionalIdentificador, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DocumentacionAdicionalIdentificador, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group" style="display:none" id="grpRequiereDocumentacionAdicionalInscripcionObligatoria">
-            @Html.LabelFor(model => model.RequiereDocumentacionAdicionalInscripcionObligatoria, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.RequiereDocumentacionAdicionalInscripcionObligatoria)
-                    @Html.ValidationMessageFor(model => model.RequiereDocumentacionAdicionalInscripcionObligatoria, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+    <!-- Checkbox para habilitar Enviar Acta por Email -->
+    <div class="form-group">
+        @Html.LabelFor(model => model.EnviarActaEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.EnviarActaEmail, new { htmlAttributes = new { @onclick = "toggleActaEmailFields();" } })
+                @Html.ValidationMessageFor(model => model.EnviarActaEmail, "", new { @class = "text-danger" })
             </div>
         </div>
     </div>
+
+    <!-- Contenedor con fondo gris claro y bordes redondeados -->
+    <div id="actaEmailContainer" class="form-group" style="display:none; border: 1px solid #ccc; border-radius: 10px; padding: 15px; background-color: #f8f9fa;">
+        <!-- Campo de ActaEmail -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.ActaEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ActaEmail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ActaEmail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Campo de ActaEmailCuerpo -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.ActaEmailCuerpo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <textarea id="ActaEmailCuerpo" name="ActaEmailCuerpo" class="form-control"></textarea>
+                @Html.ValidationMessageFor(model => model.ActaEmailCuerpo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.EvaluacionConNota, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.EvaluacionConNota, new { htmlAttributes = new { @onclick = "togglePuntajes();" } })
+                @Html.ValidationMessageFor(model => model.EvaluacionConNota, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="grpPuntajeMinimo">
+        @Html.LabelFor(model => model.PuntajeMinimo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.PuntajeMinimo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.PuntajeMinimo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="grpPuntajeMaximo">
+        @Html.LabelFor(model => model.PuntajeMaximo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.PuntajeMaximo, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.PuntajeMaximo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.RequiereAutorizacion, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.RequiereAutorizacion)
+                @Html.ValidationMessageFor(model => model.RequiereAutorizacion, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TieneMinimoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.TieneMinimoAsistentes, new { htmlAttributes = new { @onclick = "toggleMinimoAsistentes();" } })
+                @Html.ValidationMessageFor(model => model.TieneMinimoAsistentes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="grpMinimoAsistentes" style="display:none;">
+        @Html.LabelFor(model => model.MinimoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MinimoAsistentes, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MinimoAsistentes, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TieneMaximoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.TieneMaximoAsistentes, new { htmlAttributes = new { @onclick = "toggleMaximoAsistentes();" } })
+                @Html.ValidationMessageFor(model => model.TieneMaximoAsistentes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="grpMaximoAsistentes" style="display:none;">
+        @Html.LabelFor(model => model.MaximoAsistentes, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MaximoAsistentes, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MaximoAsistentes, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TieneCierreIncripcion, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.TieneCierreIncripcion, new { htmlAttributes = new { @onclick = "toggleHorasCierreInscripcion();" } })
+                @Html.ValidationMessageFor(model => model.TieneCierreIncripcion, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" id="grpHorasCierreInscripcion" style="display:none;">
+        @Html.LabelFor(model => model.HorasCierreInscripcion, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.HorasCierreInscripcion, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.HorasCierreInscripcion, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.PermiteInscripcionesExternas, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.PermiteInscripcionesExternas)
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.PermiteEnviosOVAL, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.PermiteEnviosOVAL, new { htmlAttributes = new { @onclick = "togglePuntoServicio();" } })
+            </div>
+        </div>
+    </div>
+
+    @*La sección donde se selecciona el punto de servicio, se inicializará como
+        no visible porque el checkbox "PermiteEnviosOVAL" no será el primero en mostrarse *@
+    <div class="form-group" style="display:none" id="SeccionDatosEmpresa">
+        @Html.Label("Punto de servicio", new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.DropDownList("PuntoServicioId", null, htmlAttributes: new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.RequiereDocumentacionAdicionalInscripcion, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.RequiereDocumentacionAdicionalInscripcion, new { htmlAttributes = new { @onclick = "toggleDocumentacionAdicional();" } })
+                @Html.ValidationMessageFor(model => model.RequiereDocumentacionAdicionalInscripcion, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="display:none" id="grpDocumentacionAdicionalIdentificador">
+        @Html.LabelFor(model => model.DocumentacionAdicionalIdentificador, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DocumentacionAdicionalIdentificador, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.DocumentacionAdicionalIdentificador, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" style="display:none" id="grpRequiereDocumentacionAdicionalInscripcionObligatoria">
+        @Html.LabelFor(model => model.RequiereDocumentacionAdicionalInscripcionObligatoria, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.RequiereDocumentacionAdicionalInscripcionObligatoria)
+                @Html.ValidationMessageFor(model => model.RequiereDocumentacionAdicionalInscripcionObligatoria, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+</div>
 }
 
 <div>
@@ -228,62 +260,81 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 
-    <script type="text/javascript">
+    <!-- Incluir Summernote desde un CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.js"></script>
 
-        function togglePuntajes()
-        {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Inicializar Summernote Lite
+            $('#ActaEmailCuerpo').summernote({
+                height: 300,
+                placeholder: 'Escribe el cuerpo del email en formato HTML...',
+                tabsize: 2
+            });
+
+            // Mostrar/ocultar contenedor de ActaEmail al cargar la página
+            toggleActaEmailFields();
+        });
+
+        function toggleActaEmailFields() {
+            if ($('#EnviarActaEmail').is(':checked')) {
+                $('#actaEmailContainer').show();
+            } else {
+                $('#actaEmailContainer').hide();
+                // Limpiar los campos si se ocultan
+                $('#ActaEmailCuerpo').summernote && $('#ActaEmailCuerpo').summernote('reset');
+                $('#ActaEmail').val('');
+            }
+        }
+
+        function togglePuntajes() {
             $("#grpPuntajeMinimo").toggle();
             $("#grpPuntajeMaximo").toggle();
 
-            if (!$("#EvaluacionConNota").is(":checked"))
-            {
-                //si se desmarca el checkbox y se ocultan los campos, 
+            if (!$("#EvaluacionConNota").is(":checked")) {
+                //si se desmarca el checkbox y se ocultan los campos,
                 //se setea 0 como valor por defecto para prevenir que los validadores lo indiquen como un error
                 $("#PuntajeMinimo").val("0");
                 $("#PuntajeMaximo").val("0");
             }
         }
 
-        function toggleMinimoAsistentes()
-        {
+        function toggleMinimoAsistentes() {
             $("#grpMinimoAsistentes").toggle();
 
             if (!$("#TieneMinimoAsistentes").is(":checked")) {
-                //si se desmarca el checkbox y se ocultan el campo, 
+                //si se desmarca el checkbox y se ocultan el campo,
                 //se setea 0 como valor por defecto para prevenir que los validadores lo indiquen como un error
                 $("#MinimoAsistentes").val("0");
             }
         }
 
-        function toggleMaximoAsistentes()
-        {
+        function toggleMaximoAsistentes() {
             $("#grpMaximoAsistentes").toggle();
 
             if (!$("#TieneMaximoAsistentes").is(":checked")) {
-                //si se desmarca el checkbox y se ocultan el campo, 
+                //si se desmarca el checkbox y se ocultan el campo,
                 //se setea 0 como valor por defecto para prevenir que los validadores lo indiquen como un error
                 $("#MaximoAsistentes").val("0");
             }
         }
 
-        function toggleHorasCierreInscripcion()
-        {
+        function toggleHorasCierreInscripcion() {
             $("#grpHorasCierreInscripcion").toggle();
 
             if (!$("#TieneCierreIncripcion").is(":checked")) {
-                //si se desmarca el checkbox y se ocultan el campo, 
+                //si se desmarca el checkbox y se ocultan el campo,
                 //se setea 0 como valor por defecto para prevenir que los validadores lo indiquen como un error
                 $("#HorasCierreInscripcion").val("0");
             }
         }
 
-        function togglePuntoServicio()
-        {
+        function togglePuntoServicio() {
             $('#SeccionDatosEmpresa').toggle();
         }
 
-        function toggleDocumentacionAdicional()
-        {
+        function toggleDocumentacionAdicional() {
             $("#grpDocumentacionAdicionalIdentificador").toggle();
             $("#grpRequiereDocumentacionAdicionalInscripcionObligatoria").toggle();
         }

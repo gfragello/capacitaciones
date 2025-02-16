@@ -3,7 +3,7 @@
 @using Cursos.Models.Enums;
 
 @{
-    ViewBag.Title = "Details";
+ViewBag.Title = "Details";
 }
 
 <div>
@@ -11,13 +11,38 @@
         <table>
             <tr>
                 <td style="padding-right: 10px">
-                    @if (Model.PathArchivo != null)
-                    {
-                        <a href="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto">
-                            <img src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
-                        </a>
+
+                    @{
+                        bool tieneFoto = false;
                     }
-                    else
+
+                    @if (Model.TipoAlmacenamientoFoto != null)
+                    {
+                        switch (Model.TipoAlmacenamientoFoto)
+                        {
+                            case TipoAlmacenamiento.FileSystem:
+                                if (Model.PathArchivo != null)
+                                {
+                                    tieneFoto = true;
+                                    <a href="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto">
+                                        <img src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
+                                    </a>
+                                }
+                                break;
+
+                            case TipoAlmacenamiento.BlobStorage:
+                                if (Model.BlobStorageUri != null)
+                                {
+                                    tieneFoto = true;
+                                    <a href="@Model.BlobStorageUri">
+                                        <img src="@Model.BlobStorageUri?width=150&height=150&mode=crop&anchor=top" alt="" />
+                                    </a>
+                                }
+                                break;
+                        }
+                    }
+
+                    @if (!tieneFoto)
                     {
                         <img src="~/images/sinfoto_150x150.png" alt="Sin foto asociada" />
                     }
