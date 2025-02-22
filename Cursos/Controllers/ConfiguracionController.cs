@@ -12,7 +12,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador")]
     public class ConfiguracionController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Configuracion
         public ActionResult Index()

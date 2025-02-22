@@ -139,61 +139,87 @@
         }
     }
 
-    @*Los usuarios con perfil InscripcionesExternas no tienen acceso al menú de opciones*@
+    @{
+        bool envioRealizado = Model.JornadaActasEnviadas != null && Model.JornadaActasEnviadas.Any();
+        // btn-success si existen envíos, btn-primary si no hay envíos.
+        string btnClass = envioRealizado ? "btn btn-success dropdown-toggle" : "btn btn-primary dropdown-toggle";
+    }
     @if (!HttpContext.Current.User.IsInRole("InscripcionesExternas"))
     {
-        <p style="vertical-align: middle;">
-            <a href="@Url.Action("Index") "><span class="glyphicon glyphicon-circle-arrow-left" style="font-size: 25px; color: #017d49"></span>&nbsp;Regresar</a>
-            &nbsp;&nbsp;&nbsp;
+        <div class="btn-group">
+            <a href="@Url.Action("Index")" class="btn btn-primary">
+                <span class="glyphicon glyphicon-circle-arrow-left"></span>&nbsp;Regresar
+            </a>
             @if (Model.RequiereAutorizacion)
             {
-                <a href="@Url.Action("ToggleAutorizada", new { id = Model.JornadaID })"><span class="@classAccionJornadaAutorizadas" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionJornadaAutorizadas</a>
-                @:&nbsp;&nbsp; &nbsp; &nbsp;
+                <a href="@Url.Action("ToggleAutorizada", new { id = Model.JornadaID })" class="btn btn-primary">
+                    <span class="@classAccionJornadaAutorizadas"></span>&nbsp;@textoAccionJornadaAutorizadas
+                </a>
             }
-            @if (Model.Autorizada == true)
+            @if (Model.Autorizada)
             {
-                <a href="@Url.Action("Details", new { id = Model.JornadaID, exportarExcel = true })"><span class="glyphicon glyphicon-share" style="font-size: 25px; color: #017d49"></span>&nbsp;Exportar a Excel</a>
-                @:&nbsp; &nbsp; &nbsp;
-                <a href="@Url.Action("Create", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-paperclip" style="font-size: 25px; color: #017d49"></span>&nbsp;Copiar capacitados a otra jornada</a>
-                @:&nbsp;&nbsp; &nbsp; &nbsp;
-                <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })"><span class="glyphicon glyphicon-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Generar Acta</a>
-                @:&nbsp;&nbsp; &nbsp; &nbsp;
-                if (Model.Curso.EnviarActaEmail)
-                {
-                    <a href="@Url.Action("Details", new { id = Model.JornadaID, enviarActaEmail = true })">
-                        <span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar Acta por Email
-                    </a>
-                    @:&nbsp;&nbsp; &nbsp; &nbsp;
-                }
-                <a href="@Url.Action("IngresarCalificaciones", new { id = Model.JornadaID })"><span class="glyphicon glyphicon-list-alt" style="font-size: 25px; color: #017d49"></span>&nbsp;Ingresar calificaciones</a>
-                @:&nbsp;&nbsp; &nbsp; &nbsp;
+                <a href="@Url.Action("Details", new { id = Model.JornadaID, exportarExcel = true })" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-share"></span>&nbsp;Exportar a Excel
+                </a>
+                <a href="@Url.Action("Create", new { id = Model.JornadaID })" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-paperclip"></span>&nbsp;Copiar capacitados a otra jornada
+                </a>
+                <a href="@Url.Action("IngresarCalificaciones", new { id = Model.JornadaID })" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-list-alt"></span>&nbsp;Ingresar calificaciones
+                </a>
                 if (Model.PermiteEnviosOVAL)
                 {
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                            OVAL
-                            <span class="caret"></span>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-globe"></span>&nbsp;OVAL <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li class="btnEnvioRegistrosOVALJornada" data-jornadaid="@Model.JornadaID.ToString()" style="cursor: pointer;"><a href="#">Enviar datos</a></li>
-                            <li><a href="@Url.Action("Details", new { id = Model.JornadaID, generarReporteOVAL = true })">Reporte de envíos</a></li>
+                            <li class="btnEnvioRegistrosOVALJornada" data-jornadaid="@Model.JornadaID" style="cursor: pointer;">
+                                <a href="#">
+                                    <span class="glyphicon glyphicon-arrow-right"></span>&nbsp;Enviar datos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("Details", new { id = Model.JornadaID, generarReporteOVAL = true })">
+                                    <span class="glyphicon glyphicon-file"></span>&nbsp;Reporte de envíos
+                                </a>
+                            </li>
                         </ul>
                     </div>
-                    <!--<span class="glyphicon glyphicon-transfer btnEnvioRegistrosOVALJornada" data-jornadaid="@Model.JornadaID.ToString()" style="font-size: 25px; color: #017d49; cursor: pointer;"></span>-->
-                    @*:&nbsp;&nbsp; &nbsp; &nbsp;*@
                 }
-                @*:&nbsp;&nbsp; &nbsp; &nbsp;
-                    <a href="@Url.Action("ToggleCuposDisponibles", new { id = Model.JornadaID })"><span class="@classAccionCuposDisponibles" style="font-size: 25px; color: #017d49"></span>&nbsp;@textoAccionCuposDisponibles</a>
-                *@
+                <div class="btn-group">
+                    <button type="button" class="@btnClass" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-file"></span>&nbsp;Acta <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li>
+                            <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })">
+                                <span class="glyphicon glyphicon-file"></span>&nbsp;Generar Acta
+                            </a>
+                        </li>
+                        @if (Model.Curso.EnviarActaEmail)
+                        {
+                            <li>
+                                <a href="@Url.Action("Details", new { id = Model.JornadaID, enviarActaEmail = true })">
+                                    <span class="glyphicon glyphicon-envelope"></span>&nbsp;Enviar Acta por Email
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="btnVerEnvios" data-jornadaid="@Model.JornadaID">
+                                    <span class="glyphicon glyphicon-eye-open"></span>&nbsp;Ver Envios
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
             }
-        </p>
-
+        </div>
         <hr />
     }
 
-</div>
 
-<br />
+
+</div>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -369,12 +395,31 @@ else
     </div>
 }
 
+<div id="modalVerEnvios" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Envios de Acta</h4>
+            </div>
+            <div class="modal-body">
+                <div id="divActasEnviadasContent">
+                    <!-- Aquí se cargará el contenido vía AJAX -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
 
     @Scripts.Render("~/Scripts/enviarOval.js")
     @Scripts.Render("~/Scripts/documentacionAdicional.js")
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
         //al cerrar la ventana modal, se recarga la página para actualizar los valores de la tabla
         $('#modalMensaje').on('hidden.bs.modal', function () {
@@ -576,5 +621,16 @@ else
                 $("#tabEnviosOVAL").load('@(Url.Action("ObtenerRegistrosCapacitacionOVAL", "Jornadas",null, Request.Url.Scheme))?jornadaId=' + @Model.JornadaID);
         }
 
-    </script>
+        $(document).on("click", "#btnVerEnvios", function(e) {
+            e.preventDefault();
+            var jornadaId = $(this).data("jornadaid");
+
+            // Cargar el partial view en el div del modal
+            $("#divActasEnviadasContent").load('@Url.Action("ObtenerActasEnviadas", "Jornadas")?jornadaId=' + jornadaId, function() {
+                // Mostrar el modal cuando se ha cargado el contenido
+                $("#modalVerEnvios").modal("show");
+            });
+        });
+
+</script>
 }

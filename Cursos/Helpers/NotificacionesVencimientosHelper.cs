@@ -11,7 +11,7 @@ namespace Cursos.Helpers
     {
         private readonly static NotificacionesVencimientosHelper _instance = new NotificacionesVencimientosHelper();
 
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public static NotificacionesVencimientosHelper GetInstance()
         {

@@ -18,7 +18,7 @@ namespace Cursos.Controllers
 {
     public class NotificacionesVencimientosController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: NotificacionesVencimientos
         public ActionResult Index(bool? reporteVencimientos)
@@ -352,7 +352,7 @@ namespace Cursos.Controllers
         //Antes de listar en pantalla los vencimientos, se le asocian la notificaciones a los registros que no la tienen
         private void ActualizarNotificacionesVencimientos()
         {
-            using (CursosDbContext db = new CursosDbContext())
+            using (ApplicationDbContext db = new ApplicationDbContext())
             {
 
                 var rcSinNotificacioneAsociadas =
@@ -416,7 +416,7 @@ namespace Cursos.Controllers
 
         private bool VerificarCursoYaActualizado(RegistroCapacitacion registroAnalizado)
         {
-            using (CursosDbContext db = new CursosDbContext())
+            using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 Capacitado c = db.Capacitados.Where(cap => cap.CapacitadoID == registroAnalizado.CapacitadoID).Include(cap => cap.RegistrosCapacitacion).FirstOrDefault(); //Find(registroAnalizado.CapacitadoID);
 
@@ -438,7 +438,7 @@ namespace Cursos.Controllers
             List<int> jornadasVencidasId = null;
 
             //se obtienen los Ids de las notificaciones que están por vencer
-            using (CursosDbContext db = new CursosDbContext())
+            using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 var notificacionVencimientos = db.NotificacionVencimientos
                                                  .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
@@ -453,7 +453,7 @@ namespace Cursos.Controllers
 
             foreach (var jornadaVencidaId in jornadasVencidasId)
             {
-                using (CursosDbContext db = new CursosDbContext())
+                using (ApplicationDbContext db = new ApplicationDbContext())
                 {
                     var jornadaVencida = db.Jornada.Find(jornadaVencidaId);
                     //var capacitado = db.Capacitados.Find(capacitadosIds[i]);

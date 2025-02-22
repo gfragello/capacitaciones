@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Cursos.Models.JornadaActaEnviada>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Destino</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var registro in Model)
+        {
+            <tr>
+                <td>@registro.FechaHoraEnvio.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@registro.UsuarioEnvio</td>
+                <td>@registro.MailDestinoEnvio</td>
+            </tr>
+        }
+    </tbody>
+</table>

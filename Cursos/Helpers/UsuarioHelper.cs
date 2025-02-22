@@ -11,7 +11,7 @@ namespace Cursos.Helpers
         private static UsuarioHelper instance = null;
 
         private ApplicationDbContext db = new ApplicationDbContext();
-        private CursosDbContext dbcursos = new CursosDbContext();
+        private ApplicationDbContext dbcursos = new ApplicationDbContext();
 
         private UsuarioHelper() { }
 

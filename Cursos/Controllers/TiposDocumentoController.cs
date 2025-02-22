@@ -13,7 +13,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador")]
     public class TiposDocumentoController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: TiposDocumento
         public ActionResult Index()

@@ -25,7 +25,7 @@ namespace Cursos.Helpers.EnvioOVAL
             return _instance;
         }
 
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public RespuestaOVAL EnviarDatosRegistro(RegistroCapacitacion r)
         {
@@ -297,7 +297,7 @@ namespace Cursos.Helpers.EnvioOVAL
         public bool EnviarDatosRegistroOVAL(int registroCapacitacionId, ref int totalAceptados, ref int totalRechazados)
         {
             //se inicializa nuevamente el db context para evitar que se lean datos cacheados
-            db = new CursosDbContext();
+            db = new ApplicationDbContext();
             var registroCapacitacion = db.RegistroCapacitacion.Where(r => r.RegistroCapacitacionID == registroCapacitacionId).FirstOrDefault();
 
             if (registroCapacitacion != null)

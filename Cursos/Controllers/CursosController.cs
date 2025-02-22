@@ -13,7 +13,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador")]
     public class CursosController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Cursos
         public ActionResult Index()
@@ -55,10 +55,15 @@ namespace Cursos.Controllers
         // To protect from overposting attacks, por favor habilita las propiedades específicas que quieres enlazar.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
         {
             if (ModelState.IsValid)
             {
+                if (curso.VigenciaHastaFinAnio)
+                {
+                    curso.Vigencia = 0;
+                }
+
                 // Si no se permite el envío de OVAL, se debe limpiar el PuntoServicioId
                 if (!curso.PermiteEnviosOVAL)
                     curso.PuntoServicioId = null;
@@ -101,7 +106,7 @@ namespace Cursos.Controllers
         // POST: Cursos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
         {
             if (ModelState.IsValid)
             {
@@ -114,6 +119,11 @@ namespace Cursos.Controllers
                 {
                     curso.ActaEmail = null;
                     curso.ActaEmailCuerpo = null; // Se asegura que se limpie ActaEmailCuerpo
+                }
+
+                if (curso.VigenciaHastaFinAnio)
+                {
+                    curso.Vigencia = 0;
                 }
 
                 db.Entry(curso).State = EntityState.Modified;

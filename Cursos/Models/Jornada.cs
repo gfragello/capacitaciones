@@ -11,6 +11,11 @@ namespace Cursos.Models
 {
     public class Jornada : ElementoAccesoControlado
     {
+        public Jornada()
+        {
+            JornadaActasEnviadas = new HashSet<JornadaActaEnviada>();
+        }
+
         public int JornadaID { get; set; }
 
         [Required(ErrorMessage = "Debe ingresar la fecha del curso")]
@@ -145,6 +150,8 @@ namespace Cursos.Models
 
         [Display(Name = "Permite envíos OVAL")]
         public bool PermiteEnviosOVAL { get; set; }
+
+        public virtual ICollection<JornadaActaEnviada> JornadaActasEnviadas { get; set; }
 
         public void IniciarAtributosAutorizacion(bool requiereAutorizacion)
         {
@@ -491,19 +498,16 @@ namespace Cursos.Models
         }
 
         //hay un error en esta función cuando this.Fecha es 29 de febrero
-        public DateTime ObtenerFechaVencimiento(bool copiaJornada = false)
+        public DateTime ObtenerFechaVencimiento()
         {
-            //Tener en cuenta que al usar esta función desde la funcionalidad Copiar Jornada, this.Curso no estará instanciado
-            int aniosIncremento = copiaJornada ? 3 : (this.CursoId == 2 ? 0 : this.Curso.Vigencia);
-            int targetYear = this.Fecha.Year + aniosIncremento;
-            int targetMonth = this.Fecha.Month;
-            int targetDay = this.Fecha.Day;
-
-            //TODO: hacer que esto sea configurable, que se pueda especificar en el curso que vence el último día del año
-            if (this.CursoId == 2)
-                return new DateTime(targetYear, 12, 31);
-            else //para el resto de los cursos
+            if (this.Curso.VigenciaHastaFinAnio)
+                return new DateTime(this.Fecha.Year, 12, 31);
+            else //para los cursos que tengan especificada una vigencia en años
             {
+                int targetYear = this.Fecha.Year + this.Curso.Vigencia;
+                int targetMonth = this.Fecha.Month;
+                int targetDay = this.Fecha.Day;
+
                 // Especialmente manejar 29 de febrero
                 if (targetMonth == 2 && targetDay == 29)
                 {
@@ -514,10 +518,10 @@ namespace Cursos.Models
                         targetDay = 28;
                     }
                 }
-            }
 
-            // Retornar la fecha de vencimiento calculada
-            return new DateTime(targetYear, targetMonth, targetDay);
+                // Retornar la fecha de vencimiento calculada
+                return new DateTime(targetYear, targetMonth, targetDay);
+            }
         }
 
         public void ToggleAutorizada()

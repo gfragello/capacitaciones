@@ -14,7 +14,7 @@ namespace Cursos.Helpers
         //se implementa el patron singleton
         private readonly static ArchivosFSHelper _instance = new ArchivosFSHelper();
 
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         public static ArchivosFSHelper GetInstance()
         {

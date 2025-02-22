@@ -20,7 +20,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas,InstructorExterno")]
     public class RegistrosCapacitacionController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: RegistrosCapacitacion
         public ActionResult Index(int? currentCursoID, int? cursoID,
@@ -437,7 +437,8 @@ namespace Cursos.Controllers
 
         private DateTime CalcularFechaVencimiento(int JornadaId)
         {
-            return db.Jornada.Find(JornadaId).ObtenerFechaVencimiento();
+            var jornada = db.Jornada.Where(j => j.JornadaID == JornadaId).Include(j => j.Curso).FirstOrDefault();
+            return jornada.ObtenerFechaVencimiento();
         }
 
         protected override void Dispose(bool disposing)

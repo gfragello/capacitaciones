@@ -28,7 +28,6 @@ namespace Cursos.Controllers
         private ApplicationUserManager _userManager;
 
         private ApplicationDbContext db = new ApplicationDbContext();
-        private CursosDbContext dbcursos = new CursosDbContext();
 
         public AccountController()
         {
@@ -82,7 +81,7 @@ namespace Cursos.Controllers
             rolesDD.Insert(0, new IdentityRole { Id = string.Empty, Name = "Todas" } );
             ViewBag.RoleId = new SelectList(rolesDD, "Id", "Name", RoleId);
 
-            List<Empresa> empresasDD = dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList();
+            List<Empresa> empresasDD = db.Empresas.OrderBy(e => e.NombreFantasia).ToList();
             empresasDD.Insert(0, new Empresa { EmpresaID = -1, NombreFantasia = "Todas" });
             ViewBag.EmpresaID = new SelectList(empresasDD, "EmpresaID", "NombreFantasia", EmpresaID);
 
@@ -93,7 +92,7 @@ namespace Cursos.Controllers
             {
                 var usuariosEmpresa = new List<String>();
 
-                foreach (var empresaUsuario in dbcursos.EmpresasUsuarios.Where(eu => eu.EmpresaID == EmpresaID))
+                foreach (var empresaUsuario in db.EmpresasUsuarios.Where(eu => eu.EmpresaID == EmpresaID))
                 {
                     usuariosEmpresa.Add(empresaUsuario.Usuario);
                 }
@@ -138,14 +137,14 @@ namespace Cursos.Controllers
             ViewBag.RoleName = new SelectList(db.Roles.OrderBy(r => r.Name).ToList(), "Name", "Name", rolActual);
 
             if (rolActual == "ConsultaEmpresa")
-                ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(usuario.UserName).EmpresaID);
+                ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(usuario.UserName).EmpresaID);
             else
-                ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
+                ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
 
             if (rolActual == "InstructorExterno")
-                ViewBag.InstructorID = new SelectList(dbcursos.Instructores.Where(i => i.Activo).OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre", UsuarioHelper.GetInstance().ObtenerInstructorAsociado(usuario.UserName).InstructorID);
+                ViewBag.InstructorID = new SelectList(db.Instructores.Where(i => i.Activo).OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre", UsuarioHelper.GetInstance().ObtenerInstructorAsociado(usuario.UserName).InstructorID);
             else
-                ViewBag.InstructorID = new SelectList(dbcursos.Instructores.Where(i => i.Activo).OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre");
+                ViewBag.InstructorID = new SelectList(db.Instructores.Where(i => i.Activo).OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre");
 
             ViewBag.PermitirInscripcionesExternas = false;
 
@@ -172,8 +171,8 @@ namespace Cursos.Controllers
         {
             string id = Request["Id"];
             string roleNameEditado = Request["RoleName"];
-            Empresa empresaEditada = dbcursos.Empresas.Find(int.Parse(Request["EmpresaID"]));
-            Instructor instructorEditado = dbcursos.Instructores.Find(int.Parse(Request["InstructorID"]));
+            Empresa empresaEditada = db.Empresas.Find(int.Parse(Request["EmpresaID"]));
+            Instructor instructorEditado = db.Instructores.Find(int.Parse(Request["InstructorID"]));
 
             //https://blog.productiveedge.com/asp-net-mvc-checkboxfor-explained
             bool permitirInscripcionesExternas = Request["PermitirInscripcionesExternas"].Contains("true") ? true : false;
@@ -185,6 +184,13 @@ namespace Cursos.Controllers
             string roleNameActual = UsuarioHelper.GetInstance().ObtenerRoleName(usuario.Roles.ElementAt(0).RoleId);
             var empresaActual = UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(usuario.UserName);
             var instructorActual = UsuarioHelper.GetInstance().ObtenerInstructorAsociado(usuario.UserName);
+
+            // Obtención del valor del checkbox
+            bool hasSignatureFooter = Request["HasSignatureFooter"] != null && Request["HasSignatureFooter"].Contains("true");
+            usuario.HasSignatureFooter = hasSignatureFooter;
+
+            // Si no se marca, se limpia el campo de la firma
+            usuario.SignatureFooter = hasSignatureFooter ? Request.Unvalidated["SignatureFooter"] : null;
 
             bool quitarAsociacionEmpresa = false;
             bool quitarAsociacionInstructor = false;
@@ -246,7 +252,7 @@ namespace Cursos.Controllers
                 if (instructorActualID != instructorEditadoID)
                     this.AsociarUsuarioAInstructor(instructorEditadoID, usuario.UserName);
 
-            dbcursos.SaveChanges();
+            db.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -408,8 +414,8 @@ namespace Cursos.Controllers
         public ActionResult Register()
         {
             ViewBag.RoleName = new SelectList(db.Roles.OrderBy(r => r.Name).ToList(), "Name", "Name");
-            ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
-            ViewBag.InstructorID = new SelectList(dbcursos.Instructores.OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre");
+            ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia");
+            ViewBag.InstructorID = new SelectList(db.Instructores.OrderBy(i => i.Apellido).OrderBy(i => i.Nombre).ToList(), "InstructorID", "ApellidoNombre");
 
             return View();
         }
@@ -423,8 +429,16 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser 
+                { 
+                    UserName = model.Email, 
+                    Email = model.Email, 
+                    HasSignatureFooter = model.HasSignatureFooter, 
+                    SignatureFooter = model.HasSignatureFooter ? model.SignatureFooter : null 
+                };
+                
                 var result = await UserManager.CreateAsync(user, model.Password);
+                
                 if (result.Succeeded)
                 {
                     //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
@@ -450,7 +464,7 @@ namespace Cursos.Controllers
                 }
 
                 ViewBag.RoleName = new SelectList(db.Roles.ToList(), "Name", "Name");
-                ViewBag.EmpresaID = new SelectList(dbcursos.Empresas.ToList(), "EmpresaID", "NombreFantasia");
+                ViewBag.EmpresaID = new SelectList(db.Empresas.ToList(), "EmpresaID", "NombreFantasia");
 
                 AddErrors(result);
             }
@@ -824,30 +838,30 @@ namespace Cursos.Controllers
         {
             EmpresaUsuario eu = new EmpresaUsuario { Usuario = usuario };
 
-            dbcursos.Empresas.Find(empresaID).Usuarios.Add(eu);
-            dbcursos.SaveChanges();
+            db.Empresas.Find(empresaID).Usuarios.Add(eu);
+            db.SaveChanges();
         }
 
         private void RemoverAsociacionUsuarioAEmpresa(string usuario)
         {
-            var eu = dbcursos.EmpresasUsuarios.Where(eus => eus.Usuario == usuario).FirstOrDefault();
-            dbcursos.EmpresasUsuarios.Remove(eu);
-            dbcursos.SaveChanges();
+            var eu = db.EmpresasUsuarios.Where(eus => eus.Usuario == usuario).FirstOrDefault();
+            db.EmpresasUsuarios.Remove(eu);
+            db.SaveChanges();
         }
 
         private void AsociarUsuarioAInstructor(int instructorID, string usuario)
         {
             InstructorUsuario iu = new InstructorUsuario { Usuario = usuario };
 
-            dbcursos.Instructores.Find(instructorID).Usuarios.Add(iu);
-            dbcursos.SaveChanges();
+            db.Instructores.Find(instructorID).Usuarios.Add(iu);
+            db.SaveChanges();
         }
 
         private void RemoverAsociacionUsuarioInstructor(string usuario)
         {
-            var iu = dbcursos.InstructoresUsuarios.Where(ius => ius.Usuario == usuario).FirstOrDefault();
-            dbcursos.InstructoresUsuarios.Remove(iu);
-            dbcursos.SaveChanges();
+            var iu = db.InstructoresUsuarios.Where(ius => ius.Usuario == usuario).FirstOrDefault();
+            db.InstructoresUsuarios.Remove(iu);
+            db.SaveChanges();
         }
 
         private ActionResult ExportDataExcel(List<ApplicationUser> usuarios)

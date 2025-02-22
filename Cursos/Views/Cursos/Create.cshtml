@@ -45,9 +45,17 @@
     </div>
 
     <div class="form-group">
+        @Html.LabelFor(model => model.VigenciaHastaFinAnio, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.CheckBoxFor(model => model.VigenciaHastaFinAnio, new { id = "VigenciaHastaFinAnio" })
+            @Html.ValidationMessageFor(model => model.VigenciaHastaFinAnio, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="divVigencia">
         @Html.LabelFor(model => model.Vigencia, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.EditorFor(model => model.Vigencia, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.EditorFor(model => model.Vigencia, new { htmlAttributes = new { @class = "form-control", id = "Vigencia" } })
             @Html.ValidationMessageFor(model => model.Vigencia, "", new { @class = "text-danger" })
         </div>
     </div>
@@ -275,6 +283,9 @@
 
             // Mostrar/ocultar contenedor de ActaEmail al cargar la página
             toggleActaEmailFields();
+
+            toggleVigenciaHastaFinAnio();
+            $('#VigenciaHastaFinAnio').change(toggleVigenciaHastaFinAnio);
         });
 
         function toggleActaEmailFields() {
@@ -337,6 +348,17 @@
         function toggleDocumentacionAdicional() {
             $("#grpDocumentacionAdicionalIdentificador").toggle();
             $("#grpRequiereDocumentacionAdicionalInscripcionObligatoria").toggle();
+        }
+
+        function toggleVigenciaHastaFinAnio() {
+            if ($('#VigenciaHastaFinAnio').is(':checked')) {
+                // Ocultar el campo Vigencia y setearlo a 0
+                $('#divVigencia').hide();
+                $('#Vigencia').val("0");
+            } else {
+                // Mostrar el campo Vigencia
+                $('#divVigencia').show();
+            }
         }
 
     </script>

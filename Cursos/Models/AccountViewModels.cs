@@ -83,6 +83,12 @@ namespace Cursos.Models
         [Required]
         public string RoleName { get; set; }
 
+        [Display(Name = "Tiene pie de firma")]
+        public bool HasSignatureFooter { get; set; }
+
+        [Display(Name = "Pie de firma")]
+        public string SignatureFooter { get; set; }
+
         public int EmpresaID { get; set; }
 
         public int InstructorID { get; set; }

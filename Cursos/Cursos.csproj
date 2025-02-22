@@ -595,6 +595,18 @@
     <Compile Include="Migrations\202502111156525_MensajesUsuarios.Designer.cs">
       <DependentUpon>202502111156525_MensajesUsuarios.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502181232555_UnificarContextos.cs" />
+    <Compile Include="Migrations\202502181232555_UnificarContextos.Designer.cs">
+      <DependentUpon>202502181232555_UnificarContextos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502191705597_JornadaActaEnviada.cs" />
+    <Compile Include="Migrations\202502191705597_JornadaActaEnviada.Designer.cs">
+      <DependentUpon>202502191705597_JornadaActaEnviada.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202502211650014_Curso_VigenciaHastaFinAnio.cs" />
+    <Compile Include="Migrations\202502211650014_Curso_VigenciaHastaFinAnio.Designer.cs">
+      <DependentUpon>202502211650014_Curso_VigenciaHastaFinAnio.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -602,7 +614,6 @@
     <Compile Include="Models\CIValidator.cs" />
     <Compile Include="Models\Configuracion.cs" />
     <Compile Include="Models\Curso.cs" />
-    <Compile Include="Models\CursosDbContext.cs" />
     <Compile Include="Models\Departamento.cs" />
     <Compile Include="Models\ElementoAccesoControlado.cs" />
     <Compile Include="Models\Empresa.cs" />
@@ -618,6 +629,7 @@
     <Compile Include="Models\Instructor.cs" />
     <Compile Include="Models\InstructorUsuario.cs" />
     <Compile Include="Models\Jornada.cs" />
+    <Compile Include="Models\JornadaActaEnviada.cs" />
     <Compile Include="Models\Lugar.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\MensajeUsuario.cs" />
@@ -791,6 +803,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502111156525_MensajesUsuarios.resx">
       <DependentUpon>202502111156525_MensajesUsuarios.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502181232555_UnificarContextos.resx">
+      <DependentUpon>202502181232555_UnificarContextos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502191705597_JornadaActaEnviada.resx">
+      <DependentUpon>202502191705597_JornadaActaEnviada.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502211650014_Curso_VigenciaHastaFinAnio.resx">
+      <DependentUpon>202502211650014_Curso_VigenciaHastaFinAnio.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
@@ -967,6 +988,7 @@
     <Content Include="Views\Shared\_ArchivoFechaHoraPartial.cshtml" />
     <Content Include="Views\Jornadas\UltimasCargarFotos.cshtml" />
     <Content Include="Views\MensajesUsuarios\Edit.cshtml" />
+    <Content Include="Views\Jornadas\_ListJornadaActasEnviadasPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

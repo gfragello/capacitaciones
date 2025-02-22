@@ -18,7 +18,7 @@ namespace Cursos.Helpers
 
         public string GetValue(string Index, string Seccion)
         {
-            using (CursosDbContext db = new CursosDbContext())
+            using (ApplicationDbContext db = new ApplicationDbContext())
             {
                 var conf = db.Configuracion.Where(c => c.Index == Index && c.Seccion == Seccion).FirstOrDefault();
 

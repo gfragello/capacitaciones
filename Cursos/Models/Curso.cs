@@ -43,6 +43,9 @@ namespace Cursos.Models
         [Required(ErrorMessage = "Debe ingresar los {0} del curso")]
         public int Vigencia { get; set; }
 
+        [Display(Name = "Vigencia hasta fin de año")]
+        public bool VigenciaHastaFinAnio { get; set; }
+
         [Required(ErrorMessage = "Debe ingresar el módulo del curso")]
         public string Modulo { get; set; }
 

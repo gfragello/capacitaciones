@@ -56,14 +56,33 @@
             </div>
         </div>
 
+        <div class="form-group">
+            @Html.LabelFor(model => model.HasSignatureFooter, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.HasSignatureFooter, new { htmlAttributes = new { @onclick = "toggleSignatureFooterFields();" } })
+                    @Html.ValidationMessageFor(model => model.HasSignatureFooter, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
 
+        @{ var estiloSignature = Model.HasSignatureFooter ? "display:block" : "display:none"; }
+        <div id="signatureFooterContainer" class="form-group" style="@estiloSignature; border: 1px solid #ccc; border-radius: 10px; padding: 15px; background-color: #f8f9fa;">
+            <div class="form-group">
+                @Html.LabelFor(model => model.SignatureFooter, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.SignatureFooter, new { @class = "form-control", id = "SignatureFooter" })
+                    @Html.ValidationMessageFor(model => model.SignatureFooter, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </div>
-        
+
     </div>
 }
 
@@ -72,28 +91,52 @@
 </div>
 
 @section Scripts {
+
     @Scripts.Render("~/bundles/jqueryval")
 
-<script>
-    $(function () {
-        $('#RoleName').change(function () {
-            var value = $(this).val();
-            if (value == 'ConsultaEmpresa') {
-                $('#SeccionDatosEmpresa').show();
-                $('#SeccionPermitirInscripcionesExternas').show();
-            } else {
-                $('#SeccionDatosEmpresa').hide();
-                $('#SeccionPermitirInscripcionesExternas').hide();
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.js"></script>
 
-                $("#PermitirInscripcionesExternas").prop("checked", false);
-            }
-
-            if (value == 'InstructorExterno') {
-                $('#SeccionDatosInstructor').show();
-            } else {
-                $('#SeccionDatosInstructor').hide();
-            }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#SignatureFooter').summernote({
+                height: 300,
+                placeholder: 'Pie de firma...',
+                tabsize: 2
+            });
+            toggleSignatureFooterFields();
         });
-    })
-</script>
+
+        function toggleSignatureFooterFields() {
+            if ($('#HasSignatureFooter').is(':checked')) {
+                $('#signatureFooterContainer').show();
+            } else {
+                $('#signatureFooterContainer').hide();
+                if ($('#SignatureFooter').summernote) {
+                    $('#SignatureFooter').summernote('reset');
+                }
+                $('#SignatureFooter').val('');
+            }
+        }
+        $(function () {
+            $('#RoleName').change(function () {
+                var value = $(this).val();
+                if (value == 'ConsultaEmpresa') {
+                    $('#SeccionDatosEmpresa').show();
+                    $('#SeccionPermitirInscripcionesExternas').show();
+                } else {
+                    $('#SeccionDatosEmpresa').hide();
+                    $('#SeccionPermitirInscripcionesExternas').hide();
+
+                    $("#PermitirInscripcionesExternas").prop("checked", false);
+                }
+
+                if (value == 'InstructorExterno') {
+                    $('#SeccionDatosInstructor').show();
+                } else {
+                    $('#SeccionDatosInstructor').hide();
+                }
+            });
+        })
+    </script>
 }

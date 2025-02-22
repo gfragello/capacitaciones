@@ -18,7 +18,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador,InscripcionesExternas,InstructorExterno")]
     public class CustomToolsController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
         private ValidationHelper validationHelper = ValidationHelper.GetInstance();
 
         const string module = "customTools";

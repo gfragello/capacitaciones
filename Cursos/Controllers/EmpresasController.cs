@@ -17,7 +17,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador,AdministradorExterno")]
     public class EmpresasController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Empresas
         public ActionResult Index(string currentNombreFantasia, string nombreFantasia,

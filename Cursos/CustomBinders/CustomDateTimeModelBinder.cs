@@ -10,7 +10,7 @@ namespace Cursos.CustomBinders
 {
     public class CustomDateTimeModelBinder : System.Web.Mvc.DefaultModelBinder
     {
-        Cursos.Models.CursosDbContext db = new Models.CursosDbContext();
+        Cursos.Models.ApplicationDbContext db = new Models.ApplicationDbContext();
 
         public override object BindModel(ControllerContext controllerContext, System.Web.Mvc.ModelBindingContext bindingContext)
         {

@@ -9,7 +9,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador")]
     public class MensajesUsuariosController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: MensajesUsuarios/Edit
         public ActionResult Edit()

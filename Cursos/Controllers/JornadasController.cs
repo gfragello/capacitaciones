@@ -23,7 +23,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador,AdministradorExterno,InscripcionesExternas,InstructorExterno")]
     public class JornadasController : BaseController
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Jornadas
         public ActionResult Index(int? currentCursoID, int? CursoID,
@@ -265,11 +265,13 @@ namespace Cursos.Controllers
                 jornada.SetearAtributosControl();
 
                 Curso c = db.Cursos.Find(jornada.CursoId);
+                jornada.Curso = c;
+
                 jornada.IniciarAtributosAutorizacion(c.RequiereAutorizacion);
 
                 if (JornadaTemplateId != null)
                 {
-                    Jornada jornadaTemplate = db.Jornada.Find(JornadaTemplateId);
+                    Jornada jornadaTemplate = db.Jornada.Include(j => j.Curso).FirstOrDefault(j => j.JornadaID == JornadaTemplateId);
 
                     if (jornadaTemplate == null)
                         return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -283,7 +285,7 @@ namespace Cursos.Controllers
                         nuevoRC.Capacitado = rc.Capacitado;
                         nuevoRC.Nota = 0;
                         nuevoRC.Aprobado = true;
-                        nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento(true);
+                        nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento();
 
                         if (jornada.PermiteEnviosOVAL)
                             nuevoRC.EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio;
@@ -507,7 +509,7 @@ namespace Cursos.Controllers
 
         public ActionResult AgregarRegistroCapacitacion(int jornadaId, int capacitadoId)
         {
-            var jornada = db.Jornada.Find(jornadaId);
+            var jornada = db.Jornada.Where(j => j.JornadaID == jornadaId).Include(j => j.Curso).FirstOrDefault();
             var capacitado = db.Capacitados.Find(capacitadoId);
 
             if (jornada == null || capacitado == null)
@@ -1270,5 +1272,20 @@ namespace Cursos.Controllers
 
             return View(viewModel);
         }
+
+        public ActionResult ObtenerActasEnviadas(int jornadaId)
+        {
+            var jornada = db.Jornada.Include("JornadaActasEnviadas")
+                                    .FirstOrDefault(j => j.JornadaID == jornadaId);
+            if (jornada == null)
+                return HttpNotFound();
+
+            var enviosOrdenados = jornada.JornadaActasEnviadas
+                                          .OrderByDescending(ja => ja.FechaHoraEnvio)
+                                          .ToList();
+
+            return PartialView("_ListJornadaActasEnviadasPartial", enviosOrdenados);
+        }
+
     }
 }

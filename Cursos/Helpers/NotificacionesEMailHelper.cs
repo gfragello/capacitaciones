@@ -203,6 +203,8 @@ namespace Cursos.Helpers
 
         public bool EnviarEmailJornadaActa(Jornada jornada)
         {
+            ApplicationDbContext db = new ApplicationDbContext();
+
             if (jornada != null && jornada.Curso != null)
             {
                 var message = new MailMessage();
@@ -222,9 +224,17 @@ namespace Cursos.Helpers
                 // Asunto del correo
                 message.Subject = string.Format("Acta de la Jornada {0} - {1}", jornada.Curso.Descripcion, jornada.Fecha.ToShortDateString());
 
-                // Cuerpo del correo
-                message.Body = jornada.Curso.ActaEmailCuerpo;
+                // Cuerpo del correo: se parte del cuerpo base del curso
+                string body = jornada.Curso.ActaEmailCuerpo;
 
+                // Recuperar el usuario logueado y, si tiene firma, concatenarla
+                var usuarioLogueado = db.Users.FirstOrDefault(u => u.UserName == HttpContext.Current.User.Identity.Name);
+                if (usuarioLogueado != null && usuarioLogueado.HasSignatureFooter &&
+                    !string.IsNullOrEmpty(usuarioLogueado.SignatureFooter))
+                {
+                    body += "<br/>" + usuarioLogueado.SignatureFooter;
+                }
+                message.Body = body;
                 message.IsBodyHtml = true;
 
                 // Adjuntar el archivo del acta generado por GenerarJornadaExcelStream
@@ -232,7 +242,8 @@ namespace Cursos.Helpers
                 if (stream != null)
                 {
                     stream.Position = 0; // Asegurarse de que el stream esté al inicio
-                    var attachment = new Attachment(stream, $"{jornada.JornadaIdentificacionCompleta}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    var attachment = new Attachment(stream, $"{jornada.JornadaIdentificacionCompleta}.xlsx",
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                     message.Attachments.Add(attachment);
                 }
                 else
@@ -257,6 +268,18 @@ namespace Cursos.Helpers
                     try
                     {
                         smtp.Send(message);
+
+                        // Registrar el envío del acta
+                        var registroEnvio = new JornadaActaEnviada
+                        {
+                            JornadaID = jornada.JornadaID,
+                            UsuarioEnvio = HttpContext.Current.User.Identity.Name,
+                            FechaHoraEnvio = DateTime.Now,
+                            MailDestinoEnvio = jornada.Curso.ActaEmail // Si hay múltiples, podrías concatenarlos
+                        };
+                        db.JornadaActasEnviadas.Add(registroEnvio);
+                        db.SaveChanges();
+
                         return true;
                     }
                     catch (Exception)

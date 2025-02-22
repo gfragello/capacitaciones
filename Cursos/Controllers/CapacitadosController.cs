@@ -22,7 +22,7 @@ namespace Cursos.Controllers
     public class CapacitadosController : BaseController //Hereda de BaseController (en lugar de Controller) porque algunos view requieren se en multi-idioma
                                                         //En BaseController se setea el lenguage en SetCurrentCultureOnThread
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Capacitados
         [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InscripcionesExternas")]
@@ -300,7 +300,7 @@ namespace Cursos.Controllers
                 //si durante la cración se recibe un id de jornada, el capacitado es agregado a esa jornada
                 if (jornadaId != null)
                 {
-                    Jornada j = db.Jornada.Find(jornadaId);
+                    Jornada j = db.Jornada.Where(jor => jor.JornadaID == jornadaId).Include(jor => jor.Curso).FirstOrDefault();
 
                     if (j == null)
                         return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -315,7 +315,7 @@ namespace Cursos.Controllers
                     nuevoRC.Capacitado = capacitado;
                     nuevoRC.Nota = 0;
                     nuevoRC.Aprobado = true;
-                    nuevoRC.FechaVencimiento = j.ObtenerFechaVencimiento(true);
+                    nuevoRC.FechaVencimiento = j.ObtenerFechaVencimiento();
 
                     if (j.PermiteEnviosOVAL)
                         nuevoRC.EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio;

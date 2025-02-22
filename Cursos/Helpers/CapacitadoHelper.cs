@@ -16,7 +16,7 @@ namespace Cursos.Helpers
             return _instance;
         }
 
-        public bool CambiarExtensionFotoAJPG(Capacitado c, CursosDbContext dbContext)
+        public bool CambiarExtensionFotoAJPG(Capacitado c, ApplicationDbContext dbContext)
         {
             //var capacitado = db.Capacitados.Where(c => c.CapacitadoID == CapacitadoID).;
             var pathArchivo = dbContext.PathArchivos.Find(c.PathArchivoID);

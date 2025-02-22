@@ -13,7 +13,7 @@ namespace Cursos.Controllers
     [Authorize(Roles = "Administrador")]
     public class LugaresController : Controller
     {
-        private CursosDbContext db = new CursosDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Lugares
         public ActionResult Index()
