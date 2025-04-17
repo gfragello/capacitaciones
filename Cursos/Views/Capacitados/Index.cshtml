@@ -1,4 +1,4 @@
-﻿@model PagedList.IPagedList<Cursos.Models.Capacitado>
+@model PagedList.IPagedList<Cursos.Models.Capacitado>
 @using PagedList.Mvc;
 @using Cursos.Helpers;
 <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
@@ -7,105 +7,94 @@
     ViewBag.Title = "Capacitados";
 }
 
-@*
-<table>
-    <tr>
-        <td><h3>Capacitados</h3> </td>
-        <td><a href="@Url.Action("Create") "><img src="@Url.Content("~/images/capacitados.png")" /></a></td>
-        <td>@Html.ActionLink("Create New", "Create")</td>
-    </tr>
-</table>
-*@
+<h2>Capacitados</h2>
 
-<h4>Capacitados</h4>
+<div class="mb-3">
+    <div class="btn-group" role="group">
+        @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
+        {
+            @Html.ActionLink("Crear nuevo", "Create", null, new { @class = "btn btn-primary" })
+        }
+        @Html.ActionLink("Exportar a Excel", "Index",
+            new
+                 {
+                currentNombre = ViewBag.CurrentNombre,
+                currentApellido = ViewBag.CurrentApellido,
+                currentEmpresaID = ViewBag.CurrentEmpresaID,
+                currentCursoID = ViewBag.CurrentCursoID,
+                exportarExcel = true
+            },
+            new { @class = "btn btn-primary" })
+    </div>
+</div>
 
-<p>
-    @if (User.IsInRole("Administrador") || User.IsInRole("AdministradorExterno"))
-    {
-        @Html.ActionLink("Crear nuevo", "Create")
-        @:&nbsp;&nbsp;
-    }
-    @Html.ActionLink("Exportar a Excel", "Index", new { currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID, exportarExcel = true })
-</p>
-
-<hr />
-
-@using (Html.BeginForm())
-{
-    <table>
-        <tr>
-            <td>
-
-                <div class="form-inline" style="margin:5px 3px;">
-
-                    <div class="form-group">
-                        <div class="col-md-5">
-                            @Html.Label(Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblDocumento")):
-                        </div>
-                        <div class="col-md-10">
-                            @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-5">
-                            @Html.Label(Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblNombre")):
-                        </div>
-                        <div class="col-md-10">
-                            @Html.TextBox("nombre", ViewBag.CurrentNombre as string , new { htmlAttributes = new { @class = "form-control" } })
+<div class="card mb-4">
+    <div class="card-header bg-light">
+        <a href="javascript:void(0);" class="filter-toggle" id="toggleFilters">
+            Ocultar Filtros
+        </a>
+    </div>
+    <div id="filterContent">
+        <div class="card-body">
+            @using (Html.BeginForm())
+            {
+                <div class="row">
+                    <!-- Primera fila: Documento, Nombre, Apellido -->
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label>@Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblDocumento"):</label>
+                            @Html.TextBox("documento", "", new { @class = "form-control" })
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <div class="col-md-5">
-                            @Html.Label(Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblApellido")):
-                        </div>
-                        <div class="col-md-10">
-                            @Html.TextBox("apellido", ViewBag.CurrentApellido as string, new { htmlAttributes = new { @class = "form-control" } })
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label>@Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblNombre"):</label>
+                            @Html.TextBox("nombre", ViewBag.CurrentNombre as string, new { @class = "form-control" })
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <div class="col-md-5">
-                            @Html.Label(Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblEmpresa")):
-                        </div>
-                        <div class="col-md-10">
-                            @Html.DropDownList("EmpresaID", null, htmlAttributes: new { @class = "form-control" })
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label>@Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblApellido"):</label>
+                            @Html.TextBox("apellido", ViewBag.CurrentApellido as string, new { @class = "form-control" })
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <div class="col-md-5">
-                            @Html.Label(Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblCurso")):
+                    <!-- Segunda fila: Empresa, Curso, Botones -->
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label>@Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblEmpresa"):</label>
+                            @Html.DropDownList("EmpresaID", null, new { @class = "form-control" })
                         </div>
-                        <div class="col-md-10">
-                            @Html.DropDownList("CursoID", null, htmlAttributes: new { @class = "form-control" })
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label>@Resources.ViewCapacitadosIndex.ResourceManager.GetString("lblCurso"):</label>
+                            @Html.DropDownList("CursoID", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group mb-3" style="margin-top: 25px;">
+                            <div class="btn-group">
+                                <input type="submit" value="@Resources.ViewCapacitadosIndex.ResourceManager.GetString("btnBuscar")" class="btn btn-primary" />
+                                @Html.ActionLink("Limpiar filtros", "Index", null, new { @class = "btn btn-secondary" })
+                            </div>
                         </div>
                     </div>
                 </div>
-            </td>
-            <td width="1%">
-                <div class="form-group">
-                    <div class="col-md-2">
-                        <input type="submit" value="@Resources.ViewCapacitadosIndex.ResourceManager.GetString("btnBuscar")" />
-                    </div>
-                    <!--
-                    <div class="col-md-2">
-                        @Html.ActionLink("Limpiar filtros", "Index")
-                    </div>
-                    -->
-                </div>
-            </td>
-
-        </tr>
-    </table>
-}
+            }
+        </div>
+    </div>
+</div>
 
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
 
 @Html.Partial("_ListCapacitadosPartial", Model)
 
 <br />
-Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
+P&aacute;gina @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
 
 @Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))

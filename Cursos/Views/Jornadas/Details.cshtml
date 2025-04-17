@@ -187,6 +187,13 @@
                         </ul>
                     </div>
                 }
+
+                <!-- Formulario oculto fuera del menú -->
+                using (Html.BeginForm("EnviarActaEmail", "Jornadas", new { id = Model.JornadaID }, FormMethod.Post, new { id = "formEnviarActa", style = "display:none;" }))
+                {
+                    @Html.AntiForgeryToken()
+                }
+
                 <div class="btn-group">
                     <button type="button" class="@btnClass" data-toggle="dropdown">
                         <span class="glyphicon glyphicon-file"></span>&nbsp;Acta <span class="caret"></span>
@@ -197,10 +204,10 @@
                                 <span class="glyphicon glyphicon-file"></span>&nbsp;Generar Acta
                             </a>
                         </li>
-                        @if (Model.Curso.EnviarActaEmail)
+                        @if (HttpContext.Current.User.IsInRole("Administrador") && Model.Curso.EnviarActaEmail)
                         {
                             <li>
-                                <a href="@Url.Action("Details", new { id = Model.JornadaID, enviarActaEmail = true })">
+                                <a href="javascript:void(0)" onclick="document.getElementById('formEnviarActa').submit(); return false;">
                                     <span class="glyphicon glyphicon-envelope"></span>&nbsp;Enviar Acta por Email
                                 </a>
                             </li>

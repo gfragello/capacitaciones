@@ -1,0 +1,29 @@
+﻿/* Estilos para el toggle de filtros */
+.filter-toggle {
+    cursor: pointer;
+    user-select: none;
+    font-size: 1.1rem;
+    color: #007bff;
+    text-decoration: none;
+}
+
+    .filter-toggle:hover {
+        text-decoration: underline;
+        color: #0056b3;
+    }
+
+.card-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Estilos para los checkboxes */
+.checkbox-container {
+    margin-bottom: 1rem;
+}
+
+.checkbox-container label {
+    display: block;
+    margin-bottom: 5px;
+}

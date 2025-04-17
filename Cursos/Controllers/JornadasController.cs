@@ -17,6 +17,7 @@ using Cursos.Helpers;
 using System.Net.Mail;
 using Cursos.Helpers.EnvioOVAL;
 using Cursos.Models.ViewModels;
+using System.Globalization;
 
 namespace Cursos.Controllers
 {
@@ -27,8 +28,8 @@ namespace Cursos.Controllers
 
         // GET: Jornadas
         public ActionResult Index(int? currentCursoID, int? CursoID,
-                                  DateTime? currentFechaInicio, DateTime? fechaInicio,
-                                  DateTime? currentFechaFin, DateTime? fechaFin,
+                                  string currentFechaInicio, string fechaInicio,
+                                  string currentFechaFin, string fechaFin,
                                   bool? currentCreadasOtrosUsuarios, bool? creadasOtrosUsuarios,
                                   bool? currentAutorizacionPendiente, bool? autorizacionPendiente, 
                                   int? page, bool? exportarExcel)
@@ -45,22 +46,39 @@ namespace Cursos.Controllers
 
             ViewBag.CurrentCursoID = CursoID;
 
-            if (fechaInicio != null)
-                page = 1;
-            else
-                fechaInicio = currentFechaInicio;
+            DateTime? fechaInicioObj = null;
+            DateTime? fechaFinObj = null;
+            CultureInfo culture = new CultureInfo("es-ES"); // O la cultura adecuada
 
-            ViewBag.CurrentFechaInicio = fechaInicio;
+            if (!string.IsNullOrEmpty(fechaInicio))
+            {
+                DateTime temp;
+                if (DateTime.TryParseExact(fechaInicio, "dd/MM/yyyy", culture, DateTimeStyles.None, out temp))
+                    fechaInicioObj = temp;
+            }
+            else if (!string.IsNullOrEmpty(currentFechaInicio))
+            {
+                DateTime temp;
+                if (DateTime.TryParseExact(currentFechaInicio, "dd/MM/yyyy", culture, DateTimeStyles.None, out temp))
+                    fechaInicioObj = temp;
+            }
 
-            if (fechaFin != null)
-                page = 1;
-            else
-                fechaFin = currentFechaFin;
+            if (!string.IsNullOrEmpty(fechaFin))
+            {
+                DateTime temp;
+                if (DateTime.TryParseExact(fechaFin, "dd/MM/yyyy", culture, DateTimeStyles.None, out temp))
+                    fechaFinObj = temp;
+            }
+            else if (!string.IsNullOrEmpty(currentFechaFin))
+            {
+                DateTime temp;
+                if (DateTime.TryParseExact(currentFechaFin, "dd/MM/yyyy", culture, DateTimeStyles.None, out temp))
+                    fechaFinObj = temp;
+            }
 
-            //se agrega la hora 23:59:59 para que en el filtro de fecha final se contample todo el día completo
-            DateTime fechaFinFiltro = fechaFin != null ? fechaFin.Value.AddMinutes(1439) : DateTime.MinValue;
-
-            ViewBag.CurrentFechaFin = fechaFin;
+            // Mantener los valores para mostrar en las vistas
+            ViewBag.CurrentFechaInicio = fechaInicioObj.HasValue ? fechaInicioObj.Value.ToString("dd/MM/yyyy") : null;
+            ViewBag.CurrentFechaFin = fechaFinObj.HasValue ? fechaFinObj.Value.ToString("dd/MM/yyyy") : null;
 
             if (creadasOtrosUsuarios != null)
                 page = 1;
@@ -85,12 +103,16 @@ namespace Cursos.Controllers
             if (CursoID != -1)
                 jornadas = jornadas.Where(j => j.CursoId == CursoID);
 
-            if (fechaInicio != null)
-                jornadas = jornadas.Where(j => j.Fecha >= fechaInicio.Value);
+            // Usar fechaInicioObj y fechaFinObj en lugar de fechaInicio y fechaFin en los filtros
+            if (fechaInicioObj != null)
+                jornadas = jornadas.Where(j => j.Fecha >= fechaInicioObj.Value);
 
             //el valor indica que no se ingreso un valor correspondiente a la fecha fin para aplicar en el filtro
-            if (fechaFinFiltro != DateTime.MinValue)
+            if (fechaFinObj != null)
+            {
+                DateTime fechaFinFiltro = fechaFinObj.Value.AddMinutes(1439);
                 jornadas = jornadas.Where(j => j.Fecha <= fechaFinFiltro);
+            }
 
             if (User.IsInRole("InstructorExterno")) //si es un instructor externo, solo se muestran las jornadas asignadas al instructor asociado al usuario actual
             {
@@ -135,10 +157,9 @@ namespace Cursos.Controllers
         //edición de un capacitado) y se regresa con el "back button", se recarga la página y se ven correctamente los elementos actualizados por JavaScript
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")]
         public ActionResult Details(int? id,
-                                    bool? exportarExcel,
-                                    bool? generarActa,
-                                    bool? generarReporteOVAL,
-                                    bool? enviarActaEmail)
+                                   bool? exportarExcel,
+                                   bool? generarActa,
+                                   bool? generarReporteOVAL)
         {
             if (id == null)
             {
@@ -153,7 +174,6 @@ namespace Cursos.Controllers
             bool excel = exportarExcel != null ? (bool)exportarExcel : false;
             bool acta = generarActa != null ? (bool)generarActa : false;
             bool reporteOVAL = generarReporteOVAL != null ? (bool)generarReporteOVAL : false;
-            bool enviarActa = enviarActaEmail ?? false;
 
             if (excel)
                 return ExportDataExcel(jornada);
@@ -164,7 +184,22 @@ namespace Cursos.Controllers
             if (reporteOVAL)
                 return GenerarReporteOVAL(jornada);
 
-            if (enviarActa && jornada.Curso.EnviarActaEmail)
+            return View(jornada);
+        }
+
+        // POST: Jornadas/EnviarActaEmail/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrador")]
+        public ActionResult EnviarActaEmail(int id)
+        {
+            Jornada jornada = db.Jornada.Find(id);
+            if (jornada == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (jornada.Curso.EnviarActaEmail)
             {
                 bool emailEnviado = NotificacionesEMailHelper.GetInstance().EnviarEmailJornadaActa(jornada);
                 if (emailEnviado)
@@ -173,8 +208,8 @@ namespace Cursos.Controllers
                     TempData["ErrorMessage"] = "Hubo un error al enviar el acta por correo electrónico.";
             }
 
-            return View(jornada);
-
+            // Redirigir a la página de detalles sin parámetros en la URL
+            return RedirectToAction("Details", new { id = id });
         }
 
         [Authorize(Roles = "Administrador,InstructorExterno")]

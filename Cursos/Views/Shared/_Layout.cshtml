@@ -6,12 +6,14 @@
     <title>@ViewBag.Title - CSL Certificaciones</title>
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/jqueryui")
+    <!-- Incluir CSS para la funcionalidad de filtros -->
+    <link href="~/Content/Filters/filter-toggle.css" rel="stylesheet" type="text/css" />
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
     @*Cuando se ingresa desde jornadas.csl.uy no se muestra el menú superior para prevenir el inicio de sesiones desde jornadas.csl.uy*@
     @*if (Request.Url.Host != "jornadas.csl.uy")
-    {*@
+        {*@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -25,42 +27,42 @@
             <div class="navbar-collapse collapse">
                 @if (User.IsInRole("Administrador"))
                 {
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    @*
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                    *@
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Mantenimiento
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("Index", "Cursos")">Cursos</a></li>
-                            <li><a href="@Url.Action("Index", "Empresas")">Empresas</a></li>
-                            <li><a href="@Url.Action("Index", "Instructores")">Instructores</a></li>
-                            <li><a href="@Url.Action("Index", "Lugares")">Lugares</a></li>
-                            <li><a href="@Url.Action("Index", "TiposDocumento")">Tipos de Documento</a></li>
-                            <li><a href="@Url.Action("Index", "Account")">Usuarios</a></li>
-                            <li><a href="@Url.Action("EditarItem", "Configuracion")">Configuración</a></li>
-                            <li><a href="@Url.Action("Edit", "MensajesUsuarios")">Mensajes Jornadas Disponibles</a></li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            Funcionalidades
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("Index", "Capacitados")">Capacitados</a></li>
-                            <li><a href="@Url.Action("Index", "Jornadas")">Jornadas</a></li>
-                            <li><a href="@Url.Action("Index", "RegistrosCapacitacion")">Registros de Capacitación</a></li>
-                            <li><a href="@Url.Action("IndexOVAL", "RegistrosCapacitacion",  new { paginarResultados = true })">Panel de envíos OVAL</a></li>
-                            <li><a href="@Url.Action("Index", "NotificacionesVencimientos")">Notificaciones de vencimientos</a></li>
-                        </ul>
-                    </li>
-                </ul>
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        @*
+                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                        *@
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Mantenimiento
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="@Url.Action("Index", "Cursos")">Cursos</a></li>
+                                <li><a href="@Url.Action("Index", "Empresas")">Empresas</a></li>
+                                <li><a href="@Url.Action("Index", "Instructores")">Instructores</a></li>
+                                <li><a href="@Url.Action("Index", "Lugares")">Lugares</a></li>
+                                <li><a href="@Url.Action("Index", "TiposDocumento")">Tipos de Documento</a></li>
+                                <li><a href="@Url.Action("Index", "Account")">Usuarios</a></li>
+                                <li><a href="@Url.Action("EditarItem", "Configuracion")">Configuración</a></li>
+                                <li><a href="@Url.Action("Edit", "MensajesUsuarios")">Mensajes Jornadas Disponibles</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                Funcionalidades
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="@Url.Action("Index", "Capacitados")">Capacitados</a></li>
+                                <li><a href="@Url.Action("Index", "Jornadas")">Jornadas</a></li>
+                                <li><a href="@Url.Action("Index", "RegistrosCapacitacion")">Registros de Capacitación</a></li>
+                                <li><a href="@Url.Action("IndexOVAL", "RegistrosCapacitacion",  new { paginarResultados = true })">Panel de envíos OVAL</a></li>
+                                <li><a href="@Url.Action("Index", "NotificacionesVencimientos")">Notificaciones de vencimientos</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 }
                 @if (User.IsInRole("AdministradorExterno"))
                 {
@@ -91,14 +93,14 @@
 
                 @if (User.IsInRole("ConsultaEmpresa"))
                 {
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Consulta por documento", "ConsultaDocumento", "Capacitados")</li>
-                     @if (User.IsInRole("InscripcionesExternas"))
-                     {
-                        <li>@Html.ActionLink("Jornadas Disponibles", "Disponibles", "Jornadas")</li>
-                     }
-                </ul>
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                        <li>@Html.ActionLink("Consulta por documento", "ConsultaDocumento", "Capacitados")</li>
+                        @if (User.IsInRole("InscripcionesExternas"))
+                        {
+                            <li>@Html.ActionLink("Jornadas Disponibles", "Disponibles", "Jornadas")</li>
+                        }
+                    </ul>
                 }
 
                 @if (User.IsInRole("InstructorExterno"))
@@ -119,22 +121,22 @@
 
                 @Html.Partial("_LoginPartial")
 
-                
-                    <ul class="langs" style="list-style:none;">
-                        <li style="display:inline;">
-                            <a href="" class="setLang" data-lang="es-UY"><img src="@Url.Content("~/images/flag-uruguay_40x40.png")" title="Español" /></a>
-                        
-                        </li>
-                        <li style="display:inline;">
-                            <a href="" class="setLang" data-lang="en-US"><img src="@Url.Content("~/images/flag-united-kingdom_40x40.png")" title="English" /></a>
-                        </li>
-                        @if (User.IsInRole("Administrador") || User.IsInRole("InstructorExterno"))
-                        {
+
+                <ul class="langs" style="list-style:none;">
+                    <li style="display:inline;">
+                        <a href="" class="setLang" data-lang="es-UY"><img src="@Url.Content("~/images/flag-uruguay_40x40.png")" title="Español" /></a>
+
+                    </li>
+                    <li style="display:inline;">
+                        <a href="" class="setLang" data-lang="en-US"><img src="@Url.Content("~/images/flag-united-kingdom_40x40.png")" title="English" /></a>
+                    </li>
+                    @if (User.IsInRole("Administrador") || User.IsInRole("InstructorExterno"))
+                    {
                         <li style="display:inline;">
                             <a href="@Url.Action("UltimasCargarFotos", "Jornadas")"><img src="@Url.Content("~/images/tomarFoto_40x40.png")" title="Tomar fotos" /></a>
                         </li>
-                        }
-                    </ul>
+                    }
+                </ul>
             </div>
         </div>
     </div>
@@ -161,11 +163,11 @@
                 changeYear: true,
                 showOn: "button"
             }).css("display", "inline-block")
-            .next("button").button({
-                icons: { primary: "ui-icon-calendar" },
-                label: "Seleccionar una fecha",
-                text: false
-            });
+                .next("button").button({
+                    icons: { primary: "ui-icon-calendar" },
+                    label: "Seleccionar una fecha",
+                    text: false
+                });
         });
 
         $(document).ready(function () {
@@ -179,6 +181,8 @@
             })
         });
     </script>
+    <!-- Incluir JavaScript para la funcionalidad de filtros -->
+    <script src="~/Scripts/Filters/filter-toggle.js"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

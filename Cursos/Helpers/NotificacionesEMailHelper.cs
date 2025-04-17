@@ -222,7 +222,7 @@ namespace Cursos.Helpers
                 message.From = new MailAddress(ConfiguracionHelper.GetInstance().GetValue("EmailUsuario", "Envio_Actas"));
 
                 // Asunto del correo
-                message.Subject = string.Format("Acta de la Jornada {0} - {1}", jornada.Curso.Descripcion, jornada.Fecha.ToShortDateString());
+                message.Subject = string.Format("Acta de la Jornada {0}", jornada.JornadaIdentificacionCompleta);
 
                 // Cuerpo del correo: se parte del cuerpo base del curso
                 string body = jornada.Curso.ActaEmailCuerpo;
