@@ -607,6 +607,14 @@
     <Compile Include="Migrations\202502211650014_Curso_VigenciaHastaFinAnio.Designer.cs">
       <DependentUpon>202502211650014_Curso_VigenciaHastaFinAnio.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505110441202_LimitarDocumentoALongitud25.cs" />
+    <Compile Include="Migrations\202505110441202_LimitarDocumentoALongitud25.Designer.cs">
+      <DependentUpon>202505110441202_LimitarDocumentoALongitud25.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202505110442402_AddIndexToDocumento.cs" />
+    <Compile Include="Migrations\202505110442402_AddIndexToDocumento.Designer.cs">
+      <DependentUpon>202505110442402_AddIndexToDocumento.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -813,6 +821,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502211650014_Curso_VigenciaHastaFinAnio.resx">
       <DependentUpon>202502211650014_Curso_VigenciaHastaFinAnio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505110441202_LimitarDocumentoALongitud25.resx">
+      <DependentUpon>202505110441202_LimitarDocumentoALongitud25.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505110442402_AddIndexToDocumento.resx">
+      <DependentUpon>202505110442402_AddIndexToDocumento.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

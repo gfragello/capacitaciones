@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure.Annotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -85,6 +87,16 @@ namespace Cursos.Models
                 .WithMany(j => j.JornadaActasEnviadas)
                 .HasForeignKey(ja => ja.JornadaID)
                 .WillCascadeOnDelete(true);
+
+            // Índice NO único para Documento en Capacitado
+            modelBuilder.Entity<Capacitado>()
+                .Property(c => c.Documento)
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(
+                        new IndexAttribute("IX_Capacitado_Documento") { IsUnique = false }
+                    )
+                );
 
             //configura la relación entre el Instructor y los cursos
             //modelbuilder.Entity<Instructor>().HasMany(i => i.Cursos).WithMany(c => c.Instructores).Map(ic => ic.MapLeftKey("IntructorId")

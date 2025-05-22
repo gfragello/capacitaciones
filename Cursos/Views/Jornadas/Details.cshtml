@@ -338,17 +338,20 @@
         }
         <tr>
             <td>
-                <div class="form-inline" style="margin:5px 3px;">
+                <div class="form-horizontal" style="margin: 5px 3px;">
                     <div class="form-group">
-                        <div class="col-md-5">
-                            @Html.Label("Documento"):
+                        @* Etiqueta de Documento *@
+                        <label class="col-md-2 control-label" for="documento">Documento</label>
+                        <div class="col-md-4">
+                            @Html.TextBox("documento", "", new { @class = "form-control", placeholder = "Ingrese documento" })
                         </div>
-                        <div class="col-md-10">
-                            @Html.TextBox("documento", "", new { htmlAttributes = new { @class = "form-control" } })
-                            &nbsp;&nbsp;&nbsp;
-                            <button class="btn btn-default" onclick="buscarCapacitados();"><span class="glyphicon glyphicon-search"></span>&nbsp;Buscar</button>
-                            &nbsp;&nbsp;&nbsp;
-                            <button class="btn btn-default" onclick="crearCapacitado();"><span class="glyphicon glyphicon-user"></span>&nbsp;Crear nuevo</button>
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-default" onclick="buscarCapacitados();">
+                                <span class="glyphicon glyphicon-search"></span> Buscar
+                            </button>
+                            <button type="button" class="btn btn-default" onclick="crearCapacitado();">
+                                <span class="glyphicon glyphicon-user"></span> Crear nuevo
+                            </button>
                         </div>
                     </div>
                 </div>

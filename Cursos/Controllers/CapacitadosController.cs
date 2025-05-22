@@ -750,24 +750,39 @@ namespace Cursos.Controllers
 
         //el parámetro jornadaIdExcluir indica que los capacitados que participaron de esas jornadas no pueden ser seleccionados
         [HttpGet]
-        public ActionResult ObtenerSelecionarCapacitados(string documento,
-                                                         int jornadaIdExcluir)
+        public ActionResult ObtenerSelecionarCapacitados(string documento, int jornadaIdExcluir)
         {
-            var capacitados = db.Capacitados.Include(c => c.Empresa).Include(c => c.RegistrosCapacitacion);
+            var capacitadosQ = db.Capacitados
+                                 .Include(c => c.Empresa)
+                                 .Include(c => c.RegistrosCapacitacion)
+                                 .AsQueryable();
+
+            List<Capacitado> lista;
 
             if (!String.IsNullOrEmpty(documento))
-                capacitados = capacitados.Where(c => c.Documento.Contains(documento));
+            {
+                // Primero pruebo por prefijo
+                lista = capacitadosQ.Where(c => c.Documento.StartsWith(documento)).ToList();
+
+                // Si no hay, pruebo por Contains
+                if (lista.Count == 0)
+                    lista = capacitadosQ.Where(c => c.Documento.Contains(documento)).ToList();
+            }
+            else
+            {
+                lista = capacitadosQ.ToList();
+            }
 
             ViewBag.JornadaIdExcluir = jornadaIdExcluir;
 
-            Jornada jornada = db.Jornada.Where(j => j.JornadaID == jornadaIdExcluir).FirstOrDefault();
+            // Solo traigo el valor necesario, no toda la entidad
+            var cursoId = db.Jornada
+                            .Where(j => j.JornadaID == jornadaIdExcluir)
+                            .Select(j => (int?)j.CursoId)
+                            .FirstOrDefault();
+            ViewBag.JornadaExcluirCursoId = cursoId ?? -1;
 
-            if (jornada != null)
-                ViewBag.JornadaExcluirCursoId = jornada.CursoId;
-            else
-                ViewBag.JornadaExcluirCursoId = -1;
-
-            return PartialView("_SeleccionarCapacitadosPartial", capacitados.ToList());
+            return PartialView("_SeleccionarCapacitadosPartial", lista);
         }
 
         [HttpGet]

@@ -49,6 +49,7 @@ namespace Cursos.Models
 
         [CIValidator]
         [Required(ErrorMessage = "Debe ingresar el documento del capacitado")]
+        [StringLength(25)]
         public String Documento { get; set; }
 
         [NotMapped]
