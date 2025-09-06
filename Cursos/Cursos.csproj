@@ -317,6 +317,7 @@
     <Compile Include="Controllers\ConfiguracionController.cs" />
     <Compile Include="Controllers\CursosController.cs" />
     <Compile Include="Controllers\CustomToolsController.cs" />
+    <Compile Include="Controllers\DocumentosInteresController.cs" />
     <Compile Include="Controllers\EmpresasController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\InstructoresController.cs" />
@@ -333,6 +334,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ArchivosFSHelper.cs" />
+    <Compile Include="Helpers\ActaHelper.cs" />
     <Compile Include="Helpers\CapacitadoHelper.cs" />
     <Compile Include="Helpers\CertificadoHelper.cs" />
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
@@ -615,6 +617,14 @@
     <Compile Include="Migrations\202505110442402_AddIndexToDocumento.Designer.cs">
       <DependentUpon>202505110442402_AddIndexToDocumento.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508250633280_AddRegimenPago.cs" />
+    <Compile Include="Migrations\202508250633280_AddRegimenPago.Designer.cs">
+      <DependentUpon>202508250633280_AddRegimenPago.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509021807173_DocumentosInteres.cs" />
+    <Compile Include="Migrations\202509021807173_DocumentosInteres.Designer.cs">
+      <DependentUpon>202509021807173_DocumentosInteres.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -623,6 +633,7 @@
     <Compile Include="Models\Configuracion.cs" />
     <Compile Include="Models\Curso.cs" />
     <Compile Include="Models\Departamento.cs" />
+    <Compile Include="Models\DocumentoInteres.cs" />
     <Compile Include="Models\ElementoAccesoControlado.cs" />
     <Compile Include="Models\Empresa.cs" />
     <Compile Include="Models\EmpresaUsuario.cs" />
@@ -645,6 +656,7 @@
     <Compile Include="Models\NotificacionVencimiento.cs" />
     <Compile Include="Models\PathArchivo.cs" />
     <Compile Include="Models\PuntoServicio.cs" />
+    <Compile Include="Models\RegimenPago.cs" />
     <Compile Include="Models\RegistroCapacitacion.cs" />
     <Compile Include="Models\RegistroOVAL.cs" />
     <Compile Include="Models\RespuestaOVAL.cs" />
@@ -678,8 +690,10 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\custom.css" />
+    <Content Include="Content\empresa-autocomplete.css" />
     <Content Include="Content\Filters\filter-toggle.css" />
     <Content Include="Content\PagedList.css" />
+    <Content Include="Content\table-actions.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -828,12 +842,19 @@
     <EmbeddedResource Include="Migrations\202505110442402_AddIndexToDocumento.resx">
       <DependentUpon>202505110442402_AddIndexToDocumento.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508250633280_AddRegimenPago.resx">
+      <DependentUpon>202508250633280_AddRegimenPago.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509021807173_DocumentosInteres.resx">
+      <DependentUpon>202509021807173_DocumentosInteres.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
     <Content Include="Scripts\cargarfoto.js" />
     <Content Include="Scripts\clickableRow.js" />
     <Content Include="Scripts\documentacionAdicional.js" />
+    <Content Include="Scripts\empresa-autocomplete.js" />
     <Content Include="Scripts\enviarOVAL.js" />
     <Content Include="Scripts\Filters\filter-toggle.js" />
     <Content Include="Scripts\jquery-2.2.0.js" />
@@ -931,6 +952,11 @@
     <Content Include="Views\Empresas\Details.cshtml" />
     <Content Include="Views\Empresas\Edit.cshtml" />
     <Content Include="Views\Empresas\Index.cshtml" />
+    <Content Include="Views\DocumentosInteres\Create.cshtml" />
+    <Content Include="Views\DocumentosInteres\Delete.cshtml" />
+    <Content Include="Views\DocumentosInteres\Details.cshtml" />
+    <Content Include="Views\DocumentosInteres\Edit.cshtml" />
+    <Content Include="Views\DocumentosInteres\Index.cshtml" />
     <Content Include="Views\Instructores\Create.cshtml" />
     <Content Include="Views\Instructores\Delete.cshtml" />
     <Content Include="Views\Instructores\Details.cshtml" />
@@ -1008,6 +1034,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="documents\" />
     <Folder Include="images\Actas\" />
     <Folder Include="images\FotosCapacitadosImportar\" />
     <Folder Include="images\FotosCapacitados\" />

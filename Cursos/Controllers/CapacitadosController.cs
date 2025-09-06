@@ -214,6 +214,17 @@ namespace Cursos.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,Telefono,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload, int? jornadaId)
         {
+            // Guardamos el valor de la empresa para recuperarla en caso de error de validación
+            var empresaOriginalID = capacitado.EmpresaID;
+            
+            // Validación: EmpresaID obligatorio y existente
+            if (capacitado.EmpresaID == 0 || !db.Empresas.Any(e => e.EmpresaID == capacitado.EmpresaID))
+            {
+                ModelState.AddModelError("EmpresaID", "Debe seleccionar una empresa válida de la lista.");
+                // Resetear el ID para que no cause confusión en la vista
+                capacitado.EmpresaID = 0;
+            }
+
             if (ModelState.IsValid)
             {
                 capacitado.SetearAtributosControl();
@@ -336,7 +347,42 @@ namespace Cursos.Controllers
             }
 
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
-            ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
+            
+            // Maneja la visualización para diferentes roles de la misma manera que en GET
+            if (System.Web.HttpContext.Current.User.IsInRole("ConsultaEmpresa") && System.Web.HttpContext.Current.User.IsInRole("InscripcionesExternas"))
+            {
+                var empresa = UsuarioHelper.GetInstance().ObtenerEmpresaAsociada(System.Web.HttpContext.Current.User.Identity.Name);
+                ViewBag.EmpresaID = empresa.EmpresaID;
+                ViewBag.EmpresaNombreFantasia = empresa.NombreFantasia;
+            }
+            else
+            {
+                // Si hay error pero se había seleccionado una empresa, la recuperamos para mostrarla
+                if (capacitado.EmpresaID > 0)
+                {
+                    var empresaSeleccionada = db.Empresas.Find(capacitado.EmpresaID);
+                    if (empresaSeleccionada != null)
+                    {
+                        ViewBag.EmpresaSeleccionada = empresaSeleccionada;
+                    }
+                }
+                else
+                {
+                    // Intentar recuperar la empresa del ModelState si está disponible
+                    TryUpdateModel(capacitado);
+                    if (capacitado.EmpresaID > 0)
+                    {
+                        var empresaSeleccionada = db.Empresas.Find(capacitado.EmpresaID);
+                        if (empresaSeleccionada != null)
+                        {
+                            ViewBag.EmpresaSeleccionada = empresaSeleccionada;
+                        }
+                    }
+                }
+                
+                // Configuramos la visualización para usuarios que pueden seleccionar empresa
+                ViewBag.JornadaId = jornadaId;
+            }
 
             return View(capacitado);
         }

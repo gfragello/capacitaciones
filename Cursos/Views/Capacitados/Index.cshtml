@@ -79,8 +79,13 @@
                     <div class="col-md-4">
                         <div class="form-group mb-3" style="margin-top: 25px;">
                             <div class="btn-group">
-                                <input type="submit" value="@Resources.ViewCapacitadosIndex.ResourceManager.GetString("btnBuscar")" class="btn btn-primary" />
-                                @Html.ActionLink("Limpiar filtros", "Index", null, new { @class = "btn btn-secondary" })
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                    @Resources.ViewCapacitadosIndex.ResourceManager.GetString("btnBuscar")
+                                </button>
+                                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                    <i class="fa fa-eraser"></i> Limpiar filtros
+                                </a>
                             </div>
                         </div>
                     </div>

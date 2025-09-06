@@ -1,0 +1,44 @@
+﻿.filtro-empresa-input,
+#filtroEmpresa.form-control {
+    min-width: 350px;
+    max-width: 500px;
+    width: 100%;
+    display: inline-block;
+    padding-right: 2.2rem !important;
+    box-sizing: border-box;
+}
+
+.sugerencias-empresas-dropdown,
+#sugerencias-empresas.list-group {
+    width: 100% !important;
+    min-width: 350px;
+    max-width: 500px;
+    position: absolute;
+    z-index: 999;
+    left: 0;
+}
+
+    .sugerencias-empresas-dropdown .list-group-item,
+    #sugerencias-empresas.list-group .list-group-item {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-top: 0.3rem;
+        padding-bottom: 0.3rem;
+        font-size: 0.95em;
+    }
+
+.empresa-clear-icon {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    height: 1.5rem;
+    width: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

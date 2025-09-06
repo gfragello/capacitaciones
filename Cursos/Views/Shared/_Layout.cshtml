@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - CSL Certificaciones</title>
     @Styles.Render("~/Content/css")
+    <!-- Incluir CSS para el estilo de las acciones que se muestra en las grillas -->
+    <link href="~/Content/table-actions.css" rel="stylesheet" />
     @Styles.Render("~/Content/jqueryui")
     <!-- Incluir CSS para la funcionalidad de filtros -->
     <link href="~/Content/Filters/filter-toggle.css" rel="stylesheet" type="text/css" />
     @Scripts.Render("~/bundles/modernizr")
+    <!-- FontAwesome: requerido para mostrar iconos reutilizables en la aplicación (ej: botón de limpiar filtro, futuros usos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     @*Cuando se ingresa desde jornadas.csl.uy no se muestra el menú superior para prevenir el inicio de sesiones desde jornadas.csl.uy*@
@@ -60,6 +64,7 @@
                                 <li><a href="@Url.Action("Index", "RegistrosCapacitacion")">Registros de Capacitación</a></li>
                                 <li><a href="@Url.Action("IndexOVAL", "RegistrosCapacitacion",  new { paginarResultados = true })">Panel de envíos OVAL</a></li>
                                 <li><a href="@Url.Action("Index", "NotificacionesVencimientos")">Notificaciones de vencimientos</a></li>
+                                <li><a href="@Url.Action("Index", "DocumentosInteres")">Documentos de Interés</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -86,6 +91,7 @@
                             <ul class="dropdown-menu">
                                 <li><a href="@Url.Action("Index", "Capacitados")">Capacitados</a></li>
                                 <li><a href="@Url.Action("Index", "Jornadas")">Jornadas</a></li>
+                                <li><a href="@Url.Action("Index", "DocumentosInteres")">Documentos de Interés</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -100,6 +106,7 @@
                         {
                             <li>@Html.ActionLink("Jornadas Disponibles", "Disponibles", "Jornadas")</li>
                         }
+                        <li>@Html.ActionLink("Documentos de Interés", "Index", "DocumentosInteres")</li>
                     </ul>
                 }
 
@@ -178,7 +185,26 @@
                 var lang = $(this).attr("data-lang");
                 MultiLanguage.Cookies.setCookie("LangForCursos", lang, 30);
                 location.reload(true);
-            })
+            });
+
+            // Ajustar dinámicamente el padding-top del body según la altura del navbar
+            function adjustBodyPadding() {
+                var navbarHeight = $('.navbar-fixed-top').outerHeight();
+                $('body').css('padding-top', navbarHeight + 'px');
+            }
+
+            // Ejecutar al cargar la página
+            adjustBodyPadding();
+
+            // Ejecutar cuando cambie el tamaño de la ventana
+            $(window).resize(function() {
+                adjustBodyPadding();
+            });
+
+            // Ejecutar cuando se colapsa/expande el navbar en móviles
+            $('.navbar-toggle').on('click', function() {
+                setTimeout(adjustBodyPadding, 300); // Delay para esperar la animación
+            });
         });
     </script>
     <!-- Incluir JavaScript para la funcionalidad de filtros -->

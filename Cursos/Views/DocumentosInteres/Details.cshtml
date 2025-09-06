@@ -1,0 +1,59 @@
+﻿@model Cursos.Models.DocumentoInteres
+
+@{
+    ViewBag.Title = "Detalles del Documento de Interés";
+}
+
+<h2>Detalles del Documento de Interés</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+        <dd>
+            @if (!string.IsNullOrEmpty(Model.Descripcion))
+            {
+                <div style="white-space: pre-wrap;">@Html.DisplayFor(model => model.Descripcion)</div>
+            }
+            else
+            {
+                <em>Sin descripción</em>
+            }
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NombreArchivo)
+        </dt>
+        <dd>
+            @Html.ActionLink(Model.NombreArchivo, "Download", new { id = Model.DocumentoInteresID }, new { @class = "btn btn-link", target = "_blank" })
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Activo)
+        </dt>
+        <dd>
+            @if (Model.Activo)
+            {
+                <span class="badge badge-success">Activo</span>
+            }
+            else
+            {
+                <span class="badge badge-secondary">Inactivo</span>
+            }
+        </dd>
+    </dl>
+</div>
+
+<p>
+    @Html.ActionLink("Editar", "Edit", new { id = Model.DocumentoInteresID }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Volver a la lista", "Index", null, new { @class = "btn btn-secondary" })
+</p>

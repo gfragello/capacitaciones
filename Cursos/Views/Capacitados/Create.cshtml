@@ -22,8 +22,7 @@
                 @Html.DropDownList("TipoDocumentoID", null, htmlAttributes: new { @class = "form-control" })
                 @Html.EditorFor(model => model.Documento, new { htmlAttributes = new { @class = "form-control", @onblur = "validarDocumentoRepetido();" } })
                 @Html.ValidationMessageFor(model => model.Documento, "", new { @class = "text-danger" })
-                @*Html.Label("DocumentoRepetido", "El documento ya está asignado al Capacitado x", htmlAttributes: new { style = "display:inline;", @href = "/Capacitados/Create/" })*@
-                <a href="#" id="DocumentoRepetido" style = "display:none;">El documento ya está asignado a un Capacitado</a>
+                <a href="#" id="DocumentoRepetido" style="display:none;">El documento ya está asignado a un Capacitado</a>
             </div>
         </div>
 
@@ -69,18 +68,27 @@
             </div>
         </div>
 
+        <!-- BLOQUE EMPRESA CORREGIDO -->
         <div class="form-group">
             @Html.Label(Resources.ViewCapacitadosCreate.ResourceManager.GetString("lblEmpresa"), new { @class = "control-label col-md-2" })
             @if (User.IsInRole("ConsultaEmpresa") && User.IsInRole("InscripcionesExternas"))
             {
-                <label class="control-label col-md-2" style="text-align: left;">@ViewBag.EmpresaNombreFantasia</label>
-                <input type="hidden" id="EmpresaID" name="EmpresaID" value="@ViewBag.EmpresaID" />
-                @Html.ValidationMessageFor(model => model.EmpresaID, "", new { @class = "text-danger" })
+                <div class="col-md-10">
+                    <label class="control-label" style="text-align: left;">@ViewBag.EmpresaNombreFantasia</label>
+                    <input type="hidden" id="EmpresaID" name="EmpresaID" value="@ViewBag.EmpresaID" />
+                    @Html.ValidationMessageFor(model => model.EmpresaID, "", new { @class = "text-danger" })
+                </div>
             }
             else
             {
-                <div class="col-md-10">
-                    @Html.DropDownList("EmpresaID", null, htmlAttributes: new { @class = "form-control" })
+                <div class="col-md-10 position-relative" style="max-width:500px;">
+                    <input type="text" id="filtroEmpresa" class="form-control filtro-empresa-input"
+                           autocomplete="off"
+                           placeholder="Buscar empresa por nombre, RUT o razón social..." />
+                    <input type="hidden" id="EmpresaID" name="EmpresaID" />
+                    <div id="sugerencias-empresas" class="list-group sugerencias-empresas-dropdown"
+                         style="display:none;"></div>
+                    <span class="text-danger" id="empresaError"></span>
                     @Html.ValidationMessageFor(model => model.EmpresaID, "", new { @class = "text-danger" })
                 </div>
             }
@@ -102,63 +110,100 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script>
+    <script src="~/Scripts/empresa-autocomplete.js"></script>
+    <link rel="stylesheet" href="~/Content/empresa-autocomplete.css" />
+    <script>
+        $(function () {
+            // Inicialización unificada y parametrizada del autocompletado de empresas
+            var autoCompleteOptions = {
+                inputId: "filtroEmpresa",
+                hiddenId: "EmpresaID",
+                sugerenciasId: "sugerencias-empresas",
+                urlAutocomplete: '@Url.Action("AutocompleteEmpresa", "Empresas")',
+                placeholder: "Buscar empresa por nombre, RUT o razón social...",
+                mensajeNoEncontrada: "No se encontraron empresas",
+                showClearIcon: true,
+                minLength: 3,
+                enableTooltips: true,
+                onClear: function() {
+                    $('#empresaError').text('Debe seleccionar una empresa válida de la lista.');
+                },
+                onSelect: function() {
+                    $('#empresaError').text('');
+                }
+            };
+            
+            // Si hay una empresa preseleccionada por error de validación
+            @if (ViewBag.EmpresaSeleccionada != null)
+            {
+                <text>
+                // Establecer la empresa preseleccionada
+                autoCompleteOptions.valorInicial = {
+                    id: @ViewBag.EmpresaSeleccionada.EmpresaID,
+                    text: "@ViewBag.EmpresaSeleccionada.NombreFantasia"
+                };
+                </text>
+            }
+            
+            initEmpresaAutocomplete(autoCompleteOptions);
 
-    $('.btnGuardar').on('click', function (e)
-    {
-        var documento = $('#Documento').val();
-        var tipoDocumentoID = $('#TipoDocumentoID').val();
+            // Guardar con validación de documento repetido y empresa seleccionada
+            $('.btnGuardar').on('click', function (e) {
+                var documento = $('#Documento').val();
+                var tipoDocumentoID = $('#TipoDocumentoID').val();
+                var empresaID = $('#EmpresaID').val();
+                
+                // Validar que se haya seleccionado una empresa
+                if (!empresaID || empresaID === "0" || empresaID === "") {
+                    $('#empresaError').text('Debe seleccionar una empresa válida de la lista.');
+                    return false;
+                } else {
+                    $('#empresaError').text('');
+                }
 
-        //solo se controlan la CI
-        if (tipoDocumentoID == 1)
-        {
-            $.ajax({
-                url: '/Capacitados/ExisteCapacitadoDocumento',
-                type: 'post',
-                data: { documento: documento, 
-                        tipoDocumentoID: tipoDocumentoID },
-                success: function (existeCapacitado)
-                         {
-                            if (!existeCapacitado) 
-                            {
+                // solo se controlan la CI
+                if (tipoDocumentoID == 1) {
+                    $.ajax({
+                        url: '/Capacitados/ExisteCapacitadoDocumento',
+                        type: 'post',
+                        data: {
+                            documento: documento,
+                            tipoDocumentoID: tipoDocumentoID
+                        },
+                        success: function (existeCapacitado) {
+                            if (!existeCapacitado) {
                                 $("#formCapacitado")[0].submit();
                             }
-                            else
-                            {
+                            else {
                                 alert('El capacitado con documento ' + documento + ' ya existe en la base de datos.');
                             }
-                         }
+                        }
+                    });
+                }
+                else {
+                    $("#formCapacitado")[0].submit();
+                }
+            });
+        });
+
+        function validarDocumentoRepetido() {
+            var documento = $('#Documento').val();
+            $.ajax({
+                url: '/Capacitados/ObtenerCapacitadoIDPorDocumento',
+                type: "GET",
+                dataType: "JSON",
+                data: { documento: documento },
+                success: function (capacitadoId) {
+                    if (capacitadoId != -1) {
+                        $('#DocumentoRepetido').attr('href', '/Capacitados/Details/' + capacitadoId);
+                        $('#DocumentoRepetido').show();
+                    }
+                    else {
+                        $('#DocumentoRepetido').attr('href', '#');
+                        $('#DocumentoRepetido').hide();
+                    }
+                }
             });
         }
-        else
-        {
-            $("#formCapacitado")[0].submit();
-        }
-    });
-
-    function validarDocumentoRepetido()
-    {
-        var documento = $('#Documento').val();
-        $.ajax({
-            url: '/Capacitados/ObtenerCapacitadoIDPorDocumento',
-            type: "GET",
-            dataType: "JSON",
-            data: { documento: documento},
-            success: function (capacitadoId)
-                     {
-                        if (capacitadoId != -1) {
-                            //window.location.href = '/Capacitados/Details/' + capacitadoId;
-                            $('#DocumentoRepetido').attr('href', '/Capacitados/Details/' + capacitadoId);
-                            $('#DocumentoRepetido').show();
-                        }
-                        else
-                        {
-                            $('#DocumentoRepetido').attr('href', '#');
-                            $('#DocumentoRepetido').hide();
-                        }
-                     }
-        });
-    }
-
-</script>
+    </script>
 }

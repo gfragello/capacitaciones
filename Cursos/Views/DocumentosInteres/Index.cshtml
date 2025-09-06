@@ -1,0 +1,127 @@
+﻿@model IEnumerable<Cursos.Models.DocumentoInteres>
+
+@{
+    ViewBag.Title = "Documentos de Interés";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <h2>Documentos de Interés</h2>
+        </div>
+    </div>
+
+    @if (User.IsInRole("Administrador"))
+    {
+        <div class="row mb-3">
+            <div class="col-md-12">
+                @Html.ActionLink("Crear Nuevo", "Create", null, new { @class = "btn btn-primary" })
+            </div>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <th>Estado</th>
+                    }
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <th>&nbsp;</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    @* Solo mostrar documentos activos para usuarios no administradores *@
+                    if (User.IsInRole("Administrador") || item.Activo)
+                    {
+                    <tr>
+                        <td>
+                            @{
+                                string extension = System.IO.Path.GetExtension(item.NombreArchivo).ToLowerInvariant();
+                                string iconClass = "fa fa-file";
+                                switch (extension)
+                                {
+                                    case ".pdf":
+                                        iconClass = "fa fa-file-pdf-o";
+                                        break;
+                                    case ".doc":
+                                    case ".docx":
+                                        iconClass = "fa fa-file-word-o";
+                                        break;
+                                    case ".xls":
+                                    case ".xlsx":
+                                        iconClass = "fa fa-file-excel-o";
+                                        break;
+                                    case ".ppt":
+                                    case ".pptx":
+                                        iconClass = "fa fa-file-powerpoint-o";
+                                        break;
+                                    case ".jpg":
+                                    case ".jpeg":
+                                    case ".png":
+                                    case ".gif":
+                                        iconClass = "fa fa-file-image-o";
+                                        break;
+                                    case ".zip":
+                                    case ".rar":
+                                        iconClass = "fa fa-file-archive-o";
+                                        break;
+                                    case ".txt":
+                                        iconClass = "fa fa-file-text-o";
+                                        break;
+                                }
+                            }
+                            <i class="@iconClass" style="margin-right: 5px;"></i>
+                            @Html.ActionLink(item.Nombre, "Download", new { id = item.DocumentoInteresID })
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.Descripcion))
+                            {
+                                var descripcionCorta = item.Descripcion.Length > 100 ? item.Descripcion.Substring(0, 100) + "..." : item.Descripcion;
+                                <span title="@item.Descripcion">@descripcionCorta</span>
+                            }
+                        </td>
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <td>
+                                @if (item.Activo)
+                                {
+                                    <span class="badge" style="background-color: #5cb85c; color: white;">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge" style="background-color: #d9534f; color: white;">Inactivo</span>
+                                }
+                            </td>
+                        }
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <td class="text-center">
+                                <div class="action-links">
+                                    <a href="@Url.Action("Details", "DocumentosInteres", new { id = item.DocumentoInteresID })" class="action-icon" title="Ver detalle">
+                                        <img src="@Url.Content("~/images/verDetalle_16x16.png")" alt="Ver detalle" />
+                                    </a>
+                                    <a href="@Url.Action("Edit", "DocumentosInteres", new { id = item.DocumentoInteresID })" class="action-icon" title="Editar">
+                                        <img src="@Url.Content("~/images/editar_16x16.png")" alt="Editar" />
+                                    </a>
+                                    <a href="@Url.Action("Delete", "DocumentosInteres", new { id = item.DocumentoInteresID })" class="action-icon" title="Eliminar">
+                                        <img src="@Url.Content("~/images/borrar_16x16.png")" alt="Eliminar" />
+                                    </a>
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

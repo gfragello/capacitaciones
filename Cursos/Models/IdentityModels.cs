@@ -122,5 +122,9 @@ namespace Cursos.Models
         public DbSet<MensajeUsuario> MensajesUsuarios { get; set; }
 
         public DbSet<JornadaActaEnviada> JornadaActasEnviadas { get; set; }
+        
+        public DbSet<RegimenPago> RegimenesPago { get; set; }
+
+        public DbSet<DocumentoInteres> DocumentosInteres { get; set; }
     }
 }

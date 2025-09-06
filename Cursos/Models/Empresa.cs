@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.WebPages;
 
 namespace Cursos.Models
 {
@@ -26,6 +28,17 @@ namespace Cursos.Models
         //[Required(ErrorMessage = "Debe ingresar el {0}")]
         public string RUT { get; set; }
 
+        public string NombreCompleto
+        {
+            get
+            {
+                if (RUT.IsEmpty() || RazonSocial.IsEmpty())
+                    return NombreFantasia;
+
+                return String.Format("{0} / {1}", RazonSocial, RUT);
+            }
+        }
+
         [Display(Name = "Departamento")]
         public int DepartamentoID { get; set; }
         public virtual Departamento Departamento { get; set; }
@@ -44,6 +57,11 @@ namespace Cursos.Models
 
         [Display(Name = "Teléfono")]
         public string Telefono { get; set; }
+
+        [Display(Name = "Régimen de Pago")]
+        [Required(ErrorMessage = "Debe seleccionar un régimen de pago")]
+        public int RegimenPagoID { get; set; } = 1; // Valor por defecto: Régimen Estándar
+        public virtual RegimenPago RegimenPago { get; set; }
 
         public virtual List<Capacitado> Capacitados { get; set; }
 

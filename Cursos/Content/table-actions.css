@@ -1,0 +1,31 @@
+﻿/* Estilos para las acciones en la tabla */
+.action-links {
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 6px;
+    transition: all 0.2s ease;
+}
+
+    .action-icon:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+    }
+
+    .action-icon img {
+        max-width: 100%;
+        max-height: 100%;
+    }

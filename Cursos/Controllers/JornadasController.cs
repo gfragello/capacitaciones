@@ -18,6 +18,7 @@ using System.Net.Mail;
 using Cursos.Helpers.EnvioOVAL;
 using Cursos.Models.ViewModels;
 using System.Globalization;
+using PdfSharp.Pdf;
 
 namespace Cursos.Controllers
 {
@@ -159,13 +160,31 @@ namespace Cursos.Controllers
         public ActionResult Details(int? id,
                                    bool? exportarExcel,
                                    bool? generarActa,
+                                   bool? generarActaPDF,
                                    bool? generarReporteOVAL)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Jornada jornada = db.Jornada.Find(id);
+            
+            Jornada jornada;
+            
+            // Si vamos a generar un acta PDF, necesitamos cargar las entidades relacionadas
+            if (generarActaPDF == true)
+            {
+                jornada = db.Jornada.Where(j => j.JornadaID == id)
+                    .Include(j => j.Curso)
+                    .Include(j => j.Instructor)
+                    .Include(j => j.Lugar)
+                    .Include(j => j.RegistrosCapacitacion.Select(r => r.Capacitado))
+                    .FirstOrDefault();
+            }
+            else
+            {
+                jornada = db.Jornada.Find(id);
+            }
+            
             if (jornada == null)
             {
                 return HttpNotFound();
@@ -173,6 +192,7 @@ namespace Cursos.Controllers
 
             bool excel = exportarExcel != null ? (bool)exportarExcel : false;
             bool acta = generarActa != null ? (bool)generarActa : false;
+            bool actaPDF = generarActaPDF != null ? (bool)generarActaPDF : false;
             bool reporteOVAL = generarReporteOVAL != null ? (bool)generarReporteOVAL : false;
 
             if (excel)
@@ -180,6 +200,9 @@ namespace Cursos.Controllers
 
             if (acta)
                 return GenerarActa(jornada);
+
+            if (actaPDF)
+                return GenerarActaPDF(jornada);
 
             if (reporteOVAL)
                 return GenerarReporteOVAL(jornada);
@@ -774,6 +797,21 @@ namespace Cursos.Controllers
             string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
             return File(stream, contentType, fileName);
+        }
+
+        private ActionResult GenerarActaPDF(Jornada j)
+        {
+            using (PdfDocument pdfDocument = ActaHelper.GetInstance().GenerarActaPDF(j))
+            {
+                var stream = new MemoryStream();
+                pdfDocument.Save(stream, false);
+
+                string fileName = String.Format("ACTA {0} {1} {2}.pdf", j.Curso.Descripcion, j.FechaFormatoYYYYYMMDD, j.HoraSinSeparador);
+                string contentType = "application/pdf";
+
+                stream.Position = 0;
+                return File(stream, contentType, fileName);
+            }
         }
 
 

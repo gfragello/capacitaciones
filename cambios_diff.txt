@@ -1,0 +1,102 @@
+diff --git a/Cursos/Controllers/CapacitadosController.cs b/Cursos/Controllers/CapacitadosController.cs
+index 3a145a0..e9be8f9 100644
+--- a/Cursos/Controllers/CapacitadosController.cs
++++ b/Cursos/Controllers/CapacitadosController.cs
+@@ -214,6 +214,12 @@ namespace Cursos.Controllers
+         [ValidateAntiForgeryToken]
+         public ActionResult Create([Bind(Include = "CapacitadoID,Nombre,Apellido,Documento,Fecha,Telefono,EmpresaID,TipoDocumentoID")] Capacitado capacitado, HttpPostedFileBase upload, int? jornadaId)
+         {
++            // Validaci+¦n: EmpresaID obligatorio y existente
++            if (capacitado.EmpresaID == 0 || !db.Empresas.Any(e => e.EmpresaID == capacitado.EmpresaID))
++            {
++                ModelState.AddModelError("EmpresaID", "Debe seleccionar una empresa v+ílida de la lista.");
++            }
++
+             if (ModelState.IsValid)
+             {
+                 capacitado.SetearAtributosControl();
+@@ -336,7 +342,7 @@ namespace Cursos.Controllers
+             }
+ 
+             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
+-            ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
++            //ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
+ 
+             return View(capacitado);
+         }
+diff --git a/Cursos/Controllers/EmpresasController.cs b/Cursos/Controllers/EmpresasController.cs
+index b24a6c5..307079a 100644
+--- a/Cursos/Controllers/EmpresasController.cs
++++ b/Cursos/Controllers/EmpresasController.cs
+@@ -20,20 +20,27 @@ namespace Cursos.Controllers
+         private ApplicationDbContext db = new ApplicationDbContext();
+ 
+         // GET: Empresas
+-        public ActionResult Index(string currentNombreFantasia, string nombreFantasia,
+-                                  int? page, bool? exportarExcel)
++        public ActionResult Index(string currentFiltroEmpresa, string filtroEmpresa, int? FiltroEmpresaID, int? page, bool? exportarExcel)
+         {
+-            if (nombreFantasia != null) //si el par+ímetro vino con alg+¦n valor es porque se presion+¦ buscar y se resetea la p+ígina a 1
++            if (filtroEmpresa != null)
+                 page = 1;
+             else
+-                nombreFantasia = currentNombreFantasia;
++                filtroEmpresa = currentFiltroEmpresa;
+ 
+-            ViewBag.CurrentNombreFantasia = nombreFantasia;
++            ViewBag.CurrentFiltroEmpresa = filtroEmpresa;
+ 
+             var empresas = db.Empresas.AsQueryable();
+ 
+-            if (!String.IsNullOrEmpty(nombreFantasia))
+-                empresas = empresas.Where(e => e.NombreFantasia.Contains(nombreFantasia));
++            if (FiltroEmpresaID.HasValue && FiltroEmpresaID.Value > 0)
++                empresas = empresas.Where(e => e.EmpresaID == FiltroEmpresaID.Value);
++            else if(!String.IsNullOrEmpty(filtroEmpresa))
++            {
++                empresas = empresas.Where(e =>
++                    (e.NombreFantasia != null && e.NombreFantasia.Contains(filtroEmpresa)) ||
++                    (e.RazonSocial != null && e.RazonSocial.Contains(filtroEmpresa)) ||
++                    (e.RUT != null && e.RUT.Contains(filtroEmpresa))
++                );
++            }
+ 
+             int pageSize = 10;
+             int pageNumber = (page ?? 1);
+@@ -243,6 +250,36 @@ namespace Cursos.Controllers
+             }
+         }
+ 
++        [HttpGet]
++        public JsonResult AutocompleteEmpresa(string term)
++        {
++            if (string.IsNullOrWhiteSpace(term))
++                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
++
++            var sugeridas = db.Empresas
++                .Where(e =>
++                    (e.NombreFantasia != null && e.NombreFantasia.Contains(term)) ||
++                    (e.RazonSocial != null && e.RazonSocial.Contains(term)) ||
++                    (e.RUT != null && e.RUT.Contains(term))
++                )
++                .OrderBy(e => e.NombreFantasia)
++                .Take(10)
++                .ToList() // Salimos de LINQ-to-Entities para usar l+¦gica C#
++                .Select(e => new
++                {
++                    id = e.EmpresaID,
++                    label = e.NombreFantasia
++                                + (!string.IsNullOrEmpty(e.RazonSocial) ? " (" + e.RazonSocial + ")" : "")
++                                + (!string.IsNullOrEmpty(e.RUT) ? " - " + e.RUT : ""),
++                    value = (string.IsNullOrWhiteSpace(e.RUT) || string.IsNullOrWhiteSpace(e.RazonSocial))
++                                ? e.NombreFantasia
++                                : string.Format("{0} / {1}", e.RazonSocial, e.RUT)
++                })
++                .ToList();
++
++            return Json(sugeridas, JsonRequestBehavior.AllowGet);
++        }
++
+         protected override void Dispose(bool disposing)
+         {
+             if (disposing)

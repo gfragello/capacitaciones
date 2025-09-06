@@ -200,8 +200,13 @@
                     </button>
                     <ul class="dropdown-menu" role="menu">
                         <li>
-                            <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })">
+                            <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActaPDF = true })">
                                 <span class="glyphicon glyphicon-file"></span>&nbsp;Generar Acta
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Details", new { id = Model.JornadaID, generarActa = true })">
+                                <span class="glyphicon glyphicon-file"></span>&nbsp;Generar Acta Excel
                             </a>
                         </li>
                         @if (HttpContext.Current.User.IsInRole("Administrador") && Model.Curso.EnviarActaEmail)

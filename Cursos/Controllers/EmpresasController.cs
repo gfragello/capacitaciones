@@ -20,20 +20,32 @@ namespace Cursos.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Empresas
-        public ActionResult Index(string currentNombreFantasia, string nombreFantasia,
-                                  int? page, bool? exportarExcel)
+        public ActionResult Index(string currentFiltroEmpresa, string filtroEmpresa, int? FiltroEmpresaID, int? FiltroRegimenPagoID, int? page, bool? exportarExcel)
         {
-            if (nombreFantasia != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
+            if (filtroEmpresa != null)
                 page = 1;
             else
-                nombreFantasia = currentNombreFantasia;
+                filtroEmpresa = currentFiltroEmpresa;
 
-            ViewBag.CurrentNombreFantasia = nombreFantasia;
+            ViewBag.CurrentFiltroEmpresa = filtroEmpresa;
+            ViewBag.FiltroRegimenPagoID = FiltroRegimenPagoID;
+            ViewBag.RegimenesPago = new SelectList(db.RegimenesPago, "RegimenPagoID", "Nombre", FiltroRegimenPagoID);
 
-            var empresas = db.Empresas.AsQueryable();
+            var empresas = db.Empresas.Include(e => e.RegimenPago).AsQueryable();
 
-            if (!String.IsNullOrEmpty(nombreFantasia))
-                empresas = empresas.Where(e => e.NombreFantasia.Contains(nombreFantasia));
+            if (FiltroEmpresaID.HasValue && FiltroEmpresaID.Value > 0)
+                empresas = empresas.Where(e => e.EmpresaID == FiltroEmpresaID.Value);
+            else if(!String.IsNullOrEmpty(filtroEmpresa))
+            {
+                empresas = empresas.Where(e =>
+                    (e.NombreFantasia != null && e.NombreFantasia.Contains(filtroEmpresa)) ||
+                    (e.RazonSocial != null && e.RazonSocial.Contains(filtroEmpresa)) ||
+                    (e.RUT != null && e.RUT.Contains(filtroEmpresa))
+                );
+            }
+            
+            if (FiltroRegimenPagoID.HasValue && FiltroRegimenPagoID.Value > 0)
+                empresas = empresas.Where(e => e.RegimenPagoID == FiltroRegimenPagoID.Value);
 
             int pageSize = 10;
             int pageNumber = (page ?? 1);
@@ -78,8 +90,12 @@ namespace Cursos.Controllers
         public ActionResult Create()
         {
             ViewBag.DepartamentoID = new SelectList(db.Departamentos, "DepartamentoID", "Nombre");
-
-            return View();
+            ViewBag.RegimenPagoID = new SelectList(db.RegimenesPago, "RegimenPagoID", "Nombre", 1); // 1 = Régimen Estándar por defecto
+            
+            // Asegurarnos que el modelo tenga un valor por defecto
+            var empresa = new Empresa { RegimenPagoID = 2 };
+            
+            return View(empresa);
         }
 
         // POST: Empresas/Create
@@ -87,7 +103,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,EmailFacturacion,Telefono")] Empresa empresa)
+        public ActionResult Create([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,EmailFacturacion,Telefono,RegimenPagoID")] Empresa empresa)
         {
             if (ModelState.IsValid)
             {
@@ -100,6 +116,7 @@ namespace Cursos.Controllers
             }
 
             ViewBag.DepartamentoID = new SelectList(db.Departamentos, "DepartamentoID", "Nombre");
+            ViewBag.RegimenPagoID = new SelectList(db.RegimenesPago, "RegimenPagoID", "Nombre");
 
             return View(empresa);
         }
@@ -120,6 +137,7 @@ namespace Cursos.Controllers
             if (empresa.PuedeModificarse())
             {
                 ViewBag.DepartamentoID = new SelectList(db.Departamentos, "DepartamentoID", "Nombre");
+                ViewBag.RegimenPagoID = new SelectList(db.RegimenesPago, "RegimenPagoID", "Nombre", empresa.RegimenPagoID);
                 return View(empresa);
             }
             else
@@ -133,7 +151,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,EmailFacturacion,Telefono")] Empresa empresa)
+        public ActionResult Edit([Bind(Include = "EmpresaID,NombreFantasia,Domicilio,RazonSocial,RUT,DepartamentoID,Localidad,CodigoPostal,Email,EmailFacturacion,Telefono,RegimenPagoID")] Empresa empresa)
         {
             if (ModelState.IsValid)
             {
@@ -146,6 +164,7 @@ namespace Cursos.Controllers
             }
 
             ViewBag.DepartamentoID = new SelectList(db.Departamentos, "DepartamentoID", "Nombre");
+            ViewBag.RegimenPagoID = new SelectList(db.RegimenesPago, "RegimenPagoID", "Nombre", empresa.RegimenPagoID);
 
             return View(empresa);
         }
@@ -241,6 +260,36 @@ namespace Cursos.Controllers
                 stream.Position = 0;
                 return File(stream, contentType, fileName);
             }
+        }
+
+        [HttpGet]
+        public JsonResult AutocompleteEmpresa(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+
+            var sugeridas = db.Empresas
+                .Where(e =>
+                    (e.NombreFantasia != null && e.NombreFantasia.Contains(term)) ||
+                    (e.RazonSocial != null && e.RazonSocial.Contains(term)) ||
+                    (e.RUT != null && e.RUT.Contains(term))
+                )
+                .OrderBy(e => e.NombreFantasia)
+                .Take(10)
+                .ToList() // Salimos de LINQ-to-Entities para usar lógica C#
+                .Select(e => new
+                {
+                    id = e.EmpresaID,
+                    label = e.NombreFantasia
+                                + (!string.IsNullOrEmpty(e.RazonSocial) ? " (" + e.RazonSocial + ")" : "")
+                                + (!string.IsNullOrEmpty(e.RUT) ? " - " + e.RUT : ""),
+                    value = (string.IsNullOrWhiteSpace(e.RUT) || string.IsNullOrWhiteSpace(e.RazonSocial))
+                                ? e.NombreFantasia
+                                : string.Format("{0} / {1}", e.RazonSocial, e.RUT)
+                })
+                .ToList();
+
+            return Json(sugeridas, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

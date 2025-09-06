@@ -44,6 +44,15 @@ namespace Cursos.Models
             }
         }
 
+        [NotMapped]
+        public string ApellidoNombre
+        {
+            get
+            {
+                return string.Format("{0}, {1}", this.Apellido, this.Nombre);
+            }
+        }
+
         public int TipoDocumentoID { get; set; }
         public virtual TipoDocumento TipoDocumento { get; set; }
 

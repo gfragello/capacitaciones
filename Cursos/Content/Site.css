@@ -1,12 +1,41 @@
 ﻿body {
-    padding-top: 50px;
+    padding-top: 70px; /* Incrementado para dar más espacio */
     padding-bottom: 20px;
+}
+
+/* Ajuste responsivo para el navbar cuando se vuelve más alto */
+@media (max-width: 767px) {
+    body {
+        padding-top: 120px; /* Más espacio en móviles donde el navbar colapsa */
+    }
+}
+
+/* Para pantallas grandes, ajuste dinámico si el navbar crece */
+@media (min-width: 768px) {
+    body {
+        padding-top: 80px; /* Espacio adicional para contenido expandido */
+    }
 }
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
     padding-left: 15px;
     padding-right: 15px;
+}
+
+/* Clase para manejar el solapamiento cuando el navbar es muy alto */
+.navbar-expanded {
+    padding-top: 100px !important;
+}
+
+/* Ajustes específicos para el navbar cuando tiene mucho contenido */
+.navbar-fixed-top .navbar-nav > li > a {
+    white-space: nowrap; /* Evita que los enlaces se rompan en múltiples líneas */
+}
+
+/* Si necesitas que los dropdowns tengan mejor espaciado */
+.navbar-fixed-top .dropdown-menu {
+    margin-top: 0;
 }
 
 /* Override the default bootstrap behavior where horizontal description lists 
