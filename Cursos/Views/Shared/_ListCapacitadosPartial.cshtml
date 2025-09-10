@@ -41,7 +41,9 @@
                 @Html.DisplayFor(modelItem => item.DocumentoCompleto)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Empresa.NombreFantasia)
+                <span data-toggle="tooltip" data-placement="top" title="@item.Empresa.NombreCompleto">
+                    @Html.DisplayFor(modelItem => item.Empresa.NombreFantasia)
+                </span>
             </td>
             <td>
                 <a href="@Url.Action("Details", "Capacitados", new { id = item.CapacitadoID }) "><img src="@Url.Content("~/images/verDetalle_16x16.png")" title="Ver detalle" /></a>

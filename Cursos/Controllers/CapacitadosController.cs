@@ -27,9 +27,9 @@ namespace Cursos.Controllers
         // GET: Capacitados
         [Authorize(Roles = "Administrador,AdministradorExterno,ConsultaEmpresa,ConsultaGeneral,InscripcionesExternas")]
         public ActionResult Index(string documento, 
-                                  string currentNombre, string nombre,
-                                  string currentApellido, string apellido, 
-                                  int? currentEmpresaID, int? EmpresaID, 
+                                  string currentNombreCompleto, string nombreCompleto,
+                                  string currentFiltroEmpresa, string filtroEmpresa,
+                                  int? FiltroEmpresaID,
                                   int? currentCursoID, int? CursoID, 
                                   int? page, bool? exportarExcel)
         {
@@ -37,31 +37,21 @@ namespace Cursos.Controllers
             if (User.IsInRole("InscripcionesExternas") && !User.IsInRole("ConsultaEmpresa"))
                 return RedirectToAction("Disponibles", "Jornadas");
 
-            if (nombre != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
+            if (nombreCompleto != null) //si el parámetro vino con algún valor es porque se presionó buscar y se resetea la página a 1
                 page = 1;
             else
-                nombre = currentNombre;
+                nombreCompleto = currentNombreCompleto;
 
-            ViewBag.CurrentNombre = nombre;
+            ViewBag.CurrentNombreCompleto = nombreCompleto;
 
-            if (apellido != null)
+            // Manejo del filtro de empresa con autocompletado
+            if (filtroEmpresa != null)
                 page = 1;
             else
-                apellido = currentApellido;
+                filtroEmpresa = currentFiltroEmpresa;
 
-            ViewBag.CurrentApellido = apellido;
-
-            if (EmpresaID != null)
-                page = 1;
-            else
-            { 
-                if (currentEmpresaID == null)
-                    currentEmpresaID = -1;
-
-                EmpresaID = currentEmpresaID;
-            }
-
-            ViewBag.CurrentEmpresaID = EmpresaID;
+            ViewBag.CurrentFiltroEmpresa = filtroEmpresa;
+            ViewBag.FiltroEmpresaID = FiltroEmpresaID;
 
             if (CursoID != null)
                 page = 1;
@@ -75,22 +65,21 @@ namespace Cursos.Controllers
 
             ViewBag.CurrentCursoID = CursoID;
 
-            List<Empresa> empresasDD;
-
-            if (User.IsInRole("ConsultaEmpresa")) //para este rol solo se muestran los Capacitados de esa empresa
+            // Para usuarios con rol ConsultaEmpresa, se fuerza el filtro a su empresa
+            if (User.IsInRole("ConsultaEmpresa"))
             {
                 var empresaUsuario = db.EmpresasUsuarios.Where(eu => eu.Usuario == User.Identity.Name).FirstOrDefault();
-
-                empresasDD = db.Empresas.Where(e => e.EmpresaID == empresaUsuario.EmpresaID).ToList();
-                EmpresaID = empresaUsuario.EmpresaID;
-
-                ViewBag.EmpresaID = new SelectList(empresasDD, "EmpresaID", "NombreFantasia", EmpresaID);
-            }
-            else
-            {
-                empresasDD = db.Empresas.OrderBy(e => e.NombreFantasia).ToList();
-                empresasDD.Insert(0, new Empresa { EmpresaID = -1, NombreFantasia = "Todas" });
-                ViewBag.EmpresaID = new SelectList(empresasDD, "EmpresaID", "NombreFantasia", EmpresaID);
+                if (empresaUsuario != null)
+                {
+                    FiltroEmpresaID = empresaUsuario.EmpresaID;
+                    var empresa = db.Empresas.Find(empresaUsuario.EmpresaID);
+                    if (empresa != null)
+                    {
+                        filtroEmpresa = empresa.NombreFantasia;
+                        ViewBag.CurrentFiltroEmpresa = filtroEmpresa;
+                        ViewBag.FiltroEmpresaID = FiltroEmpresaID;
+                    }
+                }
             }
 
             List<Curso> cursosDD = db.Cursos.OrderBy(c => c.Descripcion).ToList();
@@ -102,14 +91,31 @@ namespace Cursos.Controllers
             if (!String.IsNullOrEmpty(documento))
                 capacitados = capacitados.Where(c => c.Documento.Contains(documento));
 
-            if (!String.IsNullOrEmpty(nombre))
-                capacitados = capacitados.Where(c => c.Nombre.Contains(nombre));
+            if (!String.IsNullOrEmpty(nombreCompleto))
+            {
+                // Dividir el término de búsqueda en palabras individuales
+                var palabrasBusqueda = nombreCompleto.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                capacitados = capacitados.Where(c => 
+                    // Todas las palabras deben encontrarse en el nombre completo del capacitado
+                    palabrasBusqueda.All(palabra => 
+                        c.Nombre.Contains(palabra) || 
+                        c.Apellido.Contains(palabra)
+                    )
+                );
+            }
 
-            if (!String.IsNullOrEmpty(apellido))
-                capacitados = capacitados.Where(c => c.Apellido.Contains(apellido));
-
-            if (EmpresaID != -1)
-                capacitados = capacitados.Where(c => c.EmpresaID == (int)EmpresaID);
+            // Filtrado por empresa usando el autocompletado
+            if (FiltroEmpresaID.HasValue && FiltroEmpresaID.Value > 0)
+                capacitados = capacitados.Where(c => c.EmpresaID == FiltroEmpresaID.Value);
+            else if (!String.IsNullOrEmpty(filtroEmpresa))
+            {
+                capacitados = capacitados.Where(c =>
+                    (c.Empresa.NombreFantasia != null && c.Empresa.NombreFantasia.Contains(filtroEmpresa)) ||
+                    (c.Empresa.RazonSocial != null && c.Empresa.RazonSocial.Contains(filtroEmpresa)) ||
+                    (c.Empresa.RUT != null && c.Empresa.RUT.Contains(filtroEmpresa))
+                );
+            }
 
             if (CursoID != -1)
                 capacitados = capacitados.Where(c => c.RegistrosCapacitacion.Any(r => r.Jornada.CursoId == (int)CursoID));
@@ -304,8 +310,6 @@ namespace Cursos.Controllers
                         */
 
                         throw new NotImplementedException("El almacenamiento de fotos en BlobStorage no está implementado");
-
-                        break;
                 }
 
                 //si durante la cración se recibe un id de jornada, el capacitado es agregado a esa jornada
@@ -840,6 +844,36 @@ namespace Cursos.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             return PartialView("_CapacitadoCargarFotoPartial", capacitado);
+        }
+
+        [HttpGet]
+        public JsonResult AutocompleteEmpresa(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+
+            var sugeridas = db.Empresas
+                .Where(e =>
+                    (e.NombreFantasia != null && e.NombreFantasia.Contains(term)) ||
+                    (e.RazonSocial != null && e.RazonSocial.Contains(term)) ||
+                    (e.RUT != null && e.RUT.Contains(term))
+                )
+                .OrderBy(e => e.NombreFantasia)
+                .Take(10)
+                .ToList() // Salimos de LINQ-to-Entities para usar lógica C#
+                .Select(e => new
+                {
+                    id = e.EmpresaID,
+                    label = e.NombreFantasia
+                                + (!string.IsNullOrEmpty(e.RazonSocial) ? " (" + e.RazonSocial + ")" : "")
+                                + (!string.IsNullOrEmpty(e.RUT) ? " - " + e.RUT : ""),
+                    value = (string.IsNullOrWhiteSpace(e.RUT) || string.IsNullOrWhiteSpace(e.RazonSocial))
+                                ? e.NombreFantasia
+                                : string.Format("{0} / {1}", e.RazonSocial, e.RUT)
+                })
+                .ToList();
+
+            return Json(sugeridas, JsonRequestBehavior.AllowGet);
         }
     }
 }

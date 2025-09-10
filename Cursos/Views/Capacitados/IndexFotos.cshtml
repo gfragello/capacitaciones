@@ -48,8 +48,24 @@
                         <div class="col-md-5">
                             @Html.Label("Empresa:")
                         </div>
-                        <div class="col-md-10">
-                            @Html.DropDownList("EmpresaID", null, htmlAttributes: new { @class = "form-control" })
+                        <div class="col-md-10" style="position: relative;">
+                            @Html.TextBox("filtroEmpresa", ViewBag.CurrentFiltroEmpresa as string, new
+                            {
+                                @class = "form-control filtro-empresa-input",
+                                autocomplete = "off",
+                                id = "filtroEmpresa",
+                                placeholder = "Buscar empresa por nombre, RUT o razón social...",
+                                style = "padding-right:2rem;"
+                            })
+                            @Html.Hidden("FiltroEmpresaID", ViewBag.FiltroEmpresaID as int? ?? 0, new { id = "FiltroEmpresaID" })
+                            <div id="sugerencias-empresas" class="list-group sugerencias-empresas-dropdown"
+                                 style="position: absolute; z-index: 999; width: 100%; display:none;">
+                            </div>
+                            <span id="clearFiltroEmpresa"
+                                  title="Borrar filtro de empresa"
+                                  style="position: absolute; top: 50%; right: 0.25rem; transform: translateY(-50%); cursor: pointer; padding: 0.25rem 0.5rem;">
+                                <i class="fa fa-times text-secondary"></i>
+                            </span>
                         </div>
                     </div>
 
@@ -80,11 +96,31 @@
     </table>
 }
 
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentFiltroEmpresa = ViewBag.CurrentFiltroEmpresa, FiltroEmpresaID = ViewBag.FiltroEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
 
 @Html.Partial("_ListCapacitadosPartial", Model)
 
 <br />
 Página @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) de @Model.PageCount
 
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentEmpresaID = ViewBag.CurrentEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, currentNombre = ViewBag.CurrentNombre, currentApellido = ViewBag.CurrentApellido, currentFiltroEmpresa = ViewBag.CurrentFiltroEmpresa, FiltroEmpresaID = ViewBag.FiltroEmpresaID, currentCursoID = ViewBag.CurrentCursoID }))
+
+@section scripts {
+    <script src="~/Scripts/empresa-autocomplete.js"></script>
+    <link rel="stylesheet" href="~/Content/empresa-autocomplete.css" />
+    <script>
+        $(function () {
+            initEmpresaAutocomplete({
+                inputId: "filtroEmpresa",
+                hiddenId: "FiltroEmpresaID",
+                sugerenciasId: "sugerencias-empresas",
+                urlAutocomplete: '@Url.Action("AutocompleteEmpresa", "Capacitados")',
+                placeholder: "Buscar empresa por nombre, RUT o razón social...",
+                mensajeNoEncontrada: "No se encontraron empresas",
+                showClearIcon: true,
+                minLength: 3,
+                enableTooltips: true
+            });
+        });
+    </script>
+}
