@@ -11,38 +11,13 @@ ViewBag.Title = "Details";
         <table>
             <tr>
                 <td style="padding-right: 10px">
-
-                    @{
-                        bool tieneFoto = false;
-                    }
-
-                    @if (Model.TipoAlmacenamientoFoto != null)
+                    @if (Model.PathArchivo != null)
                     {
-                        switch (Model.TipoAlmacenamientoFoto)
-                        {
-                            case TipoAlmacenamiento.FileSystem:
-                                if (Model.PathArchivo != null)
-                                {
-                                    tieneFoto = true;
-                                    <a href="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto">
-                                        <img src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
-                                    </a>
-                                }
-                                break;
-
-                            case TipoAlmacenamiento.BlobStorage:
-                                if (Model.BlobStorageUri != null)
-                                {
-                                    tieneFoto = true;
-                                    <a href="@Model.BlobStorageUri">
-                                        <img src="@Model.BlobStorageUri?width=150&height=150&mode=crop&anchor=top" alt="" />
-                                    </a>
-                                }
-                                break;
-                        }
+                        <a href="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto">
+                            <img src="~/images/FotosCapacitados/@Model.PathArchivo.PathCompleto?width=150&height=150&mode=crop&anchor=top" alt="" />
+                        </a>
                     }
-
-                    @if (!tieneFoto)
+                    else
                     {
                         <img src="~/images/sinfoto_150x150.png" alt="Sin foto asociada" />
                     }
@@ -50,7 +25,7 @@ ViewBag.Title = "Details";
                 <td>
                     <h4>Capacitado</h4>
 
-                    @{ 
+                    @{
                         string edad = "";
 
                         if (Model.Edad > 0)

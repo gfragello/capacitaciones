@@ -57,7 +57,7 @@ namespace Cursos.Helpers
                 {
                     ws.Cells[i, 1].Value = registro.Capacitado.DocumentoCompleto;
                     ws.Cells[i, 2].Value = registro.Capacitado.NombreCompleto;
-                    ws.Cells[i, 3].Value = registro.Capacitado.Empresa.NombreFantasia;
+                    ws.Cells[i, 3].Value = registro.Capacitado.Empresa.NombreCompleto;
                     ws.Cells[i, 4].Value = registro.DocumentacionAdicionalDatos;
                     ws.Cells[i, 5].Value = registro.Nota;
 
