@@ -48,6 +48,14 @@
     </div>
 
     <div class="form-group">
+        @Html.LabelFor(model => model.SinVigencia, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.CheckBoxFor(model => model.SinVigencia, new { id = "SinVigencia" })
+            @Html.ValidationMessageFor(model => model.SinVigencia, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group" id="divVigenciaHastaFinAnio">
         @Html.LabelFor(model => model.VigenciaHastaFinAnio, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.CheckBoxFor(model => model.VigenciaHastaFinAnio, new { id = "VigenciaHastaFinAnio" })
@@ -270,6 +278,26 @@
     </div>
 
     <div class="form-group">
+        @Html.LabelFor(model => model.MostrarEnIndexCapacitado, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.MostrarEnIndexCapacitado)
+                @Html.ValidationMessageFor(model => model.MostrarEnIndexCapacitado, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Activo, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.Activo)
+                @Html.ValidationMessageFor(model => model.Activo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <input type="submit" value="Save" class="btn btn-default" />
         </div>
@@ -300,8 +328,9 @@
             // Mostrar/ocultar campos de ActaEmail al cargar la página
             toggleActaEmailFields();
 
-            toggleVigenciaHastaFinAnio();
-            $('#VigenciaHastaFinAnio').change(toggleVigenciaHastaFinAnio);
+            actualizarOpcionesVigencia();
+            $('#VigenciaHastaFinAnio').change(actualizarOpcionesVigencia);
+            $('#SinVigencia').change(actualizarOpcionesVigencia);
         });
 
         function toggleActaEmailFields() {
@@ -365,12 +394,22 @@
             $("#grpRequiereDocumentacionAdicionalInscripcionObligatoria").toggle();
         }
 
-        function toggleVigenciaHastaFinAnio() {
-            if ($('#VigenciaHastaFinAnio').is(':checked')) {
+        function actualizarOpcionesVigencia() {
+            if ($('#SinVigencia').is(':checked')) {
+                $('#VigenciaHastaFinAnio').prop('checked', false);
+                $('#divVigenciaHastaFinAnio').hide();
                 $('#divVigencia').hide();
                 $('#Vigencia').val("0");
+                $('#Vigencia').prop('disabled', true);
+            } else if ($('#VigenciaHastaFinAnio').is(':checked')) {
+                $('#SinVigencia').prop('checked', false);
+                $('#divVigencia').hide();
+                $('#Vigencia').val("0");
+                $('#Vigencia').prop('disabled', true);
             } else {
+                $('#divVigenciaHastaFinAnio').show();
                 $('#divVigencia').show();
+                $('#Vigencia').prop('disabled', false);
             }
         }
 

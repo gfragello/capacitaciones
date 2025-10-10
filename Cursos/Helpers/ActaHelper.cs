@@ -141,17 +141,18 @@ namespace Cursos.Helpers
             // Definir anchos de columnas (porcentajes del ancho total)
             var anchos = new double[]
             {
-                pageWidth * 0.04,  // Ordinal
-                pageWidth * 0.20,  // Nombre (fusionado con Apellido)
+                pageWidth * 0.02,  // Ordinal
+                pageWidth * 0.20,  // Nombre (fusionado con Apellido) - reducido para nueva columna
                 pageWidth * 0.08,  // Documento Completo
                 pageWidth * 0.06,  // Fecha Nac
                 pageWidth * 0.38,  // Empresa
                 pageWidth * 0.16,  // Firma
                 pageWidth * 0.04,  // 1er Reintento
-                pageWidth * 0.04   // 2do Reintento
+                pageWidth * 0.04,  // 2do Reintento
+                pageWidth * 0.02   // Nuevo Ordinal
             };
 
-            var encabezados = new string[] { "#", "Nombre", "Documento", "Fecha Nac", "Empresa", "Firma", "Nota" };
+            var encabezados = new string[] { "#", "Nombre", "Documento", "Fecha Nac", "Empresa", "Firma", "Nota", "#" };
 
             // Dibujar encabezados
             double posicionX = margenIzquierdo;
@@ -164,6 +165,10 @@ namespace Cursos.Helpers
                 {
                     anchoActual = anchos[6] + anchos[7];
                 }
+                else if (i == 7) // Nuevo Ordinal
+                {
+                    anchoActual = anchos[8];
+                }
                 
                 var rect = new XRect(posicionX, posicionY, anchoActual, alturaEncabezado);
                 gfx.DrawRectangle(XBrushes.White, rect);
@@ -172,7 +177,7 @@ namespace Cursos.Helpers
                 tf.Alignment = XParagraphAlignment.Center;
                 tf.DrawString(encabezados[i], fuenteEncabezado, XBrushes.Black, rect, XStringFormats.TopLeft);
                 
-                posicionX += anchos[i];
+                posicionX += anchoActual;
             }
 
             posicionY += alturaEncabezado;
@@ -185,82 +190,67 @@ namespace Cursos.Helpers
                 posicionX = margenIzquierdo;
                 var registro = fila < capacitados.Count ? capacitados[fila] : null;
 
-                // Ordinal
-                var rectOrdinal = new XRect(posicionX, posicionY, anchos[0], alturaFila);
-                gfx.DrawRectangle(XBrushes.White, rectOrdinal);
-                gfx.DrawRectangle(XPens.Black, rectOrdinal);
-                tf.Alignment = XParagraphAlignment.Center;
-                tf.DrawString(ordinal.ToString(), fuenteTexto, XBrushes.Black, rectOrdinal, XStringFormats.TopLeft);
-                posicionX += anchos[0];
-
-                if (registro != null)
+                // Dibujar cada columna
+                for (int col = 0; col < anchos.Length; col++)
                 {
-                    const double paddingInterno = 2; // Margen interno para el texto
-                    
-                    // Nombre (fusionado con Apellido)
-                    var rectNombre = new XRect(posicionX, posicionY, anchos[1], alturaFila);
-                    gfx.DrawRectangle(XBrushes.White, rectNombre);
-                    gfx.DrawRectangle(XPens.Black, rectNombre);
-                    var rectNombreTexto = new XRect(posicionX + paddingInterno, posicionY, anchos[1] - paddingInterno, alturaFila);
-                    tf.Alignment = XParagraphAlignment.Left;
-                    tf.DrawString(registro.Capacitado.ApellidoNombre ?? "", fuenteTexto, XBrushes.Black, rectNombreTexto, XStringFormats.TopLeft);
-                    posicionX += anchos[1];
+                    double anchoCol = anchos[col];
+                    var rect = new XRect(posicionX, posicionY, anchoCol, alturaFila);
+                    gfx.DrawRectangle(XBrushes.White, rect);
+                    gfx.DrawRectangle(XPens.Black, rect);
 
-                    // Documento Completo
-                    var rectDocumento = new XRect(posicionX, posicionY, anchos[2], alturaFila);
-                    gfx.DrawRectangle(XBrushes.White, rectDocumento);
-                    gfx.DrawRectangle(XPens.Black, rectDocumento);
-                    var rectDocumentoTexto = new XRect(posicionX + paddingInterno, posicionY, anchos[2] - paddingInterno, alturaFila);
-                    tf.Alignment = XParagraphAlignment.Left;
-                    tf.DrawString(registro.Capacitado.DocumentoCompleto ?? "", fuenteTexto, XBrushes.Black, rectDocumentoTexto, XStringFormats.TopLeft);
-                    posicionX += anchos[2];
-
-                    // Fecha Nacimiento
-                    var rectFecha = new XRect(posicionX, posicionY, anchos[3], alturaFila);
-                    gfx.DrawRectangle(XBrushes.White, rectFecha);
-                    gfx.DrawRectangle(XPens.Black, rectFecha);
-                    var rectFechaTexto = new XRect(posicionX + paddingInterno, posicionY, anchos[3] - paddingInterno, alturaFila);
-                    var fechaNac = registro.Capacitado.Fecha?.ToString("dd/MM/yyyy") ?? "";
-                    tf.DrawString(fechaNac, fuenteTexto, XBrushes.Black, rectFechaTexto, XStringFormats.TopLeft);
-                    posicionX += anchos[3];
-
-                    // Empresa
-                    var rectEmpresa = new XRect(posicionX, posicionY, anchos[4], alturaFila);
-                    gfx.DrawRectangle(XBrushes.White, rectEmpresa);
-                    gfx.DrawRectangle(XPens.Black, rectEmpresa);
-                    var rectEmpresaTexto = new XRect(posicionX + paddingInterno, posicionY, anchos[4] - paddingInterno, alturaFila);
-                    tf.Alignment = XParagraphAlignment.Left;
-                    tf.DrawString(registro.Capacitado.Empresa?.NombreCompleto ?? "", fuenteTexto, XBrushes.Black, rectEmpresaTexto, XStringFormats.TopLeft);
-                    posicionX += anchos[4];
-
-                    // Firma (siempre vacía)
-                    var rectFirma = new XRect(posicionX, posicionY, anchos[5], alturaFila);
-                    gfx.DrawRectangle(XBrushes.White, rectFirma);
-                    gfx.DrawRectangle(XPens.Black, rectFirma);
-                    posicionX += anchos[5];
-
-                    // 1er Reintento (vacío)
-                    var rectReintento1 = new XRect(posicionX, posicionY, anchos[6], alturaFila);
-                    gfx.DrawRectangle(XBrushes.White, rectReintento1);
-                    gfx.DrawRectangle(XPens.Black, rectReintento1);
-                    posicionX += anchos[6];
-
-                    // 2do Reintento (vacío)
-                    var rectReintento2 = new XRect(posicionX, posicionY, anchos[7], alturaFila);
-                    gfx.DrawRectangle(XBrushes.White, rectReintento2);
-                    gfx.DrawRectangle(XPens.Black, rectReintento2);
-                    posicionX += anchos[7];
-                }
-                else
-                {
-                    // Dibujar celdas vacías
-                    for (int i = 1; i < anchos.Length; i++)
+                    if (registro != null)
                     {
-                        var rect = new XRect(posicionX, posicionY, anchos[i], alturaFila);
-                        gfx.DrawRectangle(XBrushes.White, rect);
-                        gfx.DrawRectangle(XPens.Black, rect);
-                        posicionX += anchos[i];
+                        const double paddingInterno = 2; // Margen interno para el texto
+                        
+                        if (col == 0) // Ordinal
+                        {
+                            tf.Alignment = XParagraphAlignment.Center;
+                            tf.DrawString(ordinal.ToString(), fuenteTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
+                        }
+                        else if (col == 1) // Nombre
+                        {
+                            var rectTexto = new XRect(posicionX + paddingInterno, posicionY, anchoCol - paddingInterno, alturaFila);
+                            tf.Alignment = XParagraphAlignment.Left;
+                            tf.DrawString(registro.Capacitado.ApellidoNombre ?? "", fuenteTexto, XBrushes.Black, rectTexto, XStringFormats.TopLeft);
+                        }
+                        else if (col == 2) // Documento
+                        {
+                            var rectTexto = new XRect(posicionX + paddingInterno, posicionY, anchoCol - paddingInterno, alturaFila);
+                            tf.Alignment = XParagraphAlignment.Left;
+                            tf.DrawString(registro.Capacitado.DocumentoCompleto ?? "", fuenteTexto, XBrushes.Black, rectTexto, XStringFormats.TopLeft);
+                        }
+                        else if (col == 3) // Fecha Nacimiento
+                        {
+                            var rectTexto = new XRect(posicionX + paddingInterno, posicionY, anchoCol - paddingInterno, alturaFila);
+                            var fechaNac = registro.Capacitado.Fecha?.ToString("dd/MM/yyyy") ?? "";
+                            tf.DrawString(fechaNac, fuenteTexto, XBrushes.Black, rectTexto, XStringFormats.TopLeft);
+                        }
+                        else if (col == 4) // Empresa
+                        {
+                            var rectTexto = new XRect(posicionX + paddingInterno, posicionY, anchoCol - paddingInterno, alturaFila);
+                            tf.Alignment = XParagraphAlignment.Left;
+                            tf.DrawString(registro.Capacitado.Empresa?.NombreCompleto ?? "", fuenteTexto, XBrushes.Black, rectTexto, XStringFormats.TopLeft);
+                        }
+                        else if (col == 5) // Firma
+                        {
+                            // Siempre vacía
+                        }
+                        else if (col == 6) // 1er Reintento
+                        {
+                            // Vacío
+                        }
+                        else if (col == 7) // 2do Reintento
+                        {
+                            // Vacío
+                        }
+                        else if (col == 8) // Nuevo Ordinal
+                        {
+                            tf.Alignment = XParagraphAlignment.Center;
+                            tf.DrawString(ordinal.ToString(), fuenteTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
+                        }
                     }
+
+                    posicionX += anchoCol;
                 }
 
                 posicionY += alturaFila;

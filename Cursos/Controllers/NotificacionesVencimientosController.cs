@@ -277,7 +277,9 @@ namespace Cursos.Controllers
             html += n.RegistroCapacitacion.Jornada.Curso.Descripcion;
             html += "</td>";
             html += "<td>";
-            html += n.RegistroCapacitacion.FechaVencimiento.ToShortDateString();
+        html += n.RegistroCapacitacion.FechaVencimiento.HasValue ?
+            n.RegistroCapacitacion.FechaVencimiento.Value.ToShortDateString() :
+            "Sin vencimiento";
             html += "</td>";
             html += "</tr> ";
 
@@ -310,7 +312,7 @@ namespace Cursos.Controllers
             var notificacionVencimientos = db.NotificacionVencimientos
                                              .Where(n => n.RegistroCapacitacion.Jornada.CursoId != 2 && n.RegistroCapacitacion.Jornada.CursoId != 4 && n.RegistroCapacitacion.Jornada.CursoId != 5)
                                              .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
-                                             .Where(n => n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar)
+                                             .Where(n => n.RegistroCapacitacion.FechaVencimiento.HasValue && n.RegistroCapacitacion.FechaVencimiento.Value <= proximaFechaVencimientoNotificar)
                                              .OrderBy(n => n.RegistroCapacitacion.Jornada.Curso.CursoID)
                                              .OrderBy(n => n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia)
                                              .Include(n => n.RegistroCapacitacion);
@@ -356,7 +358,7 @@ namespace Cursos.Controllers
             {
 
                 var rcSinNotificacioneAsociadas =
-                db.RegistroCapacitacion.Where(r => !db.NotificacionVencimientos.Any(n => n.RegistroCapacitacionID == r.RegistroCapacitacionID)).ToList();
+                db.RegistroCapacitacion.Where(r => r.FechaVencimiento.HasValue && !db.NotificacionVencimientos.Any(n => n.RegistroCapacitacionID == r.RegistroCapacitacionID)).ToList();
 
                 if (rcSinNotificacioneAsociadas.Count > 0)
                 {
@@ -442,7 +444,7 @@ namespace Cursos.Controllers
             {
                 var notificacionVencimientos = db.NotificacionVencimientos
                                                  .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
-                                                 .Where(n => n.RegistroCapacitacion.FechaVencimiento <= proximaFechaVencimientoNotificar);
+                                                 .Where(n => n.RegistroCapacitacion.FechaVencimiento.HasValue && n.RegistroCapacitacion.FechaVencimiento.Value <= proximaFechaVencimientoNotificar);
 
                 notificacionVencimientosIds = notificacionVencimientos.Select(n => n.NotificacionVencimientoID).ToList();
                 capacitadosIds = notificacionVencimientos.Select(n => n.RegistroCapacitacion.Capacitado.CapacitadoID).ToList();
@@ -529,7 +531,7 @@ namespace Cursos.Controllers
                                      join j in db.Jornada on rc.JornadaID equals j.JornadaID
                                      join cu in db.Cursos on j.CursoId equals cu.CursoID
                                      join e in db.Empresas on c.EmpresaID equals e.EmpresaID
-                                     where rc.FechaVencimiento > fechaDesde && !new int[] { 2, 4, 5 }.Contains(cu.CursoID)
+                                     where rc.FechaVencimiento.HasValue && rc.FechaVencimiento.Value > fechaDesde && !new int[] { 2, 4, 5 }.Contains(cu.CursoID)
                                      orderby j.Fecha
                                      select new
                                      {
@@ -558,7 +560,7 @@ namespace Cursos.Controllers
                 r.Empresa,
                 r.Curso,
                 Cursado = r.Cursado.ToString("dd/MM/yyyy"),
-                Vencimiento = r.Vencimiento.ToString("dd/MM/yyyy"),
+                Vencimiento = r.Vencimiento.HasValue ? r.Vencimiento.Value.ToString("dd/MM/yyyy") : "Sin vencimiento",
                 r.EstadoNotificacion,
                 Actualizacion = r.Actualizacion.ToString("dd/MM/yyyy") != "01/01/0001" ? r.Actualizacion.ToString("dd/MM/yyyy") : "",
                 r.RegistroCapacitacionID,

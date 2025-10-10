@@ -79,10 +79,12 @@ namespace Cursos.Helpers
                 fuenteTexto = new XFont("NotoSansMono", 16, XFontStyle.Regular);
                 foreach (var r in c.ObtenerRegistrosCapacitacionVigentes())
                 {
+                    string vencimientoTexto = r.FechaVencimiento.HasValue ? r.FechaVencimiento.Value.ToShortDateString() : "Sin vencimiento";
+
                     string textoRegistro =
                     string.Format("   {0, -25} {1, -12} {2, -12}", r.Jornada.Curso.Descripcion,
                                                       r.Jornada.Fecha.ToShortDateString(),
-                                                      r.FechaVencimiento.ToShortDateString());
+                                                      vencimientoTexto);
 
                     posicionY = posicionYInicial + (alturaItem * item);
 

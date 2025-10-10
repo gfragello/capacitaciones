@@ -50,6 +50,10 @@
                     else if (registroCapacitacionEnJornadaActual == null)
                     {
                     <span data-capacitadoid="@item.CapacitadoID.ToString()" class="glyphicon glyphicon-plus-sign btnSeleccionarCapacitado" style="color: #017d49; cursor: pointer;"></span>
+                        if (User.IsInRole("Administrador"))
+                        {
+                            <span onclick="abrirModalCapacitado(@item.CapacitadoID)" class="glyphicon glyphicon-eye-open" style="color: #017d49; cursor: pointer; margin-left: 10px;" title="Ver detalle"></span>
+                        }
                     }
                     else
                     {

@@ -431,14 +431,18 @@ namespace Cursos.Controllers
 
         private string FechaVencimientoString(int JornadaId)
         {
-            DateTime FechaVencimiento = CalcularFechaVencimiento(JornadaId);
-            return FechaVencimiento.Day.ToString().PadLeft(2, '0') + "/" + FechaVencimiento.Month.ToString().PadLeft(2, '0') + "/" + FechaVencimiento.Year.ToString();
+            DateTime? fechaVencimiento = CalcularFechaVencimiento(JornadaId);
+
+            if (!fechaVencimiento.HasValue)
+                return string.Empty;
+
+            return fechaVencimiento.Value.Day.ToString().PadLeft(2, '0') + "/" + fechaVencimiento.Value.Month.ToString().PadLeft(2, '0') + "/" + fechaVencimiento.Value.Year.ToString();
         }
 
-        private DateTime CalcularFechaVencimiento(int JornadaId)
+        private DateTime? CalcularFechaVencimiento(int JornadaId)
         {
             var jornada = db.Jornada.Where(j => j.JornadaID == JornadaId).Include(j => j.Curso).FirstOrDefault();
-            return jornada.ObtenerFechaVencimiento();
+            return jornada?.ObtenerFechaVencimiento();
         }
 
         protected override void Dispose(bool disposing)

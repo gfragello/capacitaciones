@@ -81,7 +81,7 @@ namespace Cursos.Controllers
             var capacitados = db.Capacitados.Where(c => c.EmpresaID == id).Include(c => c.RegistrosCapacitacion);
             ViewBag.Capacitados = capacitados.OrderBy(c => c.Apellido).ToPagedList(pageNumber, pageSize);
 
-            ViewBag.Cursos = db.Cursos.OrderBy(c => c.Descripcion).ToList();
+            ViewBag.Cursos = db.Cursos.Where(c => c.MostrarEnIndexCapacitado).OrderBy(c => c.Descripcion).ToList();
 
             return View(empresa);
         }

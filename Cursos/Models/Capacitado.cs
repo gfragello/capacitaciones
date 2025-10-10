@@ -173,7 +173,7 @@ namespace Cursos.Models
 
         public List<RegistroCapacitacion> ObtenerRegistrosCapacitacionVigentes()
         {
-            return this.RegistrosCapacitacion.Where(r => r.FechaVencimiento > DateTime.Now).ToList();
+            return this.RegistrosCapacitacion.Where(r => !r.FechaVencimiento.HasValue || r.FechaVencimiento > DateTime.Now).ToList();
         }
 
         public List<RegistroCapacitacion> ObtenerRegistrosCapacitacionEvaluados()

@@ -4,7 +4,10 @@
     ViewBag.Title = "Edit";
 }
 
-<h4>Capacitado - Editar</h4>
+@if (!(ViewBag.IsAjax ?? false))
+{
+    <h4>Capacitado - Editar</h4>
+}
 
 @Html.Partial("_DatosModificacionPartial", Model)
 
@@ -167,9 +170,12 @@ else
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+@if (!(ViewBag.IsAjax ?? false))
+{
+    <div>
+        @Html.ActionLink("Back to List", "Index")
+    </div>
+}
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

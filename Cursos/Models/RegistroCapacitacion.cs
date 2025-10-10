@@ -42,10 +42,9 @@ namespace Cursos.Models
         public int CapacitadoID { get; set; }
         public virtual Capacitado Capacitado { get; set; }
 
-        [Display(Name = "Fecha Vencimiento")]
-        [Required(ErrorMessage = "Debe ingresar la {0}")]
-        [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
-        public DateTime FechaVencimiento { get; set; }
+    [Display(Name = "Fecha Vencimiento")]
+    [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true, NullDisplayText = "Sin vencimiento")]
+    public DateTime? FechaVencimiento { get; set; }
 
         public EstadosRegistroCapacitacion Estado { get; set; }
 
@@ -66,12 +65,15 @@ namespace Cursos.Models
         public string DocumentacionAdicionalDatos { get; set; }
 
         [NotMapped]
-        private DateTime FechaInicioNoficacionVencimiento
+        private DateTime? FechaInicioNoficacionVencimiento
         {
             get
             {
                 const double diasAnticipacionAviso = 30;
-                return this.FechaVencimiento.AddDays(diasAnticipacionAviso);
+                if (!this.FechaVencimiento.HasValue)
+                    return null;
+
+                return this.FechaVencimiento.Value.AddDays(diasAnticipacionAviso);
             }
         }
 
@@ -81,7 +83,7 @@ namespace Cursos.Models
             get
             {
                 //DateTime fechaInicioControlVencimientos = new DateTime(2016, 1, 15);
-                return this.FechaInicioNoficacionVencimiento >= DateTime.Now;
+                return this.FechaInicioNoficacionVencimiento.HasValue && this.FechaInicioNoficacionVencimiento.Value >= DateTime.Now;
             }
         }
 

@@ -73,7 +73,14 @@
         @if (item.EdicionDatosCapacitadoPermitida)
         {
             <td>
-                @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+                @if (User.IsInRole("Administrador"))
+                {
+                    <a href="#" onclick="abrirModalCapacitado(@item.CapacitadoID)">@Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)</a>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.Capacitado.DocumentoCompleto)
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Capacitado.NombreCompleto)

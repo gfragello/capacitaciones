@@ -1,58 +1,444 @@
 ﻿@model Cursos.Models.Curso
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Detalle del Curso";
 }
 
-<h2>Details</h2>
+<style>
+    .course-details-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-<div>
-    <h4>Curso</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </dt>
+    .course-header {
+        color: white;
+        padding: 15px 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Descripcion)
-        </dd>
+    .course-header h2 {
+        margin: 0 0 10px 0;
+        font-size: 1.6em;
+        font-weight: bold;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Costo)
-        </dt>
+    .course-header .subtitle {
+        font-size: 1.1em;
+        opacity: 0.95;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Costo)
-        </dd>
+    .info-card {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Horas)
-        </dt>
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Horas)
-        </dd>
+    .card-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #28a745;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Vigencia)
-        </dt>
+    .card-title i {
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Vigencia)
-        </dd>
+    .info-row {
+        display: flex;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+        align-items: center;
+    }
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Modulo)
-        </dt>
+    .info-row:last-child {
+        border-bottom: none;
+    }
 
-        <dd>
-            @Html.DisplayFor(model => model.Modulo)
-        </dd>
+    .info-label {
+        font-weight: 600;
+        color: #555;
+        width: 40%;
+        min-width: 200px;
+    }
 
-    </dl>
+    .info-value {
+        color: #333;
+        flex: 1;
+    }
+
+    .badge-status {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: bold;
+    }
+
+    .badge-active {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .badge-inactive {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .badge-yes {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .badge-no {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .color-preview {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 5px;
+        border: 2px solid #ddd;
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-custom {
+        padding: 12px 30px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+
+    .btn-edit {
+        background-color: #667eea;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background-color: #5568d3;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-back:hover {
+        background-color: #5a6268;
+        color: white;
+        text-decoration: none;
+    }
+
+    .html-content {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 4px solid #667eea;
+    }
+</style>
+
+<div class="course-details-container">
+    <div class="course-header" style="background: linear-gradient(135deg, @Model.ColorDeFondo 0%, #ffffff 100%);">
+        <h2>@Model.Descripcion</h2>
+    </div>
+
+    <!-- Información Básica -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-info-sign"></i>
+            Información Básica
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.Costo)</div>
+            <div class="info-value"><strong>$@Model.Costo</strong></div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.Horas)</div>
+            <div class="info-value">@Model.Horas horas</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.Modulo)</div>
+            <div class="info-value">@Model.Modulo</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.ColorDeFondo)</div>
+            <div class="info-value">
+                <span class="color-preview" style="background-color: @Model.ColorDeFondo;"></span>
+                @Model.ColorDeFondo
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.Activo)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.Activo ? "badge-active" : "badge-inactive")">
+                    @(Model.Activo ? "Activo" : "Inactivo")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vigencia -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-calendar"></i>
+            Vigencia
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.SinVigencia)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.SinVigencia ? "badge-yes" : "badge-no")">
+                    @(Model.SinVigencia ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.VigenciaHastaFinAnio)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.VigenciaHastaFinAnio ? "badge-yes" : "badge-no")">
+                    @(Model.VigenciaHastaFinAnio ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        @if (!Model.SinVigencia && !Model.VigenciaHastaFinAnio)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.Vigencia)</div>
+                <div class="info-value">@Model.Vigencia años</div>
+            </div>
+        }
+    </div>
+
+    <!-- Evaluación -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-education"></i>
+            Evaluación y Autorización
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.EvaluacionConNota)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.EvaluacionConNota ? "badge-yes" : "badge-no")">
+                    @(Model.EvaluacionConNota ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        @if (Model.EvaluacionConNota)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.PuntajeMinimo)</div>
+                <div class="info-value">@Model.PuntajeMinimo</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.PuntajeMaximo)</div>
+                <div class="info-value">@Model.PuntajeMaximo</div>
+            </div>
+        }
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.RequiereAutorizacion)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.RequiereAutorizacion ? "badge-yes" : "badge-no")">
+                    @(Model.RequiereAutorizacion ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Asistentes -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-user"></i>
+            Asistentes e Inscripción
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.TieneMinimoAsistentes)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.TieneMinimoAsistentes ? "badge-yes" : "badge-no")">
+                    @(Model.TieneMinimoAsistentes ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        @if (Model.TieneMinimoAsistentes)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.MinimoAsistentes)</div>
+                <div class="info-value">@Model.MinimoAsistentes personas</div>
+            </div>
+        }
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.TieneMaximoAsistentes)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.TieneMaximoAsistentes ? "badge-yes" : "badge-no")">
+                    @(Model.TieneMaximoAsistentes ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        @if (Model.TieneMaximoAsistentes)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.MaximoAsistentes)</div>
+                <div class="info-value">@Model.MaximoAsistentes personas</div>
+            </div>
+        }
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.TieneCierreIncripcion)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.TieneCierreIncripcion ? "badge-yes" : "badge-no")">
+                    @(Model.TieneCierreIncripcion ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        @if (Model.TieneCierreIncripcion)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.HorasCierreInscripcion)</div>
+                <div class="info-value">@Model.HorasCierreInscripcion horas antes</div>
+            </div>
+        }
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.PermiteInscripcionesExternas)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.PermiteInscripcionesExternas ? "badge-yes" : "badge-no")">
+                    @(Model.PermiteInscripcionesExternas ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Envíos OVAL -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-send"></i>
+            Envíos OVAL
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.PermiteEnviosOVAL)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.PermiteEnviosOVAL ? "badge-yes" : "badge-no")">
+                    @(Model.PermiteEnviosOVAL ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        @if (Model.PermiteEnviosOVAL && Model.PuntoServicio != null)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.PuntoServicio)</div>
+                <div class="info-value">@Model.PuntoServicio.Nombre</div>
+            </div>
+        }
+    </div>
+
+    <!-- Documentación Adicional -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-file"></i>
+            Documentación Adicional
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.RequiereDocumentacionAdicionalInscripcion)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.RequiereDocumentacionAdicionalInscripcion ? "badge-yes" : "badge-no")">
+                    @(Model.RequiereDocumentacionAdicionalInscripcion ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+        @if (Model.RequiereDocumentacionAdicionalInscripcion)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.DocumentacionAdicionalIdentificador)</div>
+                <div class="info-value">@Model.DocumentacionAdicionalIdentificador</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.RequiereDocumentacionAdicionalInscripcionObligatoria)</div>
+                <div class="info-value">
+                    <span class="badge-status @(Model.RequiereDocumentacionAdicionalInscripcionObligatoria ? "badge-yes" : "badge-no")">
+                        @(Model.RequiereDocumentacionAdicionalInscripcionObligatoria ? "Sí" : "No")
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Envío de Acta por Email -->
+    @if (Model.EnviarActaEmail)
+    {
+        <div class="info-card">
+            <div class="card-title">
+                <i class="glyphicon glyphicon-envelope"></i>
+                Envío de Acta por Email
+            </div>
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.EnviarActaEmail)</div>
+                <div class="info-value">
+                    <span class="badge-status badge-yes">Sí</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.ActaEmail)</div>
+                <div class="info-value">@Model.ActaEmail</div>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.ActaEmailCuerpo))
+            {
+                <div class="info-row">
+                    <div class="info-label">@Html.DisplayNameFor(model => model.ActaEmailCuerpo)</div>
+                    <div class="info-value">
+                        <div class="html-content">
+                            @Html.Raw(Model.ActaEmailCuerpo)
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Otras Configuraciones -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-cog"></i>
+            Otras Configuraciones
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.MostrarEnIndexCapacitado)</div>
+            <div class="info-value">
+                <span class="badge-status @(Model.MostrarEnIndexCapacitado ? "badge-yes" : "badge-no")">
+                    @(Model.MostrarEnIndexCapacitado ? "Sí" : "No")
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="action-buttons">
+        @Html.ActionLink("Editar", "Edit", new { id = Model.CursoID }, new { @class = "btn-custom btn-edit" })
+        @Html.ActionLink("Volver al Listado", "Index", null, new { @class = "btn-custom btn-back" })
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.CursoID }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

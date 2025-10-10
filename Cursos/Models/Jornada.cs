@@ -498,8 +498,11 @@ namespace Cursos.Models
         }
 
         //hay un error en esta función cuando this.Fecha es 29 de febrero
-        public DateTime ObtenerFechaVencimiento()
+        public DateTime? ObtenerFechaVencimiento()
         {
+            if (this.Curso.SinVigencia)
+                return null;
+
             if (this.Curso.VigenciaHastaFinAnio)
                 return new DateTime(this.Fecha.Year, 12, 31);
             else //para los cursos que tengan especificada una vigencia en años

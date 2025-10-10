@@ -625,6 +625,14 @@
     <Compile Include="Migrations\202509021807173_DocumentosInteres.Designer.cs">
       <DependentUpon>202509021807173_DocumentosInteres.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202509292124178_Curso_MostrarEnIndex_Activo.cs" />
+    <Compile Include="Migrations\202509292124178_Curso_MostrarEnIndex_Activo.Designer.cs">
+      <DependentUpon>202509292124178_Curso_MostrarEnIndex_Activo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510030311425_Curso_SinVigencia.cs" />
+    <Compile Include="Migrations\202510030311425_Curso_SinVigencia.Designer.cs">
+      <DependentUpon>202510030311425_Curso_SinVigencia.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -847,6 +855,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509021807173_DocumentosInteres.resx">
       <DependentUpon>202509021807173_DocumentosInteres.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509292124178_Curso_MostrarEnIndex_Activo.resx">
+      <DependentUpon>202509292124178_Curso_MostrarEnIndex_Activo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510030311425_Curso_SinVigencia.resx">
+      <DependentUpon>202510030311425_Curso_SinVigencia.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />

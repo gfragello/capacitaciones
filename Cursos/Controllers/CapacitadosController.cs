@@ -82,7 +82,7 @@ namespace Cursos.Controllers
                 }
             }
 
-            List<Curso> cursosDD = db.Cursos.OrderBy(c => c.Descripcion).ToList();
+            List<Curso> cursosDD = db.Cursos.Where(c => c.MostrarEnIndexCapacitado).OrderBy(c => c.Descripcion).ToList();
             cursosDD.Insert(0, new Curso { CursoID = -1, Descripcion = "Todos" });
             ViewBag.CursoID = new SelectList(cursosDD, "CursoID", "Descripcion", CursoID);
 
@@ -125,7 +125,7 @@ namespace Cursos.Controllers
             int pageSize = 10;
             int pageNumber = (page ?? 1);
 
-            ViewBag.Cursos = db.Cursos.OrderBy(c => c.Descripcion).ToList();
+            ViewBag.Cursos = db.Cursos.Where(c => c.MostrarEnIndexCapacitado).OrderBy(c => c.Descripcion).ToList();
 
             bool exportar = exportarExcel != null ? (bool)exportarExcel : false;
 
@@ -151,7 +151,7 @@ namespace Cursos.Controllers
                 ViewBag.Capacitados = new List<Capacitado>().ToPagedList(1,1);
             }
 
-            ViewBag.Cursos = db.Cursos.OrderBy(c => c.Descripcion).ToList();
+            ViewBag.Cursos = db.Cursos.Where(c => c.MostrarEnIndexCapacitado).OrderBy(c => c.Descripcion).ToList();
 
             return View();
         }
@@ -172,7 +172,15 @@ namespace Cursos.Controllers
             bool generar = generarCertificado != null ? (bool)generarCertificado : false;
 
             if (!generar)
-                return View(capacitado);
+            {
+                if (Request.IsAjaxRequest())
+                {
+                    ViewBag.IsAjax = true;
+                    return PartialView(capacitado);
+                }
+                else
+                    return View(capacitado);
+            }
             else
                 return GenerarCertificado((int)id);
         }
@@ -415,7 +423,15 @@ namespace Cursos.Controllers
             //{
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
                 ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
-                return View(capacitado);
+                if (Request.IsAjaxRequest())
+                {
+                    ViewBag.IsAjax = true;
+                    return PartialView(capacitado);
+                }
+                else
+                {
+                    return View(capacitado);
+                }
             //}
             //else
             //{
@@ -465,20 +481,36 @@ namespace Cursos.Controllers
                 db.Entry(capacitado).State = EntityState.Modified;
                 db.SaveChanges();
 
-                if (!string.IsNullOrEmpty(previousUrl))
+                if (Request.IsAjaxRequest())
                 {
-                    return Redirect(previousUrl);
+                    ViewBag.IsAjax = true;
+                    return PartialView("Details", capacitado);
                 }
                 else
                 {
-                    return RedirectToAction("Details", new { id = capacitado.CapacitadoID });
+                    if (!string.IsNullOrEmpty(previousUrl))
+                    {
+                        return Redirect(previousUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Details", new { id = capacitado.CapacitadoID });
+                    }
                 }
             }
             ViewBag.EmpresaID = new SelectList(db.Empresas.OrderBy(e => e.NombreFantasia).ToList(), "EmpresaID", "NombreFantasia", capacitado.EmpresaID);
             ViewBag.TipoDocumentoID = new SelectList(db.TiposDocumento.ToList(), "TipoDocumentoID", "Descripcion", capacitado.TipoDocumentoID);
 
             //hubo un error. Se regresa a la pantalla de edición
-            return View(capacitado);
+            if (Request.IsAjaxRequest())
+            {
+                ViewBag.IsAjax = true;
+                return PartialView(capacitado);
+            }
+            else
+            {
+                return View(capacitado);
+            }
         }
 
         // GET: Capacitados/Delete/5
@@ -673,12 +705,19 @@ namespace Cursos.Controllers
                         {
                             var r = c.UltimoRegistroCapacitacionPorCurso(curso.CursoID, true)[0];
 
-                            ws.Cells[i, j].Value = r.FechaVencimiento.ToShortDateString();
-
-                            if (r.FechaVencimiento < DateTime.Now) //si el regsitro ya está vencido
+                            if (r.FechaVencimiento.HasValue)
                             {
-                                ws.Cells[i, j].Style.Font.Color.SetColor(Color.Red);
-                                ws.Cells[i, j].Style.Font.Bold = true;
+                                ws.Cells[i, j].Value = r.FechaVencimiento.Value.ToShortDateString();
+
+                                if (r.FechaVencimiento.Value < DateTime.Now) //si el regsitro ya está vencido
+                                {
+                                    ws.Cells[i, j].Style.Font.Color.SetColor(Color.Red);
+                                    ws.Cells[i, j].Style.Font.Bold = true;
+                                }
+                            }
+                            else
+                            {
+                                ws.Cells[i, j].Value = "Sin vencimiento";
                             }
                         }
                         else

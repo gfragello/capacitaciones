@@ -39,9 +39,12 @@ namespace Cursos.Models
         [Required(ErrorMessage = "Debe ingresar la horas del curso")]
         public int Horas { get; set; }
 
-        [Display(Name = "Años de vigencia")]
-        [Required(ErrorMessage = "Debe ingresar los {0} del curso")]
-        public int Vigencia { get; set; }
+    [Display(Name = "Años de vigencia")]
+    [Required(ErrorMessage = "Debe ingresar los {0} del curso")]
+    public int Vigencia { get; set; }
+
+    [Display(Name = "Sin vigencia")]
+    public bool SinVigencia { get; set; }
 
         [Display(Name = "Vigencia hasta fin de año")]
         public bool VigenciaHastaFinAnio { get; set; }
@@ -115,6 +118,12 @@ namespace Cursos.Models
 
         [Display(Name = "Documentación adicional es obligatoria")]
         public bool RequiereDocumentacionAdicionalInscripcionObligatoria { get; set; }
+
+        [Display(Name = "Mostrar en Index de capacitados")]
+        public bool MostrarEnIndexCapacitado { get; set; }
+
+        [Display(Name = "Activo")]
+        public bool Activo { get; set; }
 
         public virtual List<Jornada> Jornadas { get; set; }
 

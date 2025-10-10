@@ -2,56 +2,139 @@
 
 @{
     ViewBag.Title = "Cursos";
+    bool mostrarInactivos = ViewBag.MostrarInactivos != null ? ViewBag.MostrarInactivos : false;
 }
 
-<h2>Cursos</h2>
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <h2>Cursos</h2>
+        </div>
+    </div>
 
-<p>
-    @Html.ActionLink("Crear Nuevo", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Costo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Horas)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Vigencia)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Modulo)
-        </th>
-        <th></th>
-    </tr>
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="btn-group">
+                @Html.ActionLink("Crear Nuevo", "Create", null, new { @class = "btn btn-primary" })
+            </div>
+        </div>
+    </div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Descripcion)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Costo)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Horas)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Vigencia)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Modulo)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.CursoID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.CursoID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.CursoID })
-        </td>
-    </tr>
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <a href="javascript:void(0);" class="filter-toggle" id="toggleFilters">
+                Ocultar Filtros
+            </a>
+        </div>
+        <div id="filterContent">
+            <div class="card-body">
+                @using (Html.BeginForm("Index", "Cursos", FormMethod.Get, new { @class = "form" }))
+                {
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="checkbox-container">
+                                <label for="mostrarInactivos">Mostrar Inactivos:</label>
+                                @Html.CheckBox("mostrarInactivos", mostrarInactivos, new { @class = "form-check-input" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-search"></i> Buscar
+                                </button>
+                                <a href="@Url.Action("Index")" class="btn btn-outline-secondary ml-2">
+                                    <i class="fa fa-eraser"></i> Limpiar filtros
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Descripcion)</th>
+                    <th>@Html.DisplayNameFor(model => model.Costo)</th>
+                    <th>@Html.DisplayNameFor(model => model.Horas)</th>
+                    <th>@Html.DisplayNameFor(model => model.Vigencia)</th>
+                    <th>@Html.DisplayNameFor(model => model.Modulo)</th>
+                    @if (mostrarInactivos)
+                    {
+                        <th>Estado</th>
+                    }
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    string rowClass = item.Activo ? "table-success" : "table-danger";
+                    string estadoTexto = item.Activo ? "Activo" : "Inactivo";
+
+                    <tr class="@rowClass">
+                        <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Costo)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Horas)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Vigencia)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Modulo)</td>
+                        @if (mostrarInactivos)
+                        {
+                            <td>@estadoTexto</td>
+                        }
+                        <td class="text-center">
+                            <div class="action-links">
+                                <a href="@Url.Action("Details", "Cursos", new { id = item.CursoID })" class="action-icon" title="Ver detalle">
+                                    <img src="@Url.Content("~/images/verDetalle_16x16.png")" alt="Ver detalle" />
+                                </a>
+                                <a href="@Url.Action("Edit", "Cursos", new { id = item.CursoID })" class="action-icon" title="Editar">
+                                    <img src="@Url.Content("~/images/editar_16x16.png")" alt="Editar" />
+                                </a>
+                                <a href="@Url.Action("Delete", "Cursos", new { id = item.CursoID })" class="action-icon" title="Borrar">
+                                    <img src="@Url.Content("~/images/borrar_16x16.png")" alt="Borrar" />
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            // Toggle para mostrar/ocultar filtros
+            $('#toggleFilters').off('click').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var content = $('#filterContent');
+                var toggle = $(this);
+                
+                // Evitar múltiples clics mientras se ejecuta la animación
+                if (content.is(':animated')) {
+                    return false;
+                }
+                
+                if (content.is(':visible')) {
+                    content.slideUp(300, function() {
+                        toggle.text('Mostrar Filtros');
+                    });
+                } else {
+                    content.slideDown(300, function() {
+                        toggle.text('Ocultar Filtros');
+                    });
+                }
+                
+                return false;
+            });
+        });
+    </script>
 }
-
-</table>

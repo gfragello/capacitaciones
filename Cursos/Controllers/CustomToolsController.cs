@@ -403,7 +403,7 @@ namespace Cursos.Controllers
                 else
                     r.NotaPrevia = null;
 
-                r.FechaVencimiento = new DateTime(r.Jornada.Fecha.Year + r.Jornada.Curso.Vigencia, r.Jornada.Fecha.Month, r.Jornada.Fecha.Day);
+                r.FechaVencimiento = r.Jornada.ObtenerFechaVencimiento();
 
                 registrosCapacitacion.Add(r);
             }
@@ -643,6 +643,12 @@ namespace Cursos.Controllers
 
             foreach (var r in db.RegistroCapacitacion.ToList())
             {
+                if (r.Jornada.Curso.SinVigencia)
+                {
+                    r.FechaVencimiento = null;
+                    continue;
+                }
+
                 if (r.Jornada.Fecha >= FechaCambioDuracion)
                     anioVencimiento = r.Jornada.Fecha.Year + 3;
                 else
@@ -829,7 +835,7 @@ namespace Cursos.Controllers
             {
                 foreach (var r in registrosRF)
                 {
-                    r.FechaVencimiento = ObtenerUltimoDiaAnio(r.Jornada.Fecha);
+                    r.FechaVencimiento = r.Jornada.Curso.SinVigencia ? (DateTime?)null : ObtenerUltimoDiaAnio(r.Jornada.Fecha);
                 }
 
                 db.SaveChanges();
@@ -850,12 +856,13 @@ namespace Cursos.Controllers
 
                     foreach (var r in registrosRF)
                     {
-                        r.FechaVencimiento = ObtenerUltimoDiaAnio(r.Jornada.Fecha);
+                        var nuevaFecha = r.Jornada.Curso.SinVigencia ? (DateTime?)null : ObtenerUltimoDiaAnio(r.Jornada.Fecha);
+                        r.FechaVencimiento = nuevaFecha;
 
                         ws.Cells[i, 1].Value = r.Capacitado.NombreCompleto;
                         ws.Cells[i, 2].Value = r.Capacitado.DocumentoCompleto;
                         ws.Cells[i, 4].Value = r.Jornada.JornadaIdentificacionCompleta;
-                        ws.Cells[i, 5].Value = r.FechaVencimiento.ToShortDateString();
+                        ws.Cells[i, 5].Value = nuevaFecha.HasValue ? nuevaFecha.Value.ToShortDateString() : "Sin vencimiento";
 
                         i++;
                     }

@@ -92,7 +92,7 @@
                         </span>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.RegistroCapacitacion.FechaVencimiento)
+                        @(item.RegistroCapacitacion.FechaVencimiento.HasValue ? item.RegistroCapacitacion.FechaVencimiento.Value.ToShortDateString() : "Sin vencimiento")
                     </td>
                 </tr>
 

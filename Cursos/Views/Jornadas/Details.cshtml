@@ -429,6 +429,23 @@ else
     </div>
 </div>
 
+<div id="modalCapacitado" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Detalles del Capacitado</h4>
+            </div>
+            <div class="modal-body" id="modalCapacitadoBody">
+                <!-- Aquí se cargará el contenido -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
 
     @Scripts.Render("~/Scripts/enviarOval.js")
@@ -646,6 +663,24 @@ else
                 $("#modalVerEnvios").modal("show");
             });
         });
+
+        function abrirModalCapacitado(capacitadoId) {
+            // Mostrar el modal inmediatamente con un indicador de carga
+            $("#modalCapacitadoBody").html('<div style="text-align: center; padding: 40px;"><img src="@Url.Content("~/images/cargando.gif")" /><p style="margin-top: 20px;">Cargando información del capacitado...</p></div>');
+            $("#modalCapacitado").modal("show");
+            
+            // Cargar el contenido
+            $("#modalCapacitadoBody").load('@Url.Action("Details", "Capacitados")?id=' + capacitadoId);
+        }
+
+        function abrirModalEditarCapacitado(capacitadoId) {
+            // Mostrar el modal inmediatamente con un indicador de carga
+            $("#modalCapacitadoBody").html('<div style="text-align: center; padding: 40px;"><img src="@Url.Content("~/images/cargando.gif")" /><p style="margin-top: 20px;">Cargando información del capacitado...</p></div>');
+            $("#modalCapacitado").modal("show");
+            
+            // Cargar el contenido
+            $("#modalCapacitadoBody").load('@Url.Action("Edit", "Capacitados")?id=' + capacitadoId);
+        }
 
 </script>
 }

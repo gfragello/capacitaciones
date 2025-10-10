@@ -154,7 +154,13 @@
             data: { JornadaId: jornadaId},
             success: function (FechaVencimientoString)
                      {
-                        $('#FechaVencimiento').val(FechaVencimientoString);
+                        if (FechaVencimientoString && FechaVencimientoString.length > 0) {
+                            $('#FechaVencimiento').val(FechaVencimientoString);
+                            $('#FechaVencimiento').prop('placeholder', '');
+                        } else {
+                            $('#FechaVencimiento').val('');
+                            $('#FechaVencimiento').prop('placeholder', 'Sin vencimiento');
+                        }
                      }
         });
     }

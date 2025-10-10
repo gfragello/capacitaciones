@@ -16,9 +16,18 @@ namespace Cursos.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Cursos
-        public ActionResult Index()
+        public ActionResult Index(bool mostrarInactivos = false)
         {
-            return View(db.Cursos.ToList());
+            ViewBag.MostrarInactivos = mostrarInactivos;
+
+            var cursos = db.Cursos.AsQueryable();
+
+            if (!mostrarInactivos)
+            {
+                cursos = cursos.Where(c => c.Activo);
+            }
+
+            return View(cursos.ToList());
         }
 
         // GET: Cursos/Details/5
@@ -43,7 +52,9 @@ namespace Cursos.Controllers
             var c = new Curso
             {
                 EvaluacionConNota = true,
-                EnviarActaEmail = false // Se inicializa en false
+                EnviarActaEmail = false, // Se inicializa en false
+                MostrarEnIndexCapacitado = true, // Se inicializa en true por defecto
+                Activo = true // Se inicializa en true por defecto
             };
 
             ViewBag.PuntoServicioId = new SelectList(db.PuntoServicio.OrderBy(p => p.Nombre).ToList(), "PuntoServicioId", "Nombre");
@@ -55,11 +66,21 @@ namespace Cursos.Controllers
         // To protect from overposting attacks, por favor habilita las propiedades específicas que quieres enlazar.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,SinVigencia,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo,MostrarEnIndexCapacitado,Activo")] Curso curso)
         {
+            if (!curso.SinVigencia && !curso.VigenciaHastaFinAnio && curso.Vigencia <= 0)
+            {
+                ModelState.AddModelError("Vigencia", "Debe ingresar los años de vigencia del curso");
+            }
+
             if (ModelState.IsValid)
             {
-                if (curso.VigenciaHastaFinAnio)
+                if (curso.SinVigencia)
+                {
+                    curso.Vigencia = 0;
+                    curso.VigenciaHastaFinAnio = false;
+                }
+                else if (curso.VigenciaHastaFinAnio)
                 {
                     curso.Vigencia = 0;
                 }
@@ -106,8 +127,13 @@ namespace Cursos.Controllers
         // POST: Cursos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,SinVigencia,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo,MostrarEnIndexCapacitado,Activo")] Curso curso)
         {
+            if (!curso.SinVigencia && !curso.VigenciaHastaFinAnio && curso.Vigencia <= 0)
+            {
+                ModelState.AddModelError("Vigencia", "Debe ingresar los años de vigencia del curso");
+            }
+
             if (ModelState.IsValid)
             {
                 // Si no se permite el envío de OVAL, se debe limpiar el PuntoServicioId
@@ -121,7 +147,12 @@ namespace Cursos.Controllers
                     curso.ActaEmailCuerpo = null; // Se asegura que se limpie ActaEmailCuerpo
                 }
 
-                if (curso.VigenciaHastaFinAnio)
+                if (curso.SinVigencia)
+                {
+                    curso.Vigencia = 0;
+                    curso.VigenciaHastaFinAnio = false;
+                }
+                else if (curso.VigenciaHastaFinAnio)
                 {
                     curso.Vigencia = 0;
                 }

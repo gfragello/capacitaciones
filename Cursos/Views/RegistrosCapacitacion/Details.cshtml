@@ -63,7 +63,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.FechaVencimiento)
+            @(Model.FechaVencimiento.HasValue ? Model.FechaVencimiento.Value.ToShortDateString() : "Sin vencimiento")
         </dd>
 
     </dl>

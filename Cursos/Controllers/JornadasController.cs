@@ -267,7 +267,7 @@ namespace Cursos.Controllers
         // capacitación a la jornada creada
         public ActionResult Create(int? id)
         {
-            ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion");
+            ViewBag.CursoId = new SelectList(db.Cursos.Where(c => c.Activo), "CursoID", "Descripcion");
             ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar");
 
             ViewBag.JornadaTemplateId = id;
@@ -401,7 +401,7 @@ namespace Cursos.Controllers
 
             if (jornada.PuedeEditarUsuarioActual)
             {
-                ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
+                ViewBag.CursoId = new SelectList(db.Cursos.Where(c => c.Activo || c.CursoID == jornada.CursoId), "CursoID", "Descripcion", jornada.CursoId);
                 ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
 
                 //si la jornada está siendo editada por un usuario con perfil para InstructorExterno, solo se puede asignar la jornada a ese instructor
@@ -450,7 +450,7 @@ namespace Cursos.Controllers
 
                 return RedirectToAction("Index");
             }
-            ViewBag.CursoId = new SelectList(db.Cursos, "CursoID", "Descripcion", jornada.CursoId);
+            ViewBag.CursoId = new SelectList(db.Cursos.Where(c => c.Activo || c.CursoID == jornada.CursoId), "CursoID", "Descripcion", jornada.CursoId);
             ViewBag.InstructorId = new SelectList(db.Instructores.Where(i => i.Activo == true), "InstructorID", "NombreCompleto", jornada.InstructorId);
             ViewBag.LugarID = new SelectList(db.Lugares, "LugarID", "NombreLugar", jornada.LugarID);
             return View(jornada);
