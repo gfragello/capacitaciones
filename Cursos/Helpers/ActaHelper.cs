@@ -143,10 +143,10 @@ namespace Cursos.Helpers
             {
                 pageWidth * 0.02,  // Ordinal
                 pageWidth * 0.20,  // Nombre (fusionado con Apellido) - reducido para nueva columna
-                pageWidth * 0.08,  // Documento Completo
+                pageWidth * 0.10,  // Documento Completo
                 pageWidth * 0.06,  // Fecha Nac
-                pageWidth * 0.38,  // Empresa
-                pageWidth * 0.16,  // Firma
+                pageWidth * 0.37,  // Empresa
+                pageWidth * 0.15,  // Firma
                 pageWidth * 0.04,  // 1er Reintento
                 pageWidth * 0.04,  // 2do Reintento
                 pageWidth * 0.02   // Nuevo Ordinal
@@ -217,7 +217,12 @@ namespace Cursos.Helpers
                         {
                             var rectTexto = new XRect(posicionX + paddingInterno, posicionY, anchoCol - paddingInterno, alturaFila);
                             tf.Alignment = XParagraphAlignment.Left;
-                            tf.DrawString(registro.Capacitado.DocumentoCompleto ?? "", fuenteTexto, XBrushes.Black, rectTexto, XStringFormats.TopLeft);
+                            
+                            // Truncar el documento si es muy largo para que quepa en una línea
+                            string documento = registro.Capacitado.DocumentoCompleto ?? "";
+                            string documentoTruncado = TruncarTexto(gfx, documento, fuenteTexto, anchoCol - paddingInterno);
+                            
+                            tf.DrawString(documentoTruncado, fuenteTexto, XBrushes.Black, rectTexto, XStringFormats.TopLeft);
                         }
                         else if (col == 3) // Fecha Nacimiento
                         {
@@ -293,6 +298,37 @@ namespace Cursos.Helpers
             }
 
             return posicionY + 25;
+        }
+
+        private string TruncarTexto(XGraphics gfx, string texto, XFont fuente, double anchoMaximo)
+        {
+            if (string.IsNullOrEmpty(texto))
+                return texto;
+
+            var medidaTexto = gfx.MeasureString(texto, fuente);
+            
+            // Si el texto cabe completo, devolverlo sin cambios
+            if (medidaTexto.Width <= anchoMaximo)
+                return texto;
+
+            // Si no cabe, truncar y agregar puntos suspensivos
+            string puntosSuspensivos = "...";
+            var medidaPuntos = gfx.MeasureString(puntosSuspensivos, fuente);
+            double anchoDisponible = anchoMaximo - medidaPuntos.Width;
+
+            // Ir quitando caracteres hasta que quepa
+            for (int i = texto.Length - 1; i >= 0; i--)
+            {
+                string textoTruncado = texto.Substring(0, i);
+                var medida = gfx.MeasureString(textoTruncado, fuente);
+                
+                if (medida.Width <= anchoDisponible)
+                {
+                    return textoTruncado + puntosSuspensivos;
+                }
+            }
+
+            return puntosSuspensivos;
         }
 
         private void DibujarFirmas(XGraphics gfx, Jornada jornada, double margenIzquierdo, double posicionY, double pageWidth)
