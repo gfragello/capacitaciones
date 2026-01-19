@@ -396,6 +396,21 @@ namespace Cursos.Controllers
                 ViewBag.JornadaId = jornadaId;
             }
 
+            // Cargar JornadaIdentificacionCompleta cuando hay errores de validación
+            // para que la vista pueda renderizarse correctamente
+            if (jornadaId != null)
+            {
+                Jornada j = db.Jornada.Find(jornadaId);
+                if (j != null)
+                    ViewBag.JornadaIdentificacionCompleta = j.JornadaIdentificacionCompleta;
+                else
+                    ViewBag.JornadaIdentificacionCompleta = string.Empty;
+            }
+            else
+            {
+                ViewBag.JornadaIdentificacionCompleta = string.Empty;
+            }
+
             return View(capacitado);
         }
 
