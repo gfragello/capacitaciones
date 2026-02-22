@@ -1,1 +1,263 @@
-﻿
+﻿/* =============================================
+   LOGIN PAGE - Diseño moderno y responsivo
+   ============================================= */
+
+/* Contenedor de toda la página de login: centrado vertical y horizontal */
+.login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 180px);
+    padding: 30px 15px;
+}
+
+/* Logos: fuera del card, arriba, alineados visualmente */
+.login-logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 30px;
+}
+
+/* 
+ * Ambos logos se muestran a la misma altura (60px).
+ * CSL_logo_main_h.png = 249x140 → a 60px de alto → ~107px de ancho
+ * UPM_logo_main_h.png = 378x133 → a 60px de alto → ~170px de ancho
+ * La diferencia de anchura es natural por las proporciones de cada logo.
+ */
+.login-logos img {
+    height: 95px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Tarjeta del formulario: contenedor claramente delimitado y centrado */
+.login-card {
+    background: #ffffff;
+    border: 1px solid #e0e4ea;
+    border-radius: 10px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+    padding: 36px 40px 32px;
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Encabezado dentro del card */
+.login-header {
+    text-align: center;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eef0f4;
+}
+
+.login-header h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 6px 0;
+    letter-spacing: -0.3px;
+}
+
+/* Campos del formulario */
+.login-field {
+    margin-bottom: 20px;
+}
+
+.login-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+}
+
+.login-field label .fa {
+    color: #95a5a6;
+    margin-right: 4px;
+    font-size: 14px;
+}
+
+.login-input {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 44px !important;
+    border: 1.5px solid #dce1e8 !important;
+    border-radius: 8px !important;
+    padding: 8px 14px !important;
+    font-size: 15px !important;
+    color: #2c3e50 !important;
+    background-color: #f8f9fb !important;
+    transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+
+.login-input:focus {
+    border-color: #3498db !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15) !important;
+    outline: none !important;
+}
+
+.login-input::placeholder {
+    color: #b0bec5;
+    font-size: 14px;
+}
+
+/* Checkbox recordarme */
+.login-remember {
+    margin-bottom: 24px;
+}
+
+.login-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #5a6d80;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.login-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #3498db;
+    cursor: pointer;
+}
+
+/* Botón de inicio de sesión */
+.login-btn {
+    display: block;
+    width: 100%;
+    height: 46px;
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+}
+
+.login-btn:hover {
+    background: linear-gradient(135deg, #1a6da0, #2980b9);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.35);
+    transform: translateY(-1px);
+    color: #ffffff !important;
+}
+
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.25);
+}
+
+.login-btn .fa {
+    margin-right: 6px;
+}
+
+/* Mensajes de validación */
+.login-validation-summary {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+    font-size: 13px;
+}
+
+.login-field .text-danger {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+/* =============================================
+   RESPONSIVE - Tablets y Móviles
+   ============================================= */
+
+@media (max-width: 768px) {
+    .login-page {
+        min-height: calc(100vh - 200px);
+        padding: 20px 12px;
+    }
+
+    .login-logos {
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .login-logos img {
+        height: 75px;
+    }
+
+    .login-card {
+        padding: 28px 24px 24px;
+        max-width: 100%;
+    }
+
+    .login-header h2 {
+        font-size: 19px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-page {
+        padding: 16px 10px;
+        min-height: calc(100vh - 180px);
+    }
+
+    .login-logos {
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .login-logos img {
+        height: 65px;
+    }
+
+    .login-card {
+        padding: 24px 20px 20px;
+        border-radius: 8px;
+    }
+
+    .login-header {
+        margin-bottom: 22px;
+        padding-bottom: 16px;
+    }
+
+    .login-header h2 {
+        font-size: 18px;
+    }
+
+    .login-input {
+        height: 48px !important;
+        font-size: 16px !important; /* Previene zoom automático en iOS */
+    }
+
+    .login-btn {
+        height: 50px;
+        font-size: 16px;
+    }
+
+    .login-field {
+        margin-bottom: 18px;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-card {
+        padding: 20px 16px 16px;
+    }
+
+    .login-logos img {
+        height: 52px;
+    }
+
+    .login-logos {
+        gap: 14px;
+    }
+}
