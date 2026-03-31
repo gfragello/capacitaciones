@@ -263,6 +263,7 @@ namespace Cursos.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Administrador,AdministradorExterno,InstructorExterno,InscripcionesExternas,ConsultaEmpresa")]
         public JsonResult AutocompleteEmpresa(string term)
         {
             if (string.IsNullOrWhiteSpace(term))
