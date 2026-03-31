@@ -187,17 +187,6 @@
             <div class="info-value">@Model.Horas horas</div>
         </div>
         <div class="info-row">
-            <div class="info-label">@Html.DisplayNameFor(model => model.Modulo)</div>
-            <div class="info-value">@Model.Modulo</div>
-        </div>
-        <div class="info-row">
-            <div class="info-label">@Html.DisplayNameFor(model => model.ColorDeFondo)</div>
-            <div class="info-value">
-                <span class="color-preview" style="background-color: @Model.ColorDeFondo;"></span>
-                @Model.ColorDeFondo
-            </div>
-        </div>
-        <div class="info-row">
             <div class="info-label">@Html.DisplayNameFor(model => model.Activo)</div>
             <div class="info-value">
                 <span class="badge-status @(Model.Activo ? "badge-active" : "badge-inactive")">
@@ -236,6 +225,36 @@
                 <div class="info-value">@Model.Vigencia años</div>
             </div>
         }
+        @if (!Model.SinVigencia)
+        {
+            <div class="info-row">
+                <div class="info-label">@Html.DisplayNameFor(model => model.NotificarVencimiento)</div>
+                <div class="info-value">
+                    <span class="badge-status @(Model.NotificarVencimiento ? "badge-yes" : "badge-no")">
+                        @(Model.NotificarVencimiento ? "Sí" : "No")
+                    </span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Información Adicional -->
+    <div class="info-card">
+        <div class="card-title">
+            <i class="glyphicon glyphicon-th-list"></i>
+            Información Adicional
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.Modulo)</div>
+            <div class="info-value">@Model.Modulo</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">@Html.DisplayNameFor(model => model.ColorDeFondo)</div>
+            <div class="info-value">
+                <span class="color-preview" style="background-color: @Model.ColorDeFondo;"></span>
+                @Model.ColorDeFondo
+            </div>
+        </div>
     </div>
 
     <!-- Evaluación -->

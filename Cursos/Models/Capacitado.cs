@@ -9,7 +9,6 @@ using Cursos.Helpers;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Cursos.Models.Enums;
 
 namespace Cursos.Models
 {

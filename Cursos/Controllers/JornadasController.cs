@@ -342,13 +342,15 @@ namespace Cursos.Controllers
                         nuevoRC.Jornada = jornada;
                         nuevoRC.Capacitado = rc.Capacitado;
                         nuevoRC.Nota = 0;
-                        nuevoRC.Aprobado = true;
                         nuevoRC.FechaVencimiento = jornada.ObtenerFechaVencimiento();
 
                         if (jornada.PermiteEnviosOVAL)
                             nuevoRC.EnvioOVALEstado = EstadosEnvioOVAL.PendienteEnvio;
                         else
                             nuevoRC.EnvioOVALEstado = EstadosEnvioOVAL.NoEnviar;
+
+                        // Establecer estado inicial como Inscripto
+                        nuevoRC.CambiarEstado(EstadosRegistroCapacitacion.Inscripto, ejecutarAcciones: false);
 
                         db.RegistroCapacitacion.Add(nuevoRC);
                     }
@@ -361,6 +363,25 @@ namespace Cursos.Controllers
 
                 db.Jornada.Add(jornada);
                 db.SaveChanges();
+                
+                // FASE 2: Ejecutar acciones post-guardado para registros aprobados desde template
+                if (JornadaTemplateId != null)
+                {
+                    Jornada jornadaConRegistros = db.Jornada
+                        .Include(j => j.RegistrosCapacitacion)
+                        .FirstOrDefault(j => j.JornadaID == jornada.JornadaID);
+                    
+                    if (jornadaConRegistros != null)
+                    {
+                        foreach (var rc in jornadaConRegistros.RegistrosCapacitacion)
+                        {
+                            if (rc.Estado == EstadosRegistroCapacitacion.Aprobado)
+                            {
+                                rc.CambiarEstado(EstadosRegistroCapacitacion.Aprobado, ejecutarAcciones: true);
+                            }
+                        }
+                    }
+                }
 
                 //si la jornada fue creada por un usuario con perfil para InstructorExterno, se notifica por email
                 if (System.Web.HttpContext.Current.User.IsInRole("InstructorExterno"))
@@ -578,7 +599,7 @@ namespace Cursos.Controllers
                 Jornada = jornada,
                 Capacitado = capacitado,
                 Nota = 0,
-                Aprobado = true,
+                Estado = EstadosRegistroCapacitacion.Inscripto,
                 FechaVencimiento = jornada.ObtenerFechaVencimiento(),
             };
 
@@ -606,12 +627,22 @@ namespace Cursos.Controllers
             if (jornada == null)
                 return Json(false, JsonRequestBehavior.AllowGet);
 
+            // Usar método centralizado para cambiar estado (sin ejecutar acciones aún)
             foreach (var r in jornada.RegistrosCapacitacion)
             {
-                r.Estado = estado;
+                r.CambiarEstado(estado, ejecutarAcciones: false);
             }
 
             db.SaveChanges();
+
+            // Ejecutar acciones post-guardado para todos los registros si se marcaron como Aprobado
+            if (estado == EstadosRegistroCapacitacion.Aprobado)
+            {
+                foreach (var r in jornada.RegistrosCapacitacion)
+                {
+                    r.CambiarEstado(EstadosRegistroCapacitacion.Aprobado, ejecutarAcciones: true);
+                }
+            }
 
             return Json(true, JsonRequestBehavior.AllowGet);
         }
@@ -845,7 +876,6 @@ namespace Cursos.Controllers
             const int colFechaNacimiento = 6;
             const int colEmpresa = 7;
             const int colFirma = 8;
-            const int colAprobado = 9;
             const int colNota = 10;
 
             const int colRangoPuntajesDesde = 9;

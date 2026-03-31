@@ -88,6 +88,12 @@ namespace Cursos.Models
                 .HasForeignKey(ja => ja.JornadaID)
                 .WillCascadeOnDelete(true);
 
+            modelBuilder.Entity<NotificacionVencimiento>()
+                .HasRequired(nv => nv.RegistroCapacitacion)
+                .WithMany(rc => rc.NotificacionesVencimiento)
+                .HasForeignKey(nv => nv.RegistroCapacitacionID)
+                .WillCascadeOnDelete(true);
+
             // Índice NO único para Documento en Capacitado
             modelBuilder.Entity<Capacitado>()
                 .Property(c => c.Documento)

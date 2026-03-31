@@ -395,7 +395,9 @@ namespace Cursos.Controllers
 
                 string aprobadoTetxo = ws.Cells[i, 8].Value != null ? ws.Cells[i, 8].Value.ToString() : String.Empty;
 
-                r.Aprobado = (aprobadoTetxo == "Si" || aprobadoTetxo == "S") ? true : false;
+                // Determinar estado según el texto "Aprobado"
+                bool esAprobado = (aprobadoTetxo == "Si" || aprobadoTetxo == "S");
+                r.Estado = esAprobado ? EstadosRegistroCapacitacion.Aprobado : EstadosRegistroCapacitacion.NoAprobado;
                 r.Nota = int.Parse(ws.Cells[i, 10].Value.ToString());
 
                 if (ws.Cells[i, 9].Value != null)

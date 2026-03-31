@@ -18,7 +18,7 @@
         @Html.HiddenFor(model => model.RegistroCapacitacionID)
         @Html.HiddenFor(model => model.JornadaID)
         @Html.HiddenFor(model => model.CapacitadoID)
-        @Html.HiddenFor(model => model.Aprobado)
+        @Html.HiddenFor(model => model.Estado)
         @Html.HiddenFor(model => model.Jornada.CursoId)
 
         <dl class="dl-horizontal">
@@ -48,11 +48,11 @@
             </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.Aprobado)
+                @Html.DisplayNameFor(model => model.Estado)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Aprobado)
+                @Html.DisplayFor(model => model.Estado)
             </dd>
 
             <dt>

@@ -134,7 +134,7 @@ namespace Cursos.Helpers
                         smtp.Send(message);
                         return true;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         return false;
                     }

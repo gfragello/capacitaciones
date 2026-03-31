@@ -155,10 +155,13 @@ ViewBag.Title = "Details";
             @Html.DisplayName("Nota")
         </th>
         <th>
-            @Html.DisplayName("Aprobado")
+            @Html.DisplayName("Estado")
         </th>
         @if (User.Identity.IsAuthenticated)
         {
+            <th>
+                @Html.DisplayName("Estado Notificación")
+            </th>
             <th></th> <!--Columna con acciones sobre el registro -->
         }
     </tr>
@@ -171,6 +174,29 @@ ViewBag.Title = "Details";
 
         ImagenEstadoRegistroHelper.GetInstance().ObtenerImagenYTitulo(item, ref srcImagen, ref titleTexto);
         srcImagen = Url.Content(srcImagen);
+
+        // Determinar el estilo para el estado de notificación
+        string estadoNotificacionClass = "";
+        string estadoNotificacionStyle = "";
+        
+        if (item.TieneNotificacion)
+        {
+            switch (item.EstadoNotificacion)
+            {
+                case Cursos.Models.Enums.EstadoNotificacionVencimiento.NotificacionPendiente:
+                    estadoNotificacionClass = "label label-warning";
+                    break;
+                case Cursos.Models.Enums.EstadoNotificacionVencimiento.Notificado:
+                    estadoNotificacionClass = "label label-info";
+                    break;
+                case Cursos.Models.Enums.EstadoNotificacionVencimiento.NoNotificar:
+                    estadoNotificacionClass = "label label-default";
+                    break;
+                case Cursos.Models.Enums.EstadoNotificacionVencimiento.NoNotificarYaActualizado:
+                    estadoNotificacionClass = "label label-success";
+                    break;
+            }
+        }
 
         <tr style="background-color: @bgcolor;">
             <td><img src="@srcImagen" )" title="@titleTexto" /></td>
@@ -188,8 +214,21 @@ ViewBag.Title = "Details";
                 @Html.DisplayFor(modelItem => item.Nota)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Aprobado)
+                @Html.DisplayFor(modelItem => item.Estado)
             </td>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <td>
+                    @if (item.TieneNotificacion)
+                    {
+                        <span class="@estadoNotificacionClass">@item.EstadoNotificacionTexto</span>
+                    }
+                    else
+                    {
+                        <span style="color: #999; font-style: italic;">Sin notificación</span>
+                    }
+                </td>
+            }
             @if (item.PuedeModificarse())
             {
                 <td>

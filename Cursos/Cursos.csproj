@@ -28,6 +28,9 @@
     </NuGetPackageImportStamp>
     <Use64BitIISExpress />
     <TargetFrameworkProfile />
+    <!-- Desactivar Razor Source Generator para .NET Framework -->
+    <EnableDefaultRazorGenerateItems>false</EnableDefaultRazorGenerateItems>
+    <RazorCompileOnBuild>false</RazorCompileOnBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -352,7 +355,6 @@
     <Compile Include="Helpers\JornadaHelper.cs" />
     <Compile Include="Helpers\LogHelper.cs" />
     <Compile Include="Helpers\NotificacionesEMailHelper.cs" />
-    <Compile Include="Helpers\NotificacionesVencimientosHelper.cs" />
     <Compile Include="Helpers\PathArchivoHelper.cs" />
     <Compile Include="Helpers\RegistroCapacitacionHelper.cs" />
     <Compile Include="Helpers\UsuarioHelper.cs" />
@@ -633,6 +635,14 @@
     <Compile Include="Migrations\202510030311425_Curso_SinVigencia.Designer.cs">
       <DependentUpon>202510030311425_Curso_SinVigencia.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510170342127_Curso_NotificarVencimiento.cs" />
+    <Compile Include="Migrations\202510170342127_Curso_NotificarVencimiento.Designer.cs">
+      <DependentUpon>202510170342127_Curso_NotificarVencimiento.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202601201708142_RegistroCapacitacion_EliminarAprobado.cs" />
+    <Compile Include="Migrations\202601201708142_RegistroCapacitacion_EliminarAprobado.Designer.cs">
+      <DependentUpon>202601201708142_RegistroCapacitacion_EliminarAprobado.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -862,6 +872,12 @@
     <EmbeddedResource Include="Migrations\202510030311425_Curso_SinVigencia.resx">
       <DependentUpon>202510030311425_Curso_SinVigencia.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510170342127_Curso_NotificarVencimiento.resx">
+      <DependentUpon>202510170342127_Curso_NotificarVencimiento.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202601201708142_RegistroCapacitacion_EliminarAprobado.resx">
+      <DependentUpon>202601201708142_RegistroCapacitacion_EliminarAprobado.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\PublishProfiles\csl-certificaciones - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\csl-certificaciones-desa - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-2.2.0.intellisense.js" />
@@ -1055,6 +1071,7 @@
     <Folder Include="logs\customTools\" />
     <Folder Include="logs\enviosOVAL\" />
     <Folder Include="logs\notificaciones\" />
+    <Folder Include="tmp\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

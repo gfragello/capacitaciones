@@ -163,7 +163,9 @@ namespace Cursos.Controllers
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var capacitados = db.Capacitados.Include(c => c.RegistrosCapacitacion);
+            // Incluir RegistrosCapacitacion y sus NotificacionesVencimientos asociadas
+            var capacitados = db.Capacitados
+                .Include(c => c.RegistrosCapacitacion.Select(rc => rc.NotificacionesVencimiento));
             var capacitado = capacitados.Where(c => c.CapacitadoID == (int)id).First();
 
             if (capacitado == null)
@@ -337,7 +339,7 @@ namespace Cursos.Controllers
                     nuevoRC.Jornada = j;
                     nuevoRC.Capacitado = capacitado;
                     nuevoRC.Nota = 0;
-                    nuevoRC.Aprobado = true;
+                    nuevoRC.Estado = EstadosRegistroCapacitacion.Inscripto;
                     nuevoRC.FechaVencimiento = j.ObtenerFechaVencimiento();
 
                     if (j.PermiteEnviosOVAL)

@@ -71,6 +71,16 @@
         </div>
     </div>
 
+    <div class="form-group" id="divNotificarVencimiento">
+        @Html.LabelFor(model => model.NotificarVencimiento, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.NotificarVencimiento)
+                @Html.ValidationMessageFor(model => model.NotificarVencimiento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
         @Html.LabelFor(model => model.Modulo, htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
@@ -399,16 +409,20 @@
                 $('#VigenciaHastaFinAnio').prop('checked', false);
                 $('#divVigenciaHastaFinAnio').hide();
                 $('#divVigencia').hide();
+                $('#divNotificarVencimiento').hide();
                 $('#Vigencia').val("0");
                 $('#Vigencia').prop('disabled', true);
+                $('#NotificarVencimiento').prop('checked', false);
             } else if ($('#VigenciaHastaFinAnio').is(':checked')) {
                 $('#SinVigencia').prop('checked', false);
                 $('#divVigencia').hide();
+                $('#divNotificarVencimiento').show();
                 $('#Vigencia').val("0");
                 $('#Vigencia').prop('disabled', true);
             } else {
                 $('#divVigenciaHastaFinAnio').show();
                 $('#divVigencia').show();
+                $('#divNotificarVencimiento').show();
                 $('#Vigencia').prop('disabled', false);
             }
         }

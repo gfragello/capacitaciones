@@ -282,7 +282,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateWithCapacitado([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion)
+        public ActionResult CreateWithCapacitado([Bind(Include = "RegistroCapacitacionID,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion)
         {
             if (ModelState.IsValid)
             {
@@ -327,7 +327,7 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion)
+        public ActionResult Create([Bind(Include = "RegistroCapacitacionID,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento")] RegistroCapacitacion registroCapacitacion)
         {
             if (ModelState.IsValid)
             {
@@ -371,15 +371,27 @@ namespace Cursos.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Aprobado,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento,EnvioOVALEstado,DocumentacionAdicionalDatos")] RegistroCapacitacion registroCapacitacion, 
+        public ActionResult Edit([Bind(Include = "RegistroCapacitacionID,Nota,NotaPrevia,Estado,JornadaID,CapacitadoID,FechaVencimiento,EnvioOVALEstado,DocumentacionAdicionalDatos")] RegistroCapacitacion registroCapacitacion, 
                                   string PreviousUrl)
         {
             if (ModelState.IsValid)
             {
+                // Obtener el estado anterior del registro para detectar cambios
+                var registroOriginal = db.RegistroCapacitacion.AsNoTracking()
+                    .FirstOrDefault(r => r.RegistroCapacitacionID == registroCapacitacion.RegistroCapacitacionID);
+
                 registroCapacitacion.SetearAtributosControl();
 
                 db.Entry(registroCapacitacion).State = EntityState.Modified;
                 db.SaveChanges();
+
+                // Si cambió a Aprobado desde otro estado, ejecutar acciones centralizadas
+                if (registroOriginal != null && 
+                    registroOriginal.Estado != EstadosRegistroCapacitacion.Aprobado && 
+                    registroCapacitacion.Estado == EstadosRegistroCapacitacion.Aprobado)
+                {
+                    registroCapacitacion.CambiarEstado(EstadosRegistroCapacitacion.Aprobado, ejecutarAcciones: true);
+                }
 
                 if (!String.IsNullOrEmpty(PreviousUrl))
                     return Redirect(PreviousUrl);
@@ -620,7 +632,15 @@ namespace Cursos.Controllers
                 return Json(datosActualizarNotaError, JsonRequestBehavior.AllowGet);
 
             if (registroCapacitacion.Calificar(nota))
+            {
                 db.SaveChanges();
+                
+                // Ejecutar acciones post-guardado si fue aprobado (usando método centralizado)
+                if (registroCapacitacion.Estado == EstadosRegistroCapacitacion.Aprobado)
+                {
+                    registroCapacitacion.CambiarEstado(EstadosRegistroCapacitacion.Aprobado, ejecutarAcciones: true);
+                }
+            }
             else
                 return Json(datosActualizarNotaError, JsonRequestBehavior.AllowGet);
 
@@ -647,7 +667,15 @@ namespace Cursos.Controllers
                 return Json(datosActualizarCalificacionError, JsonRequestBehavior.AllowGet);
 
             if (registroCapacitacion.Calificar(aprobado))
+            {
                 db.SaveChanges();
+                
+                // Ejecutar acciones post-guardado si fue aprobado (usando método centralizado)
+                if (aprobado && registroCapacitacion.Estado == EstadosRegistroCapacitacion.Aprobado)
+                {
+                    registroCapacitacion.CambiarEstado(EstadosRegistroCapacitacion.Aprobado, ejecutarAcciones: true);
+                }
+            }
             else
                 return Json(datosActualizarCalificacionError, JsonRequestBehavior.AllowGet);
 

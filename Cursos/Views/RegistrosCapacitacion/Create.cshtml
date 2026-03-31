@@ -80,14 +80,12 @@
             </div>
         </div>
 
-        @*Se inicializará como no visible porque el estado "Inscripto" será el primero en mostrarse *@
-        <div class="form-group" style="display:none" id="SeccionAprobado">
-            @Html.LabelFor(model => model.Aprobado, htmlAttributes: new { @class = "control-label col-md-2" })
+        @*Sección para mostrar el estado del registro*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.Estado, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.Aprobado)
-                    @Html.ValidationMessageFor(model => model.Aprobado, "", new { @class = "text-danger" })
-                </div>
+                @Html.EnumDropDownListFor(model => model.Estado, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Estado, "", new { @class = "text-danger" })
             </div>
         </div>
 

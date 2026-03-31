@@ -122,6 +122,9 @@ namespace Cursos.Models
         [Display(Name = "Mostrar en Index de capacitados")]
         public bool MostrarEnIndexCapacitado { get; set; }
 
+        [Display(Name = "Notificar vencimiento")]
+        public bool NotificarVencimiento { get; set; }
+
         [Display(Name = "Activo")]
         public bool Activo { get; set; }
 

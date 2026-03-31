@@ -465,6 +465,18 @@ else
         });
 
         $(document).on("click", '.btnSeleccionarCapacitado', function(event) {
+            // Prevenir múltiples clics
+            event.preventDefault();
+            var $btn = $(this);
+            
+            // Si ya está procesando, no hacer nada
+            if ($btn.hasClass('processing')) {
+                return false;
+            }
+            
+            // Marcar como procesando
+            $btn.addClass('processing');
+            $btn.css('opacity', '0.5');
 
             var capacitadoId = $(this).data("capacitadoid");
 
@@ -491,11 +503,20 @@ else
                             {
                                 if (resultadoOK)
                                 {
+                                    // Limpiar el campo de búsqueda y los resultados para evitar confusión
+                                    $("#documento").val("");
+                                    $("#dvSeleccionarCapacitados").html('<div class="alert alert-success"><strong>¡Éxito!</strong> Capacitado agregado correctamente.</div>');
+                                    
                                     actualizarContenidoTabs();
                                     actualizarDisponibilidadJornada();
                                     actualizarLabelsDocumentacionAdicional();
                                     //location.reload(true);
                                 }
+                            },
+                            error: function() {
+                                // Remover el estado de procesando si hay error
+                                $btn.removeClass('processing');
+                                $btn.css('opacity', '1');
                             }
                         });
                     }
@@ -504,9 +525,15 @@ else
                         alert('Ya no quedan cupos disponibles. No es posible realizar la inscripción.');
                         location.reload(true); //se recarga la página para que se actualice la no disponibilidad de cupos
                     }
+                },
+                error: function() {
+                    // Remover el estado de procesando si hay error
+                    $btn.removeClass('processing');
+                    $btn.css('opacity', '1');
                 }
             });
 
+            return false;
         });
 
         $("#fotoCapacitado").change(function (e) {
@@ -568,7 +595,10 @@ else
 
             if (documento != '')
             {
+                // Mostrar indicador de carga primero
                 $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerCargando", "CustomTools"))');
+                
+                // Luego cargar los resultados de búsqueda (eliminada la doble llamada a .load())
                 $("#dvSeleccionarCapacitados").load('@(Url.Action("ObtenerSelecionarCapacitados", "Capacitados",null, Request.Url.Scheme))?documento=' + documento + '&jornadaIdExcluir=' + @Model.JornadaID);
             }
             else
@@ -597,9 +627,9 @@ else
 
                     if (datosDisponiblidadCupos.QuedanCuposDisponibles)
                     {
-                        if ($("#documento").val() != "")
-                            buscarCapacitados();
-
+                        // REMOVIDO: La llamada automática a buscarCapacitados() que causaba el loop
+                        // El usuario debe hacer clic en buscar nuevamente si desea buscar otro capacitado
+                        
                         //alert("Aún quedan cupos disponibles");
                         $("#dvBotonAgregarCapacitado").show();
                         $("#demo").show();

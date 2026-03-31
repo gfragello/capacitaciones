@@ -10,9 +10,11 @@
     @if (Model.Count() > 0)
     {
     <a href="#" onclick="enviarNotificaciones();"><span class="glyphicon glyphicon-envelope" style="font-size: 25px; color: #017d49"></span>&nbsp;Enviar todas las notificaciones pendientes</a>
-    @:&nbsp;&nbsp;
+    <text>&nbsp;&nbsp;</text>
     }
     <a href="@Url.Action("Index", "NotificacionesVencimientos", new { reporteVencimientos = true })"><span class="glyphicon glyphicon-save-file" style="font-size: 25px; color: #017d49"></span>&nbsp;Reporte de Vencimientos</a>
+    <text>&nbsp;&nbsp;</text>
+    <a href="#" onclick="abrirConfiguracionEmail();"><span class="glyphicon glyphicon-cog" style="font-size: 25px; color: #017d49"></span>&nbsp;Configurar Email de Notificación</a>
 </p>
 
 @if (Model.Count() > 0)
@@ -38,7 +40,38 @@
     </div>
 
     <hr />
+}
 
+<!-- Modal para configuración de Email de Notificación -->
+<div id="modalConfiguracionEmail" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><span class="glyphicon glyphicon-cog"></span> Configuración de Email de Notificación</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="emailAsunto">Asunto del Email</label>
+                    <input type="text" id="emailAsunto" class="form-control" style="width: 100%;" placeholder="Ingrese el asunto del email de notificación" />
+                </div>
+                <div class="form-group">
+                    <label for="emailCuerpo">Cuerpo del Email (HTML)</label>
+                    <textarea id="emailCuerpo" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="guardarConfiguracionEmail();">
+                    <span class="glyphicon glyphicon-floppy-disk"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Count() > 0)
+{
     foreach (var notificacionesEmpresa in Model.GroupBy(n => n.RegistroCapacitacion.Capacitado.EmpresaID))
     {
         string emailEmpresa = notificacionesEmpresa.First().RegistroCapacitacion.Capacitado.Empresa.Email;
@@ -108,7 +141,66 @@ else
 }
 
 @section Scripts {
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.9.1/summernote-lite.min.js"></script>
+
     <script type="text/javascript">
+
+        function abrirConfiguracionEmail() {
+            // Cargar la configuración actual
+            $.ajax({
+                url: '/NotificacionesVencimientos/ObtenerConfiguracionEmail',
+                type: "GET",
+                dataType: "JSON",
+                success: function (config) {
+                    $('#emailAsunto').val(config.Asunto);
+                    
+                    // Destruir summernote si ya existe para reinicializarlo
+                    if ($('#emailCuerpo').hasClass('note-editor')) {
+                        $('#emailCuerpo').summernote('destroy');
+                    }
+                    
+                    $('#emailCuerpo').val(config.Cuerpo);
+                    
+                    // Inicializar Summernote
+                    $('#emailCuerpo').summernote({
+                        height: 300,
+                        placeholder: 'Escribe el cuerpo del email en formato HTML...',
+                        tabsize: 2
+                    });
+                    
+                    // Establecer el contenido
+                    $('#emailCuerpo').summernote('code', config.Cuerpo);
+                    
+                    $('#modalConfiguracionEmail').modal('show');
+                },
+                error: function () {
+                    alert('Error al cargar la configuración');
+                }
+            });
+        }
+
+        function guardarConfiguracionEmail() {
+            var asunto = $('#emailAsunto').val();
+            var cuerpo = $('#emailCuerpo').summernote('code');
+
+            $.ajax({
+                url: '/NotificacionesVencimientos/GuardarConfiguracionEmail',
+                type: "POST",
+                data: { asunto: asunto, cuerpo: cuerpo },
+                success: function (resultado) {
+                    if (resultado.success) {
+                        alert(resultado.message);
+                        $('#modalConfiguracionEmail').modal('hide');
+                    } else {
+                        alert(resultado.message);
+                    }
+                },
+                error: function () {
+                    alert('Error al guardar la configuración');
+                }
+            });
+        }
 
         function enviarNotificaciones() {
             if (confirm("¿Enviar la notificaciones de vencimiento?")) {
