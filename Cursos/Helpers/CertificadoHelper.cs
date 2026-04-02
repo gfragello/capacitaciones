@@ -186,10 +186,17 @@ namespace Cursos.Helpers
 
         private void AgregarLogo(XGraphics gfx)
         {
-            string pathArchivo = HttpContext.Current.Server.MapPath("~/images/logos/CSL_logo_main_h_300.png");
+            string pathArchivo = HttpContext.Current.Server.MapPath("~/images/logos/CSL_logo_main_h.png");
             XImage image = XImage.FromFile(pathArchivo);
 
-            gfx.DrawImage(image, 230, 700);
+            // Tamaño del logo
+            double anchoLogo = 160;
+            double altoLogo = 96;
+            
+            // Centrar el logo horizontalmente (A4 tiene un ancho de ~595 puntos)
+            double posicionX = (595 - anchoLogo) / 2;
+            
+            gfx.DrawImage(image, posicionX, 650, anchoLogo, altoLogo);
         }
 
         private void AgregarMarcaDeAgua(string texto, PdfPage page, XGraphics gfx)
