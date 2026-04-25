@@ -48,7 +48,6 @@ WHERE CursoID NOT IN (2, 4, 5)
   AND SinVigencia = 0;
 
 PRINT 'PASO 1b - Cursos configurados para notificar (con vigencia y no excluidos): ' + CAST(@@ROWCOUNT AS VARCHAR(10));
-GO
 
 -- =====================================================================
 -- PASO 2 - Backup de la tabla NotificacionesVencimientos
@@ -82,7 +81,6 @@ BEGIN
 END
 
 PRINT 'PASO 2 - Backup verificado: ' + CAST(@backupCount AS varchar(10)) + ' filas.';
-GO
 
 -- =====================================================================
 -- PASO 3 - Diagnóstico previo (informativo)
@@ -122,7 +120,6 @@ UNION ALL SELECT 'Pendientes con capacitado ya renovado',
           AND j2.Fecha > j.Fecha
           AND rc2.Estado = 1
       );
-GO
 
 -- =====================================================================
 -- Depuración transaccional (PASOS 4-7)

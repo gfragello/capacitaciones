@@ -293,24 +293,32 @@ namespace Cursos.Controllers
 
         private List<NotificacionVencimiento> ObtenerNotificacionesVencimiento(int? empresaId)
         {
-            // Actualizar notificaciones legacy y limpiar obsoletas
-            ActualizarNotificacionesVencimientos();
-
             int antelacionNotificacion = int.Parse(ConfiguracionHelper.GetInstance().GetValue("AntelacionNotificacion", "Notificaciones"));
 
             DateTime proximaFechaVencimientoNotificar = DateTime.Now.AddDays(antelacionNotificacion);
 
             // Obtener notificaciones pendientes solo de cursos que tienen habilitada la notificación de vencimiento
             var notificacionVencimientos = db.NotificacionVencimientos
+                                             .AsNoTracking()
+                                             .Include(n => n.RegistroCapacitacion)
+                                             .Include(n => n.RegistroCapacitacion.Capacitado)
+                                             .Include(n => n.RegistroCapacitacion.Capacitado.Empresa)
+                                             .Include(n => n.RegistroCapacitacion.Jornada)
+                                             .Include(n => n.RegistroCapacitacion.Jornada.Curso)
                                              .Where(n => n.RegistroCapacitacion.Jornada.Curso.NotificarVencimiento)
                                              .Where(n => n.Estado == EstadoNotificacionVencimiento.NotificacionPendiente)
-                                             .Where(n => n.RegistroCapacitacion.FechaVencimiento.HasValue && n.RegistroCapacitacion.FechaVencimiento.Value <= proximaFechaVencimientoNotificar)
-                                             .OrderBy(n => n.RegistroCapacitacion.Jornada.Curso.CursoID)
-                                             .OrderBy(n => n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia)
-                                             .Include(n => n.RegistroCapacitacion);
+                                             .Where(n => n.RegistroCapacitacion.FechaVencimiento.HasValue && n.RegistroCapacitacion.FechaVencimiento.Value <= proximaFechaVencimientoNotificar);
 
             if (empresaId != null)
                 notificacionVencimientos = notificacionVencimientos.Where(n => n.RegistroCapacitacion.Capacitado.EmpresaID == empresaId);
+
+            var notificacionVencimientosOrdenadas = notificacionVencimientos
+                                                    .OrderBy(n => n.RegistroCapacitacion.Capacitado.Empresa.NombreFantasia)
+                                                    .ThenBy(n => n.RegistroCapacitacion.Jornada.Curso.CursoID)
+                                                    .ThenBy(n => n.RegistroCapacitacion.Capacitado.Apellido)
+                                                    .ThenBy(n => n.RegistroCapacitacion.Capacitado.Nombre);
+
+            var notificacionVencimientosRet = notificacionVencimientosOrdenadas.ToList();
 
             //int totalRegistros = notificacionVencimientos.Count();
             bool generarArchivoIds = bool.Parse(ConfiguracionHelper.GetInstance().GetValue("GenerarArchivoIds", "Notificaciones"));
@@ -321,14 +329,14 @@ namespace Cursos.Controllers
 
                 //se escriben los ids de las notificaciones
                 LogHelper.GetInstance().WriteMessage("notificaciones", "NotificacionVencimientoID:");
-                foreach (NotificacionVencimiento n in notificacionVencimientos)
+                foreach (NotificacionVencimiento n in notificacionVencimientosRet)
                 {
                     LogHelper.GetInstance().WriteMessage("notificaciones", n.NotificacionVencimientoID.ToString());
                 }
 
                 //se escriben los ids de los registros de capacitación
                 LogHelper.GetInstance().WriteMessage("notificaciones", "RegistroCapacitacionID:");
-                foreach (NotificacionVencimiento n in notificacionVencimientos)
+                foreach (NotificacionVencimiento n in notificacionVencimientosRet)
                 {
                     LogHelper.GetInstance().WriteMessage("notificaciones", n.RegistroCapacitacionID.ToString());
                 }
@@ -336,7 +344,6 @@ namespace Cursos.Controllers
                 LogHelper.GetInstance().WriteMessage("notificaciones", "------------------------------------");
             }
 
-            var notificacionVencimientosRet = notificacionVencimientos.ToList();
             notificacionVencimientosRet.RemoveAll(n => n.Estado == EstadoNotificacionVencimiento.NoNotificarYaActualizado);
 
             return notificacionVencimientosRet;
