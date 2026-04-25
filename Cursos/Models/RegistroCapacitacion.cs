@@ -292,11 +292,9 @@ namespace Cursos.Models
         /// <param name="ejecutarAcciones">Si es true, ejecuta las acciones asociadas al cambio de estado (notificaciones, etc.)</param>
         public void CambiarEstado(EstadosRegistroCapacitacion nuevoEstado, bool ejecutarAcciones = true)
         {
-            EstadosRegistroCapacitacion estadoAnterior = this.Estado;
             this.Estado = nuevoEstado;
 
-            // Solo ejecutar acciones si se solicita y si realmente cambió el estado
-            if (!ejecutarAcciones || estadoAnterior == nuevoEstado)
+            if (!ejecutarAcciones)
                 return;
 
             // Ejecutar acciones específicas según el nuevo estado

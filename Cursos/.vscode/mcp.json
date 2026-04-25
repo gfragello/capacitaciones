@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "mssql-local": {
+      "command": "npx",
+      "args": ["-y", "mssql-mcp@latest"],
+      "env": {
+        "DB_SERVER": "localhost",
+        "DB_PORT": "1433",
+        "DB_DATABASE": "CursosDbContext",
+        "DB_USER": "ucursos",
+        "DB_PASSWORD": "ucursos",
+        "DB_ENCRYPT": "false",
+        "DB_TRUST_SERVER_CERTIFICATE": "true"
+      }
+    }
+  }
+}

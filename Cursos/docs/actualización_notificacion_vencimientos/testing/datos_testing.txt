@@ -1,0 +1,44 @@
+Cursos:
+	- Curso A: Tarjeta verde
+		Notifica vencimiento
+		Vigencia de 3 años
+		
+	- Curso B: Refresh
+		No notifica vencimiento
+
+Jornadas:
+	-Jornada A1 (Id 7074)
+
+	-Jornada B1 (Id 7075)
+		
+Capacitados:
+	- CI 44416158 - JONNY ABERASATEGUY
+		TV - Vencimiento 02/02/2026
+	
+	- PAS N01407813 - LEOBARDO ROJAS RODRIGUEZ
+		TV - Vencimiento 12/04/2027
+		RF - Vencido 
+		
+	- CI 44987749 - FERNANDO ABAL
+		TV - Vencimiento 10/12/2027                                                   
+
+Datos verificados en BD:
+	- Curso A / TV - Tarjeta Verde
+		CursoID: 1
+		NotificarVencimiento: true
+		Vigencia: 3 años
+
+	- Jornada A1
+		JornadaID: 7074
+		CursoID: 1
+
+	- Capacitado CI 44416158 - JONNY ABERASATEGUY
+		CapacitadoID: 37109
+		Registro en Jornada A1: RegistroCapacitacionID 83836
+		Estado actual del registro: Aprobado
+		Nota actual del registro: 55
+		FechaVencimiento del registro: 19/04/2029
+		Notificación de vencimiento asociada: NotificacionVencimientoID 75282 (Estado = NotificacionPendiente)
+		Registro TV anterior aprobado: RegistroCapacitacionID 73137 (JornadaID 6141, vencimiento 02/02/2027)
+		Notificación del TV anterior: NotificacionVencimientoID 64263 (Estado = NotificacionPendiente, preparada manualmente para TEST-PRE-010)
+		Resultado esperado al abrir la vista de notificaciones: la NotificacionVencimientoID 64263 debe pasar a Estado = NoNotificarYaActualizado

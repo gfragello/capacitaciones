@@ -376,21 +376,22 @@ namespace Cursos.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Obtener el estado anterior del registro para detectar cambios
-                var registroOriginal = db.RegistroCapacitacion.AsNoTracking()
-                    .FirstOrDefault(r => r.RegistroCapacitacionID == registroCapacitacion.RegistroCapacitacionID);
-
                 registroCapacitacion.SetearAtributosControl();
 
                 db.Entry(registroCapacitacion).State = EntityState.Modified;
                 db.SaveChanges();
 
-                // Si cambió a Aprobado desde otro estado, ejecutar acciones centralizadas
-                if (registroOriginal != null && 
-                    registroOriginal.Estado != EstadosRegistroCapacitacion.Aprobado && 
-                    registroCapacitacion.Estado == EstadosRegistroCapacitacion.Aprobado)
+                var registroActualizado = db.RegistroCapacitacion
+                    .Include(r => r.Jornada)
+                    .Include(r => r.Capacitado)
+                    .FirstOrDefault(r => r.RegistroCapacitacionID == registroCapacitacion.RegistroCapacitacionID);
+
+                // Mantener el mismo comportamiento que la carga de notas desde la jornada:
+                // si el estado final queda aprobado, ejecutar la lógica centralizada post-guardado.
+                if (registroActualizado != null &&
+                    registroActualizado.Estado == EstadosRegistroCapacitacion.Aprobado)
                 {
-                    registroCapacitacion.CambiarEstado(EstadosRegistroCapacitacion.Aprobado, ejecutarAcciones: true);
+                    registroActualizado.CambiarEstado(EstadosRegistroCapacitacion.Aprobado, ejecutarAcciones: true);
                 }
 
                 if (!String.IsNullOrEmpty(PreviousUrl))
