@@ -228,15 +228,31 @@ namespace Cursos.Controllers
                     backgroundColor = "#f9f9f9";
 
                 html += AgregarATableCapacitados(n, backgroundColor);
-
-                n.Estado = EstadoNotificacionVencimiento.Notificado;
-                n.Fecha = DateTime.Now;
-                db.Entry(n).State = EntityState.Modified;
+                ActualizarNotificacionEnviada(n.NotificacionVencimientoID);
             }
 
             html += CerrarTableCapacitados();
 
             return html;
+        }
+
+        private void ActualizarNotificacionEnviada(int notificacionVencimientoId)
+        {
+            var notificacion = db.NotificacionVencimientos.Local
+                .FirstOrDefault(n => n.NotificacionVencimientoID == notificacionVencimientoId);
+
+            if (notificacion == null)
+            {
+                notificacion = new NotificacionVencimiento
+                {
+                    NotificacionVencimientoID = notificacionVencimientoId
+                };
+
+                db.NotificacionVencimientos.Attach(notificacion);
+            }
+
+            notificacion.Estado = EstadoNotificacionVencimiento.Notificado;
+            notificacion.Fecha = DateTime.Now;
         }
 
         private string IniciarTableCapacitados()
