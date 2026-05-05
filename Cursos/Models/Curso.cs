@@ -52,6 +52,9 @@ namespace Cursos.Models
         [Required(ErrorMessage = "Debe ingresar el módulo del curso")]
         public string Modulo { get; set; }
 
+        [Display(Name = "Características")]
+        public string Caracteristicas { get; set; }
+
         [Required(ErrorMessage = "Debe ingresar el color asociado al curso")]
         [Display(Name = "Color")]
         public string ColorDeFondo { get; set; }

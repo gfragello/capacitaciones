@@ -643,6 +643,10 @@
     <Compile Include="Migrations\202601201708142_RegistroCapacitacion_EliminarAprobado.Designer.cs">
       <DependentUpon>202601201708142_RegistroCapacitacion_EliminarAprobado.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605030058421_Curso_Caracteristicas.cs" />
+    <Compile Include="Migrations\202605030058421_Curso_Caracteristicas.Designer.cs">
+      <DependentUpon>202605030058421_Curso_Caracteristicas.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -880,6 +884,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202601201708142_RegistroCapacitacion_EliminarAprobado.resx">
       <DependentUpon>202601201708142_RegistroCapacitacion_EliminarAprobado.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202605030058421_Curso_Caracteristicas.resx">
+      <DependentUpon>202605030058421_Curso_Caracteristicas.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

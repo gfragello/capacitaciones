@@ -67,7 +67,7 @@ namespace Cursos.Controllers
         // To protect from overposting attacks, por favor habilita las propiedades específicas que quieres enlazar.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,SinVigencia,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo,MostrarEnIndexCapacitado,NotificarVencimiento,Activo")] Curso curso)
+        public ActionResult Create([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Caracteristicas,VigenciaHastaFinAnio,SinVigencia,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo,MostrarEnIndexCapacitado,NotificarVencimiento,Activo")] Curso curso)
         {
             if (!curso.SinVigencia && !curso.VigenciaHastaFinAnio && curso.Vigencia <= 0)
             {
@@ -128,7 +128,7 @@ namespace Cursos.Controllers
         // POST: Cursos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,VigenciaHastaFinAnio,SinVigencia,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo,MostrarEnIndexCapacitado,NotificarVencimiento,Activo")] Curso curso)
+        public ActionResult Edit([Bind(Include = "CursoID,Descripcion,DescripcionEnIngles,Costo,Horas,Modulo,Caracteristicas,VigenciaHastaFinAnio,SinVigencia,Vigencia,EvaluacionConNota,PuntajeMinimo,PuntajeMaximo,ColorDeFondo,RequiereAutorizacion,TieneMinimoAsistentes,MinimoAsistentes,TieneMaximoAsistentes,MaximoAsistentes,TieneCierreIncripcion,HorasCierreInscripcion,PermiteInscripcionesExternas,PermiteEnviosOVAL,PuntoServicioId,RequiereDocumentacionAdicionalInscripcion,DocumentacionAdicionalIdentificador,RequiereDocumentacionAdicionalInscripcionObligatoria,EnviarActaEmail,ActaEmail,ActaEmailCuerpo,MostrarEnIndexCapacitado,NotificarVencimiento,Activo")] Curso curso)
         {
             if (!curso.SinVigencia && !curso.VigenciaHastaFinAnio && curso.Vigencia <= 0)
             {
@@ -203,6 +203,7 @@ namespace Cursos.Controllers
             {
                 var datosPlantillaJornada = new
                 {
+                    Caracteristicas = curso.Caracteristicas,
                     TieneMinimoAsistentes = curso.TieneMinimoAsistentes,
                     MinimoAsistentes = curso.MinimoAsistentes,
                     TieneMaximoAsistentes = curso.TieneMaximoAsistentes,

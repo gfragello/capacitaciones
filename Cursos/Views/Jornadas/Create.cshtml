@@ -267,6 +267,8 @@
             data: { CursoId: cursoId },
             success: function (datosPlantillaJornada)
             {
+                $("#Caracteristicas").val(datosPlantillaJornada.Caracteristicas || "");
+
                 $("#TieneMinimoAsistentes").prop("checked", datosPlantillaJornada.TieneMinimoAsistentes);
 
                 if (datosPlantillaJornada.TieneMinimoAsistentes) {
