@@ -21,6 +21,9 @@ namespace Cursos.Helpers
         private const double LogoHeight = 84;
         private const double SignatureWidth = 157;
         private const double SignatureHeight = 79;
+        private const double SignatureHorizontalOffset = 8;
+        private const double SignatureVerticalOffset = 12;
+        private const double SignatureLineOverlap = 8;
         private const double TableHeaderHeight = 24;
         private const double TableCellPaddingX = 10;
         private const double TableCellPaddingY = 7;
@@ -78,7 +81,7 @@ namespace Cursos.Helpers
             DibujarLogo(gfx, contentRect, posicionY);
             posicionY += LogoHeight + 28;
 
-            var titulo = CrearTextoAjustado(gfx, "CERTIFICADO", contentRect.Width, 30, 30, XFontStyle.Bold, 1);
+            var titulo = CrearTextoAjustado(gfx, "CERTIFICADO", contentRect.Width, 32, 32, XFontStyle.Bold, 1);
             DibujarBloqueTexto(gfx, new XRect(contentRect.Left, posicionY, contentRect.Width, titulo.Height), titulo, XBrushes.Black, XStringAlignment.Center, false);
             posicionY += titulo.Height + 22;
 
@@ -170,15 +173,17 @@ namespace Cursos.Helpers
         private void DibujarFirma(XGraphics gfx, XRect contentRect, double posicionY)
         {
             string pathArchivo = HttpContext.Current.Server.MapPath("~/images/certificados/firma-alejandro-lacruz.png");
-            double posicionX = contentRect.Left + ((contentRect.Width - SignatureWidth) / 2);
+            double posicionX = contentRect.Left + ((contentRect.Width - SignatureWidth) / 2) + SignatureHorizontalOffset;
+            double firmaY = posicionY + SignatureVerticalOffset;
+            double lineaY = posicionY + SignatureHeight - SignatureLineOverlap;
 
             using (XImage image = XImage.FromFile(pathArchivo))
             {
-                gfx.DrawImage(image, posicionX, posicionY, SignatureWidth, SignatureHeight);
+                gfx.DrawImage(image, posicionX, firmaY, SignatureWidth, SignatureHeight);
             }
 
-            double textoY = posicionY + SignatureHeight + 10;
-            gfx.DrawLine(new XPen(CertificadoStyles.GrisMedio, 0.75), contentRect.Left + ((contentRect.Width - 180) / 2), textoY, contentRect.Left + ((contentRect.Width + 180) / 2), textoY);
+            double textoY = lineaY;
+            gfx.DrawLine(new XPen(CertificadoStyles.GrisMedio, 0.75), contentRect.Left + ((contentRect.Width - 180) / 2), lineaY, contentRect.Left + ((contentRect.Width + 180) / 2), lineaY);
 
             textoY += 8;
             var firmante = CrearTextoAjustado(gfx, "Alejandro Lacruz", contentRect.Width, 11, 11, XFontStyle.Regular, 1);
