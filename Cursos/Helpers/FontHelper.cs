@@ -26,6 +26,16 @@ namespace Cursos.Helpers
             get { return LoadFontData("Cursos.fonts.NotoSansMono.NotoSansMono-Bold.ttf"); }
         }
 
+        public byte[] NotoSansRegular
+        {
+            get { return LoadFontData("Cursos.fonts.NotoSans.NotoSans-Regular.ttf"); }
+        }
+
+        public byte[] NotoSansBold
+        {
+            get { return LoadFontData("Cursos.fonts.NotoSans.NotoSans-Bold.ttf"); }
+        }
+
         // Tip: I used JetBrains dotPeek to find the names of the resources (just look how dots in folder names are encoded).
         // Make sure the fonts have compile type "Embedded Resource". Names are case-sensitive.
         /*

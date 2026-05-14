@@ -18,6 +18,11 @@ namespace Cursos.Helpers
             // Deal with the fonts we know.
             switch (name)
             {
+                case "notosans":
+                    if (isBold) return new FontResolverInfo("NotoSans#b");
+
+                    return new FontResolverInfo("NotoSans#");
+
                 case "notosansmono": //la fuente NotoSasMono no cuenta con representación en cursivas (Italic)
                     if (isBold) return new FontResolverInfo("NotoSansMono#b");
 
@@ -66,6 +71,12 @@ namespace Cursos.Helpers
         {
             switch (faceName)
             {
+                case "NotoSans#":
+                    return FontHelper.GetInstance().NotoSansRegular;
+
+                case "NotoSans#b":
+                    return FontHelper.GetInstance().NotoSansBold;
+
                 case "NotoSansMono#":
                     return FontHelper.GetInstance().NotoSansMonoRegular;
 

@@ -834,6 +834,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="fonts\NotoSansMono\NotoSansMono-Regular.ttf" />
     <EmbeddedResource Include="fonts\NotoSansMono\NotoSansMono-Bold.ttf" />
+    <EmbeddedResource Include="fonts\NotoSans\NotoSans-Regular.ttf" />
+    <EmbeddedResource Include="fonts\NotoSans\NotoSans-Bold.ttf" />
     <EmbeddedResource Include="Migrations\202401231308309_Empresa_EmailFacturacion.resx">
       <DependentUpon>202401231308309_Empresa_EmailFacturacion.cs</DependentUpon>
     </EmbeddedResource>
