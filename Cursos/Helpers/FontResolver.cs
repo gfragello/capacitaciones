@@ -18,10 +18,19 @@ namespace Cursos.Helpers
             // Deal with the fonts we know.
             switch (name)
             {
-                case "notosans":
-                    if (isBold) return new FontResolverInfo("NotoSans#b");
+                case "liberationsans":
+                case "liberation sans":
+                    if (isBold) return new FontResolverInfo("LiberationSans#b");
 
-                    return new FontResolverInfo("NotoSans#");
+                    return new FontResolverInfo("LiberationSans#");
+
+                case "notosans":
+                case "arial":
+                case "helvetica":
+                case "sans-serif":
+                    if (isBold) return new FontResolverInfo("LiberationSans#b");
+
+                    return new FontResolverInfo("LiberationSans#");
 
                 case "notosansmono": //la fuente NotoSasMono no cuenta con representación en cursivas (Italic)
                     if (isBold) return new FontResolverInfo("NotoSansMono#b");
@@ -56,9 +65,9 @@ namespace Cursos.Helpers
 
             }
 
-            // We pass all other font requests to the default handler.
-            // When running on a web server without sufficient permission, you can return a default font at this stage.
-            return PlatformFontResolver.ResolveTypeface(familyName, isBold, isItalic);
+            // Avoid PlatformFontResolver in Azure App Service: PDFsharp can hit GetFontData
+            // and fail with STATUS_ACCESS_DENIED when reading system fonts.
+            return new FontResolverInfo(isBold ? "LiberationSans#b" : "LiberationSans#");
         }
 
         /// <summary>
@@ -79,6 +88,12 @@ namespace Cursos.Helpers
 
                 case "NotoSansMono#b":
                     return FontHelper.GetInstance().NotoSansMonoBold;
+
+                case "LiberationSans#":
+                    return FontHelper.GetInstance().LiberationSansRegular;
+
+                case "LiberationSans#b":
+                    return FontHelper.GetInstance().LiberationSansBold;
 
                 //case "DMMono#":
                 //    return FontHelper.GetInstance().DMMonoRegular;

@@ -13,7 +13,7 @@ namespace Cursos.Helpers
     public sealed class CertificadoHelper
     {
         private readonly static CertificadoHelper _instance = new CertificadoHelper();
-        private const string FontFamilyName = "Arial";
+        private const string FontFamilyName = "LiberationSans";
         private const double PageMargin = 42;
         private const double BorderWidth = 3;
         private const double BorderRadius = 12;
@@ -40,6 +40,7 @@ namespace Cursos.Helpers
             if (!(GlobalFontSettings.FontResolver is FontResolver))
             {
                 GlobalFontSettings.FontResolver = new FontResolver();
+                GlobalFontSettings.DefaultFontEncoding = PdfFontEncoding.WinAnsi;
             }
 
             var pdfDocument = new PdfDocument();
