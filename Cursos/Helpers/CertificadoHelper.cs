@@ -164,7 +164,7 @@ namespace Cursos.Helpers
 
         private double DibujarFecha(XGraphics gfx, XRect contentRect, double posicionY)
         {
-            var fecha = CrearTextoAjustado(gfx, DateTime.Today.ToString("dd/MM/yyyy"), contentRect.Width, 12, 12, XFontStyle.Regular, 1);
+            var fecha = CrearTextoAjustado(gfx, "Fecha de emisión del certificado: " + DateTime.Today.ToString("dd/MM/yyyy"), contentRect.Width, 12, 12, XFontStyle.Regular, 1);
             DibujarBloqueTexto(gfx, new XRect(contentRect.Left, posicionY, contentRect.Width, fecha.Height), fecha, XBrushes.Black, XStringAlignment.Center, false);
             return posicionY + fecha.Height + 26;
         }
