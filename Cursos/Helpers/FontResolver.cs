@@ -120,8 +120,10 @@ namespace Cursos.Helpers
                 //    return FontHelper.GetInstance().AnonymousProBoldItalic;
             }
 
-            //return base.GetFont(faceName);
-            return null;
+            if (!string.IsNullOrEmpty(faceName) && faceName.EndsWith("#b", StringComparison.Ordinal))
+                return FontHelper.GetInstance().LiberationSansBold;
+
+            return FontHelper.GetInstance().LiberationSansRegular;
         }
     }
 }

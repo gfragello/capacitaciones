@@ -18,32 +18,32 @@ namespace Cursos.Helpers
 
         public byte[] NotoSansMonoRegular
         {
-            get { return LoadFontData("Cursos.fonts.NotoSansMono.NotoSansMono-Regular.ttf"); }
+            get { return LoadFontData("Cursos.fonts.NotoSansMono.NotoSansMono-Regular.ttf", @"fonts\NotoSansMono\NotoSansMono-Regular.ttf"); }
         }
 
         public byte[] NotoSansMonoBold
         {
-            get { return LoadFontData("Cursos.fonts.NotoSansMono.NotoSansMono-Bold.ttf"); }
+            get { return LoadFontData("Cursos.fonts.NotoSansMono.NotoSansMono-Bold.ttf", @"fonts\NotoSansMono\NotoSansMono-Bold.ttf"); }
         }
 
         public byte[] NotoSansRegular
         {
-            get { return LoadFontData("Cursos.fonts.NotoSans.NotoSans-Regular.ttf"); }
+            get { return LoadFontData("Cursos.fonts.NotoSans.NotoSans-Regular.ttf", @"fonts\NotoSans\NotoSans-Regular.ttf"); }
         }
 
         public byte[] NotoSansBold
         {
-            get { return LoadFontData("Cursos.fonts.NotoSans.NotoSans-Bold.ttf"); }
+            get { return LoadFontData("Cursos.fonts.NotoSans.NotoSans-Bold.ttf", @"fonts\NotoSans\NotoSans-Bold.ttf"); }
         }
 
         public byte[] LiberationSansRegular
         {
-            get { return LoadFontData("Cursos.fonts.LiberationSans.LiberationSans-Regular.ttf"); }
+            get { return LoadFontData("Cursos.fonts.LiberationSans.LiberationSans-Regular.ttf", @"fonts\LiberationSans\LiberationSans-Regular.ttf"); }
         }
 
         public byte[] LiberationSansBold
         {
-            get { return LoadFontData("Cursos.fonts.LiberationSans.LiberationSans-Bold.ttf"); }
+            get { return LoadFontData("Cursos.fonts.LiberationSans.LiberationSans-Bold.ttf", @"fonts\LiberationSans\LiberationSans-Bold.ttf"); }
         }
 
         // Tip: I used JetBrains dotPeek to find the names of the resources (just look how dots in folder names are encoded).
@@ -93,20 +93,53 @@ namespace Cursos.Helpers
         /// <summary>
         /// Returns the specified font from an embedded resource.
         /// </summary>
-        private byte[] LoadFontData(string name)
+        private byte[] LoadFontData(string name, string relativePath)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            var assembly = typeof(FontHelper).Assembly;
+            var resourceName = FindResourceName(assembly, name);
 
-            using (Stream stream = assembly.GetManifestResourceStream(name))
+            if (!string.IsNullOrEmpty(resourceName))
             {
-                if (stream == null)
-                    throw new ArgumentException("No resource with name " + name);
-
-                int count = (int)stream.Length;
-                byte[] data = new byte[count];
-                stream.Read(data, 0, count);
-                return data;
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                {
+                    if (stream != null)
+                        return ReadAllBytes(stream);
+                }
             }
+
+            var filePath = GetFontFilePath(relativePath);
+            if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                return File.ReadAllBytes(filePath);
+
+            throw new InvalidOperationException("No se pudo cargar la fuente " + name + ". Recurso embebido no encontrado y archivo no encontrado en " + relativePath + ".");
+        }
+
+        private string FindResourceName(Assembly assembly, string name)
+        {
+            var resources = assembly.GetManifestResourceNames();
+            var exactMatch = resources.FirstOrDefault(r => string.Equals(r, name, StringComparison.Ordinal));
+            if (!string.IsNullOrEmpty(exactMatch))
+                return exactMatch;
+
+            var suffix = name.Substring(name.LastIndexOf(".fonts.", StringComparison.Ordinal) + 1);
+            return resources.FirstOrDefault(r => r.EndsWith(suffix, StringComparison.Ordinal));
+        }
+
+        private byte[] ReadAllBytes(Stream stream)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
+
+        private string GetFontFilePath(string relativePath)
+        {
+            if (HttpContext.Current != null)
+                return HttpContext.Current.Server.MapPath("~/" + relativePath.Replace('\\', '/'));
+
+            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath);
         }
     }
 }
