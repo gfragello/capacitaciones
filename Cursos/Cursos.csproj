@@ -357,6 +357,8 @@
     <Compile Include="Helpers\NotificacionesEMailHelper.cs" />
     <Compile Include="Helpers\PathArchivoHelper.cs" />
     <Compile Include="Helpers\RegistroCapacitacionHelper.cs" />
+    <Compile Include="Helpers\Storage\FileSystemStorageService.cs" />
+    <Compile Include="Helpers\Storage\IFileStorageService.cs" />
     <Compile Include="Helpers\UsuarioHelper.cs" />
     <Compile Include="Helpers\ValidationHelper.cs" />
     <Compile Include="Migrations\201602211431159_InitialCreate.cs" />

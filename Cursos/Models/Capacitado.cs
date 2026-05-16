@@ -9,6 +9,7 @@ using Cursos.Helpers;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Cursos.Helpers.Storage;
 
 namespace Cursos.Models
 {
@@ -197,15 +198,12 @@ namespace Cursos.Models
 
                 string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(this.CapacitadoID);
 
-                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
                 this.PathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
                                                                                       carpetaArchivo,
-                                                                                      pathDirectorio,
                                                                                       foto,
                                                                                       TiposArchivo.FotoCapacitado);
 
-                var pathArchivoImagen = Path.Combine(pathDirectorio, nombreArchivo);
+                var pathArchivoImagen = FileSystemStorageService.GetInstance().ResolvePhysicalPath(carpetaArchivo, nombreArchivo);
 
                 Stream streamSinEXIF = new MemoryStream();
 
@@ -247,9 +245,7 @@ namespace Cursos.Models
             if (this.PathArchivo != null)
             {
                 string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(this.CapacitadoID);
-                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
-                var pathArchivoImagen = Path.Combine(pathDirectorio, this.PathArchivo.NombreArchivo);
+                var pathArchivoImagen = FileSystemStorageService.GetInstance().ResolvePhysicalPath(carpetaArchivo, this.PathArchivo.NombreArchivo);
 
                 using (Image img = Image.FromFile(pathArchivoImagen))
                 {
@@ -275,12 +271,10 @@ namespace Cursos.Models
             if (this.PathArchivo != null && this.PathArchivo.NombreArchivo.Contains(".jpeg"))
             {
                 string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(this.CapacitadoID);
-                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
-                var pathArchivoImagenAnterior = Path.Combine(pathDirectorio, this.PathArchivo.NombreArchivo);
-                var pathArchivoImagenNuevo = Path.Combine(pathDirectorio, this.PathArchivo.NombreArchivo.Replace(".jpeg", ".jpg"));
-
-                System.IO.File.Move(pathArchivoImagenAnterior, pathArchivoImagenNuevo);
+                FileSystemStorageService.GetInstance().Move(carpetaArchivo,
+                                                            this.PathArchivo.NombreArchivo,
+                                                            carpetaArchivo,
+                                                            this.PathArchivo.NombreArchivo.Replace(".jpeg", ".jpg"));
             }
         }
     }

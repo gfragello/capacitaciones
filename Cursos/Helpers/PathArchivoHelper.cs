@@ -1,9 +1,9 @@
-﻿using Cursos.Models;
+﻿using Cursos.Helpers.Storage;
+using Cursos.Models;
 using Cursos.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -18,7 +18,7 @@ namespace Cursos.Helpers
             return _instance;
         }
 
-        public PathArchivo ObtenerPathArchivo(string nombreArchivo, string carpetaArchivo, string pathDirectorio, HttpPostedFileBase archivo, TiposArchivo tipoArchivo)
+        public PathArchivo ObtenerPathArchivo(string nombreArchivo, string carpetaArchivo, HttpPostedFileBase archivo, TiposArchivo tipoArchivo)
         {
             PathArchivo pathFotoCapacitado = null;
 
@@ -30,12 +30,9 @@ namespace Cursos.Helpers
                 FechaArchivo = DateTime.Now
             };
 
-            var pathArchivo = Path.Combine(pathDirectorio, pathFotoCapacitado.NombreArchivo);
-
-            if (!System.IO.Directory.Exists(pathDirectorio))
-                System.IO.Directory.CreateDirectory(pathDirectorio);
-
-            archivo.SaveAs(pathArchivo);
+            FileSystemStorageService.GetInstance().Save(carpetaArchivo,
+                                                        pathFotoCapacitado.NombreArchivo,
+                                                        archivo);
 
             return pathFotoCapacitado;
         }

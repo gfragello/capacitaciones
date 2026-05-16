@@ -13,6 +13,7 @@ using System.Net;
 using System.ServiceModel;
 using System.Threading;
 using System.Web;
+using Cursos.Helpers.Storage;
 
 namespace Cursos.Helpers.EnvioOVAL
 {
@@ -102,9 +103,7 @@ namespace Cursos.Helpers.EnvioOVAL
 
                     //se obtiene el path donde está almacenada la imagen que se enviará al web service
                     string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(r.Capacitado.CapacitadoID);
-                    string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
-                    var pathArchivoImagen = Path.Combine(pathDirectorio, r.Capacitado.PathArchivo.NombreArchivo);
+                    var pathArchivoImagen = FileSystemStorageService.GetInstance().ResolvePhysicalPath(carpetaArchivo, r.Capacitado.PathArchivo.NombreArchivo);
 
                     fotoCapacitadoAsArray = this.GetImageAsByteArray(pathArchivoImagen);
                 }
@@ -164,9 +163,7 @@ namespace Cursos.Helpers.EnvioOVAL
             {
                 //se obtiene el path donde está almacenada la imagen que se enviará al web service
                 string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(r.Capacitado.CapacitadoID);
-                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
-                var pathArchivoImagen = Path.Combine(pathDirectorio, r.Capacitado.PathArchivo.NombreArchivo);
+                var pathArchivoImagen = FileSystemStorageService.GetInstance().ResolvePhysicalPath(carpetaArchivo, r.Capacitado.PathArchivo.NombreArchivo);
 
                 //byte[] fotoCapacitadoAsArray = null;
                 byte[] fotoCapacitadoAsArray = this.GetImageAsByteArray(pathArchivoImagen);
