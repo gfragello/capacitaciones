@@ -1,4 +1,5 @@
-﻿using Cursos.Models;
+﻿using Cursos.Helpers.Storage;
+using Cursos.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,12 +25,10 @@ namespace Cursos.Helpers
             if (c.PathArchivo != null && c.PathArchivo.NombreArchivo.ToLower().Contains(".jpeg"))
             {
                 string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(c.CapacitadoID);
-                string pathDirectorio = Path.Combine(HttpContext.Current.Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
-                var pathArchivoImagenAnterior = Path.Combine(pathDirectorio, c.PathArchivo.NombreArchivo);
-                var pathArchivoImagenNuevo = Path.Combine(pathDirectorio, c.PathArchivo.NombreArchivo.ToLower().Replace(".jpeg", ".jpg"));
-
-                System.IO.File.Move(pathArchivoImagenAnterior, pathArchivoImagenNuevo);
+                FileSystemStorageService.GetInstance().Move(carpetaArchivo,
+                                                            c.PathArchivo.NombreArchivo,
+                                                            carpetaArchivo,
+                                                            c.PathArchivo.NombreArchivo.ToLower().Replace(".jpeg", ".jpg"));
 
                 string nuevoNombreArchivo = c.PathArchivo.NombreArchivo.ToLower().Replace(".jpeg", ".jpg");
                 //c.PathArchivo.NombreArchivo = nuevoNombreArchivo;
