@@ -89,7 +89,7 @@ Una lista clara de los puntos de acoplamiento con el file system y una estimaci�
 ### Prompt sugerido para Copilot o Codex
 
 ```text
-Analizá el repositorio y encontrá todos los lugares donde se lean, escriban, roten, eliminen o referencien archivos de fotos de capacitados o archivos relacionados. Clasificá cada hallazgo por operación, archivo, método y riesgo para migrar de file system a Azure Blob Storage. No modifiques código todavía.
+Analizá el repositorio y encontrá todos los lugares donde se lean, escriban, roten, eliminen o referencien archivos de fotos de capacitados  u otro tipo de archivos. Clasificá cada hallazgo por operación, archivo, método y riesgo para migrar de file system a Azure Blob Storage. No modifiques código todavía. Documentá tus hallazgos en un archivo aparte que en su nombre se indique es un análisis de la etapa 0.
 ```
 
 ## Etapa 1 - Crear una abstracción de almacenamiento
