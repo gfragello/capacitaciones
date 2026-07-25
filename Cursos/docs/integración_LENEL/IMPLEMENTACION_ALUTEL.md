@@ -2,7 +2,7 @@
 
 ## Estado actual
 
-La base técnica de Alutel está implementada, pero la integración permanece deshabilitada y todavía no está conectada a controladores, vistas ni a un servicio de orquestación. No se debe interpretar la presencia del cliente HTTP y de las entidades como una habilitación operativa.
+La base técnica y la orquestación desacoplada de Alutel están implementadas, pero la integración permanece deshabilitada y todavía no está conectada a controladores ni vistas. No se debe interpretar la presencia del flujo interno como una habilitación operativa.
 
 La implementación disponible incluye:
 
@@ -14,9 +14,10 @@ La implementación disponible incluye:
 - política de elegibilidad y selección según las reglas confirmadas en el Gate 1;
 - validación estricta de respuestas;
 - entidades y estados de auditoría separados de OVAL;
+- servicio de orquestación con reclamo transaccional, auditoría previa y recuperación de operaciones interrumpidas;
 - pruebas MSTest sin IIS, credenciales ni acceso de red.
 
-Continúan pendientes la orquestación que crea y persiste operaciones e intentos, la interfaz operativa, el retiro de OVAL, la prueba de la migración sobre una copia de la BD y la validación del contrato en Staging.
+Continúan pendientes la interfaz operativa, el retiro de OVAL, la prueba del almacén EF6 y de la migración sobre una copia representativa de la BD, y la validación del contrato en Staging.
 
 ## Organización del módulo
 
@@ -32,6 +33,7 @@ Integraciones/Alutel/
         TipoVigenciaAlutel.cs
     Aplicacion/
         AlutelEligibilityPolicy.cs
+        AlutelIntegrationService.cs
         IClock.cs
     Infraestructura/
         AlutelConfiguration.cs
@@ -40,6 +42,8 @@ Integraciones/Alutel/
         AlutelMappingService.cs
         AlutelSafetyCardsClient.cs
         AlutelTokenProvider.cs
+        AlutelVigenciaGateway.cs
+        EfAlutelOperationStore.cs
 ```
 
 Las pruebas correspondientes se agrupan en `Cursos.Tests/Integraciones/Alutel/`. Las migraciones EF6 permanecen en `Migrations/` para conservar la secuencia global de la aplicación, y el contexto central continúa en `Models/IdentityModels.cs`.
@@ -72,6 +76,8 @@ Aplicación MVC existente -> Dominio / Aplicacion / Infraestructura
 - El contexto EF6 central puede depender de las entidades de `Dominio`.
 
 `IClock` pertenece a `Aplicacion` porque la política de elegibilidad y el token provider consumen la abstracción. `SystemClock` permanece en `Infraestructura` como su implementación de producción.
+
+`IAlutelIntegrationService` depende de dos puertos de aplicación: `IAlutelVigenciaGateway` e `IAlutelOperationStore`. El gateway combina el mapeo con el cliente SafetyCards; el almacén EF6 concentra las transacciones y no expone `ApplicationDbContext` al servicio.
 
 ## Configuración y secretos
 
@@ -110,6 +116,22 @@ En este repositorio, la CLI de EF6 interpreta esta migración aditiva como una m
 
 La migración todavía no fue aplicada ni revertida sobre una copia representativa. Esa validación debe preservar todos los datos y valores `EnvioOVAL*`.
 
+## Orquestación y recuperación
+
+`AlutelIntegrationService.ProcesarAsync` recibe explícitamente el registro y el usuario de origen. El flujo no consulta `HttpContext`:
+
+1. valida elegibilidad y límites de los datos de auditoría;
+2. reclama la operación con aislamiento `Serializable`;
+3. persiste la operación `EnProceso` y un intento inicialmente `Indeterminado`;
+4. invoca al proveedor mediante `IAlutelVigenciaGateway`;
+5. completa el intento y actualiza la operación a `Aceptado`, `Fallido` o `Indeterminado`.
+
+El reclamo se serializa por documento y tipo de vigencia. Una fecha igual o menor que otra ya aceptada no se reenvía. Una operación `EnProceso` o `Indeterminado` bloquea nuevos envíos del mismo documento y tipo hasta que se resuelva, evitando reintentos automáticos de resultados inciertos.
+
+Si la aplicación se interrumpe después de persistir el reclamo, `RecuperarEnProcesoAsync` cambia a `Indeterminado` las operaciones anteriores al umbral indicado y cierra sus intentos inconclusos con un mensaje sanitizado. La recuperación no reenvía datos; deja la operación disponible para la futura reconciliación administrativa. El umbral deberá ser mayor que el timeout máximo del cliente cuando se conecte a un proceso periódico o a una acción administrativa.
+
+Las pruebas automatizadas cubren el orden reclamar–enviar–completar, estados técnicos, concurrencia, cancelación, recuperación y el caso en que Alutel responde pero falla el guardado local. La semántica transaccional aún debe probarse contra SQL Server junto con la migración.
+
 ## Ejecución local
 
 Compilar primero el proyecto web, porque `Cursos.Tests` referencia `bin/Cursos.dll`:
@@ -128,7 +150,7 @@ Las pruebas usan un transporte HTTP simulado y no necesitan credenciales. La pri
 
 ## Activación futura
 
-El Gate 1 está resuelto, pero todavía no existe un flujo completo que pueda activarse. Antes de conectar acciones de usuario se deben implementar la Fase 8 (orquestación y persistencia) y la Fase 11 (controladores, autorización e interfaz), además de repetir en el servidor todas las validaciones de elegibilidad.
+El Gate 1 y la orquestación interna están resueltos, pero todavía no existe un flujo de usuario que pueda activarse. Antes de habilitar acciones se debe implementar la Fase 11 (controladores, autorización e interfaz), además de repetir en el servidor todas las validaciones de elegibilidad.
 
 Antes de habilitar un entorno también se debe:
 

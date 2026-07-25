@@ -344,6 +344,7 @@
     <Compile Include="Helpers\CSSHelper.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
     <Compile Include="Integraciones\Alutel\Aplicacion\AlutelEligibilityPolicy.cs" />
+    <Compile Include="Integraciones\Alutel\Aplicacion\AlutelIntegrationService.cs" />
     <Compile Include="Integraciones\Alutel\Aplicacion\IClock.cs" />
     <Compile Include="Integraciones\Alutel\Dominio\EstadoIntegracionAlutel.cs" />
     <Compile Include="Integraciones\Alutel\Dominio\IntentoIntegracionAlutel.cs" />
@@ -356,6 +357,8 @@
     <Compile Include="Integraciones\Alutel\Infraestructura\AlutelMappingService.cs" />
     <Compile Include="Integraciones\Alutel\Infraestructura\AlutelSafetyCardsClient.cs" />
     <Compile Include="Integraciones\Alutel\Infraestructura\AlutelTokenProvider.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\AlutelVigenciaGateway.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\EfAlutelOperationStore.cs" />
     <Compile Include="Helpers\EnvioOVAL\DatosTokenSeguridadOVAL.cs" />
     <Compile Include="Helpers\EnvioOVAL\EnvioOVALHelper.cs" />
     <Compile Include="Helpers\ExportarExcelHelper.cs" />

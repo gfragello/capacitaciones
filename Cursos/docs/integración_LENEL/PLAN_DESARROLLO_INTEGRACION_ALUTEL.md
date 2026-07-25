@@ -4,7 +4,7 @@
 >
 > Versión inicial: 2026-07-17.  
 > Última actualización: 2026-07-25.
-> Estado: componentes base de las Fases 1 y 3–7 implementados; migración aún no aplicada; **Gate 1 resuelto**; habilitadas las Fases 8, 10 y 11.
+> Estado: componentes base de las Fases 1 y 3–8 implementados; migración y almacén EF6 aún no probados sobre una copia de BD; **Gate 1 resuelto**; habilitadas las Fases 10 y 11.
 
 ---
 
@@ -341,7 +341,7 @@ Indeterminado
 - [x] `F3-01` Validar el modelo y la política de eliminación de su registro de origen. **Resuelto:** eliminar un `RegistroCapacitacion` borra en cascada sus operaciones e intentos Alutel.
 - [x] `F3-02` Crear entidades, enums, relaciones y `DbSet`.
 - [x] `F3-03` Agregar índices para registro, documento, estado y lote.
-- [ ] `F3-04` Incorporar control de concurrencia para reclamar una operación una sola vez. `RowVersion` ya está modelado; falta usarlo en el reclamo transaccional de la Fase 8.
+- [x] `F3-04` Incorporar control de concurrencia para reclamar una operación una sola vez. El almacén usa aislamiento `Serializable` durante el reclamo y `RowVersion` para detectar cambios concurrentes al completar o recuperar.
 - [x] `F3-05` Crear una migración EF exclusivamente aditiva.
 - [ ] `F3-06` Probar la migración sobre una copia representativa y verificar que no modifica tablas o valores OVAL.
 - [x] `F3-07` Crear el enum `TipoVigenciaAlutel` y la propiedad nullable `Curso.TipoVigenciaAlutel`.
@@ -450,23 +450,24 @@ Indeterminado
 
 ### Fase 8 — orquestación inicial desacoplada
 
-**Puede comenzar sin conectarse todavía a la interfaz real.**
+**Implementada y probada con dobles, sin conexión a la interfaz real. La validación transaccional contra SQL Server se realizará junto con F3-06.**
 
 #### Tareas
 
-- [ ] `F8-01` Recibir explícitamente registro y usuario/proceso; no leer identidad dentro del cliente HTTP.
-- [ ] `F8-02` Validar entrada y crear o reclamar transaccionalmente una operación.
-- [ ] `F8-03` Persistir `EnProceso` antes de invocar al proveedor.
-- [ ] `F8-04` Ejecutar un request unitario y persistir el intento inmutable.
-- [ ] `F8-05` Actualizar el estado lógico según el resultado validado.
-- [ ] `F8-06` Definir recuperación de operaciones que queden `EnProceso` tras reinicio.
-- [ ] `F8-07` Simular el caso “Alutel procesó, pero falló el guardado local”.
+- [x] `F8-01` Recibir explícitamente registro y usuario/proceso; el servicio no lee identidad ni `HttpContext`.
+- [x] `F8-02` Validar entrada y crear o reclamar transaccionalmente una operación mediante `IAlutelOperationStore`.
+- [x] `F8-03` Persistir `EnProceso` y el inicio del intento antes de invocar al proveedor.
+- [x] `F8-04` Ejecutar un request unitario y conservar un intento separado por cada invocación.
+- [x] `F8-05` Actualizar el estado lógico: aceptado, fallido o indeterminado según el resultado técnico validado.
+- [x] `F8-06` Recuperar como `Indeterminado` las operaciones `EnProceso` anteriores a un umbral, sin reenviarlas automáticamente.
+- [x] `F8-07` Simular “Alutel procesó, pero falló el guardado local”; el flujo devuelve indeterminado, bloquea el reenvío y permite la recuperación posterior.
 
 #### Criterio de salida
 
 - Dos invocaciones concurrentes no generan dos envíos silenciosos.
 - Todo intento deja auditoría, incluso si falla.
 - El resultado indeterminado exige intervención o reconciliación.
+- La aplicación y las pruebas no requieren credenciales ni acceso de red para validar la orquestación.
 
 ---
 
@@ -510,7 +511,7 @@ Indeterminado
 - [x] `F10-03` No implementar revocación ni corrección automática; documentar el procedimiento manual en LENEL y registrarlo en la auditoría.
 - [x] `F10-04` Rechazar `FechaVencimiento = null` con motivo explícito, sin fecha sustituta.
 - [x] `F10-05` Enviar el documento sin normalizar, admitiendo todos los tipos de documento y sin prefijo.
-- [ ] `F10-06` Ampliar el bloqueo de edición/borrado de calificaciones: `EnvioOVALEstado == Aceptado` histórico **o** operación Alutel `Aceptado`, con motivo visible. *(Depende de la orquestación de Fase 8 y de las views de Fase 11.)*
+- [ ] `F10-06` Ampliar el bloqueo de edición/borrado de calificaciones: `EnvioOVALEstado == Aceptado` histórico **o** operación Alutel `Aceptado`, con motivo visible. *(Depende de las views de Fase 11.)*
 - [x] `F10-07` Configurar el borrado en cascada de la auditoría Alutel al eliminar el `RegistroCapacitacion`, sin bloquear la eliminación.
 - [x] `F10-08` Exponer un mensaje de no elegibilidad equivalente a `MensajeNoListoParaEnviarOVAL` para usarlo como tooltip.
 
