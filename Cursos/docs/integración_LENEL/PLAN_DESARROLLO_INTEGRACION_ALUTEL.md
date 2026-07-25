@@ -3,7 +3,8 @@
 > Plan operativo basado en `ANALISIS_REEMPLAZO_OVAL_ALUTEL.md` y en el contrato `PUT Cardholder Safety Card.md`.
 >
 > Versión inicial: 2026-07-17.  
-> Estado: listo para iniciar las fases no condicionadas.
+> Última actualización: 2026-07-25.
+> Estado: componentes base de las Fases 1 y 3–7 implementados; migración aún no aplicada; **Gate 1 resuelto**; habilitadas las Fases 8, 10 y 11.
 
 ---
 
@@ -18,6 +19,7 @@ El plan permite comenzar antes de resolver todas las preguntas pendientes. Cada 
 ## 2. Documentos de referencia
 
 - [`ANALISIS_REEMPLAZO_OVAL_ALUTEL.md`](./ANALISIS_REEMPLAZO_OVAL_ALUTEL.md): alcance, decisiones, riesgos y preguntas abiertas.
+- [`IMPLEMENTACION_ALUTEL.md`](./IMPLEMENTACION_ALUTEL.md): arquitectura vigente, configuración, restricciones de EF6 y ejecución local.
 - [`PUT Cardholder Safety Card.md`](./PUT%20Cardholder%20Safety%20Card.md): contrato entregado por el proveedor.
 - [`INTEGRACION_LENEL_REEMPLAZO_OVAL.md`](./INTEGRACION_LENEL_REEMPLAZO_OVAL.md): contrato OVAL actual usado como referencia histórica.
 
@@ -43,6 +45,14 @@ Si una decisión del análisis cambia, este plan debe actualizarse antes de impl
 | OVAL operativo | Desaparecerá completamente de la interfaz y sus rutas de escritura quedarán deshabilitadas. |
 | Estados | Alutel tendrá estados y auditoría independientes de `EnvioOVALEstado`. |
 | Histórico | No se reprocesará automáticamente. Una eventual carga será un trabajo separado. |
+| Elegibilidad *(Gate 1)* | `Estado == Aprobado`, `Curso.TipoVigenciaAlutel` con valor, `FechaVencimiento` con valor y mayor a la fecha actual, y documento no vacío. Un registro vencido no puede enviarse. |
+| Selección *(Gate 1)* | Ante varias capacitaciones del mismo curso y persona gana la de mayor `FechaVencimiento`; desempate por `Jornada.Fecha` descendente y luego por `RegistroCapacitacionID` descendente. |
+| Correcciones y revocaciones *(Gate 1)* | Sin automatismo. No se envían vigencias menores ni fechas pasadas; la corrección se resuelve manualmente en LENEL y queda en la auditoría. |
+| Documento *(Gate 1)* | Se envía `Capacitado.Documento` tal como está almacenado, sin normalizar, para todos los tipos de documento y sin prefijo. |
+| Pantallas *(Gate 1)* | Botón por registro y envío por jornada en el detalle de jornada, más un panel Alutel propio para pendientes, rechazados e indeterminados. |
+| Roles *(Gate 1)* | Enviar: `Administrador`, `AdministradorExterno`, `InstructorExterno`. Panel, reintento y reconciliación: `Administrador`. `InscripcionesExternas` excluido. No se crean roles nuevos. |
+| Bloqueo de calificaciones *(Gate 1)* | Se bloquea editar o borrar la calificación si el registro tiene `EnvioOVALEstado == Aceptado` histórico o una operación Alutel `Aceptado`, mostrando el motivo. |
+| Eliminación de registros *(Gate 1)* | Eliminar un `RegistroCapacitacion` sigue permitido siempre; su auditoría Alutel se borra en cascada. |
 
 ---
 
@@ -149,20 +159,20 @@ No tiene dependencias funcionales. Habilita:
 - Mapeo confirmado.
 - Implementación del retiro OVAL en una rama de desarrollo.
 
-### Gate 1 — conexión con el flujo real del operador
+### Gate 1 — conexión con el flujo real del operador — **RESUELTO el 2026-07-25**
 
-Debe estar resuelto:
+Decisiones tomadas:
 
-- Si solo se envían capacitaciones aprobadas.
-- Tratamiento de no aprobaciones, revocaciones y correcciones.
-- Selección cuando existen varios registros del mismo curso y persona.
-- Tratamiento de cursos sin vigencia.
-- Pantalla y conjunto de registros desde los que actuará el operador.
-- Comportamiento visual cuando el curso está habilitado pero no existen registros elegibles: ocultar o mostrar deshabilitado con motivo.
-- Roles para enviar y consultar resultados.
-- Normalización de `documentNumber`.
-- Si un OVAL histórico `Aceptado` continúa bloqueando la edición o eliminación de calificaciones.
-- Qué ocurre con la auditoría Alutel si se elimina un `RegistroCapacitacion`.
+- Solo se envían capacitaciones `Aprobado` y no vencidas.
+- Las no aprobaciones, revocaciones y correcciones no generan envíos automáticos; se corrigen manualmente en LENEL.
+- Ante varios registros del mismo curso y persona gana el de mayor `FechaVencimiento`, con desempate por `Jornada.Fecha` y `RegistroCapacitacionID`.
+- Un curso sin vigencia o un registro sin `FechaVencimiento` se rechaza localmente con motivo explícito.
+- El operador actúa desde el detalle de jornada (registro individual y jornada completa) y desde un panel Alutel propio.
+- Cuando un registro no es elegible el botón se oculta y el motivo se expone como tooltip; el menú de jornada permanece visible si el curso está configurado.
+- Roles: enviar `Administrador`, `AdministradorExterno`, `InstructorExterno`; panel, reintento y reconciliación `Administrador`.
+- `documentNumber` se envía sin normalizar, tal como está en la base, para todos los tipos de documento.
+- El bloqueo de calificaciones se mantiene y se amplía: OVAL `Aceptado` histórico o Alutel `Aceptado`.
+- La eliminación de un `RegistroCapacitacion` no se bloquea; su auditoría Alutel se borra en cascada.
 
 ### Gate 2 — lotes y reintentos automáticos
 
@@ -215,7 +225,7 @@ Requiere una autorización independiente con:
 - [ ] `F0-02` Registrar una línea base de cantidades por `EnvioOVALEstado` para comprobar que el despliegue no altera el histórico. No guardar documentos personales en el artefacto.
 - [ ] `F0-03` Crear una matriz de rutas OVAL que deberán dejar de ejecutar acciones.
 - [ ] `F0-04` Revisar credenciales presentes o históricas en archivos de configuración; rotarlas si alguna vez fueron válidas y excluir secretos nuevos del repositorio.
-- [ ] `F0-05` Definir las feature flags `AlutelHabilitado` y `OvalLegacyHabilitado`. La segunda puede proteger código de contingencia, pero nunca volver a mostrar la interfaz OVAL.
+- [x] `F0-05` Definir las feature flags `AlutelHabilitado` y `OvalLegacyHabilitado`. La segunda puede proteger código de contingencia, pero nunca volver a mostrar la interfaz OVAL.
 
 #### Criterio de salida
 
@@ -226,15 +236,15 @@ Requiere una autorización independiente con:
 
 ### Fase 1 — infraestructura de pruebas
 
-**Puede comenzar ahora.** La solución actual no contiene un proyecto de pruebas.
+**Base implementada.** La solución contiene un proyecto MSTest desacoplado de IIS y de servicios externos.
 
 #### Tareas
 
-- [ ] `F1-01` Crear un proyecto `Cursos.Tests` compatible con .NET Framework 4.8.1 y agregarlo a `Cursos.sln`.
-- [ ] `F1-02` Elegir y documentar framework de pruebas y mocking compatible con el proyecto.
-- [ ] `F1-03` Agregar abstracciones para configuración, reloj, token provider y transporte HTTP.
-- [ ] `F1-04` Preparar un `HttpMessageHandler` o transporte simulado para probar requests y responses sin red.
-- [ ] `F1-05` Configurar una forma repetible de ejecutar las pruebas localmente y en CI, si existe.
+- [x] `F1-01` Crear un proyecto `Cursos.Tests` compatible con .NET Framework 4.8.1 y agregarlo a `Cursos.sln`.
+- [x] `F1-02` Elegir y documentar MSTest como framework de pruebas compatible con el proyecto.
+- [x] `F1-03` Agregar abstracciones para configuración, reloj, token provider y transporte HTTP.
+- [x] `F1-04` Preparar un transporte simulado para probar requests y responses sin red.
+- [x] `F1-05` Documentar en `IMPLEMENTACION_ALUTEL.md` la ejecución local repetible. No existe una canalización CI en este repositorio.
 
 #### Criterio de salida
 
@@ -268,7 +278,7 @@ Requiere una autorización independiente con:
 
 - [ ] `F2-12` Reemplazar los POST que adjuntan entidades completas con `EntityState.Modified`: cargar la entidad existente y actualizar únicamente las propiedades editables.
 - [ ] `F2-13` Preservar explícitamente `EnvioOVAL*`, `PermiteEnviosOVAL`, `TipoDocumentoOVAL` y vínculos legacy al editar registros, cursos, jornadas y tipos de documento.
-- [ ] `F2-14` Resolver el Gate 1 sobre el bloqueo actual de calificaciones cuando `EnvioOVALEstado == Aceptado`; no dejar una restricción invisible.
+- [ ] `F2-14` Implementar la regla confirmada en el Gate 1: mantener el bloqueo por `EnvioOVALEstado == Aceptado`, ampliarlo a operaciones Alutel aceptadas y mostrar un motivo visible.
 
 #### Criterio de salida
 
@@ -281,7 +291,7 @@ Requiere una autorización independiente con:
 
 ### Fase 3 — modelo Alutel y migración aditiva
 
-**Puede comenzar ahora.**
+**Modelo y migración creados; validación sobre BD pendiente.**
 
 #### Diseño propuesto
 
@@ -312,23 +322,30 @@ Estados iniciales:
 Pendiente
 EnProceso
 Aceptado
-RechazadoFuncional
-ErrorTransitorio
-ErrorPermanente
+Fallido
 Indeterminado
-Cancelado
+```
+
+Resultados técnicos de cada intento:
+
+```text
+Aceptado
+RechazadoFuncional
+ErrorReintentable
+ErrorDefinitivo
+Indeterminado
 ```
 
 #### Tareas
 
-- [ ] `F3-01` Validar el modelo y la política de eliminación de su registro de origen.
-- [ ] `F3-02` Crear entidades, enums, relaciones y `DbSet`.
-- [ ] `F3-03` Agregar índices para registro, documento, estado y lote.
-- [ ] `F3-04` Incorporar control de concurrencia para reclamar una operación una sola vez.
-- [ ] `F3-05` Crear una migración EF exclusivamente aditiva.
+- [x] `F3-01` Validar el modelo y la política de eliminación de su registro de origen. **Resuelto:** eliminar un `RegistroCapacitacion` borra en cascada sus operaciones e intentos Alutel.
+- [x] `F3-02` Crear entidades, enums, relaciones y `DbSet`.
+- [x] `F3-03` Agregar índices para registro, documento, estado y lote.
+- [ ] `F3-04` Incorporar control de concurrencia para reclamar una operación una sola vez. `RowVersion` ya está modelado; falta usarlo en el reclamo transaccional de la Fase 8.
+- [x] `F3-05` Crear una migración EF exclusivamente aditiva.
 - [ ] `F3-06` Probar la migración sobre una copia representativa y verificar que no modifica tablas o valores OVAL.
-- [ ] `F3-07` Crear el enum `TipoVigenciaAlutel` y la propiedad nullable `Curso.TipoVigenciaAlutel`.
-- [ ] `F3-08` Incluir en la migración de datos la asignación inicial: curso 1 = Verde, curso 2 = Refresh, curso 3 = Azul; los demás cursos = `null`.
+- [x] `F3-07` Crear el enum `TipoVigenciaAlutel` y la propiedad nullable `Curso.TipoVigenciaAlutel`.
+- [x] `F3-08` Incluir en la migración de datos la asignación inicial: curso 1 = Verde, curso 2 = Refresh, curso 3 = Azul; los demás cursos = `null`.
 
 #### Criterio de salida
 
@@ -345,12 +362,12 @@ Cancelado
 
 #### Tareas
 
-- [ ] `F4-01` Crear configuración tipada para `BaseUrl`, `TenantId`, `Scope`, endpoint, timeout, tamaño de lote, feature flag y política de reintentos.
-- [ ] `F4-02` Validar URLs, enteros y valores requeridos antes de ejecutar un envío.
-- [ ] `F4-03` Separar `ClientSecret` de la tabla `Configuracion`, `PuntoServicio.Password` y pantallas administrativas.
-- [ ] `F4-04` Implementar `IAlutelSecretProvider` para el mecanismo seguro elegido por infraestructura.
+- [ ] `F4-01` Completar la configuración tipada. `BaseUrl`, endpoint, scope, timeout, máximo unitario, feature flag y margen de token ya existen; falta cerrar la configuración definitiva por entorno y la política de reintentos.
+- [x] `F4-02` Validar URLs, enteros y valores requeridos antes de ejecutar un envío.
+- [x] `F4-03` Separar `ClientSecret` de la tabla `Configuracion`, `PuntoServicio.Password` y pantallas administrativas.
+- [x] `F4-04` Implementar `IAlutelSecretProvider` mediante la variable de entorno `CURSOS_ALUTEL_CLIENT_SECRET`.
 - [ ] `F4-05` Definir valores distintos para Desarrollo, Staging y Producción sin incluir secretos en transformaciones versionadas.
-- [ ] `F4-06` Mantener `AlutelHabilitado=false` por defecto fuera de Staging hasta el canario.
+- [x] `F4-06` Mantener `AlutelHabilitado=false` por defecto hasta el canario.
 
 #### Criterio de salida
 
@@ -365,12 +382,12 @@ Cancelado
 
 #### Tareas
 
-- [ ] `F5-01` Implementar Client Credentials con body form-urlencoded.
-- [ ] `F5-02` Parsear `access_token`, `expires_in` y `token_type` mediante DTO tipado.
-- [ ] `F5-03` Cachear el token con margen previo a expiración.
-- [ ] `F5-04` Sincronizar la renovación para evitar solicitudes paralelas de token.
-- [ ] `F5-05` Invalidar y renovar una sola vez ante `401`.
-- [ ] `F5-06` Evitar `ApplicationDbContext` y `HttpContext.Current` dentro del token provider.
+- [x] `F5-01` Implementar Client Credentials con body form-urlencoded.
+- [x] `F5-02` Parsear `access_token`, `expires_in` y `token_type` mediante DTO tipado.
+- [x] `F5-03` Cachear el token con margen previo a expiración.
+- [x] `F5-04` Sincronizar la renovación para evitar solicitudes paralelas de token.
+- [x] `F5-05` Invalidar y renovar una sola vez ante `401`.
+- [x] `F5-06` Evitar `ApplicationDbContext` y `HttpContext.Current` dentro del token provider.
 
 #### Pruebas mínimas
 
@@ -392,15 +409,15 @@ Cancelado
 
 #### Tareas
 
-- [ ] `F6-01` Crear DTOs de request con propiedades opcionales y omisión de valores nulos.
-- [ ] `F6-02` Crear DTO de response para contadores y `failedDocuments`.
-- [ ] `F6-03` Implementar cliente asincrónico con un `HttpClient` reutilizable.
-- [ ] `F6-04` Ejecutar `PUT /Cardholder/SafetyCards` con Bearer token, `Content-Type` y `Accept` correctos.
-- [ ] `F6-05` Formatear fechas exclusivamente como `yyyyMMdd` con cultura invariable.
-- [ ] `F6-06` Validar que cada item contenga documento y exactamente una vigencia en la fase inicial.
-- [ ] `F6-07` Validar contadores, subconjunto de fallidos y ausencia de duplicados antes de declarar éxito.
-- [ ] `F6-08` Clasificar `400`, `401`, `403`, `429`, `5xx`, timeout, JSON inválido y respuesta inconsistente.
-- [ ] `F6-09` Representar como `Indeterminado` cualquier caso en que no pueda demostrarse si el proveedor procesó la solicitud.
+- [x] `F6-01` Crear DTOs de request con propiedades opcionales y omisión de valores nulos.
+- [x] `F6-02` Crear DTO de response para contadores y `failedDocuments`.
+- [x] `F6-03` Implementar cliente asincrónico sobre un transporte que recibe un `HttpClient` reutilizable.
+- [x] `F6-04` Ejecutar `PUT /Cardholder/SafetyCards` con Bearer token, `Content-Type` y `Accept` correctos.
+- [x] `F6-05` Formatear fechas exclusivamente como `yyyyMMdd` con cultura invariable.
+- [x] `F6-06` Validar que cada item contenga documento y exactamente una vigencia en la fase inicial.
+- [x] `F6-07` Validar contadores, subconjunto de fallidos y ausencia de duplicados antes de declarar éxito.
+- [x] `F6-08` Clasificar `400`, `401`, `403`, `429`, `5xx`, timeout, JSON inválido y respuesta inconsistente.
+- [x] `F6-09` Representar como `Indeterminado` cualquier caso en que no pueda demostrarse si el proveedor procesó la solicitud.
 
 #### Criterio de salida
 
@@ -416,11 +433,11 @@ Cancelado
 
 #### Tareas
 
-- [ ] `F7-01` Mapear el request desde `Curso.TipoVigenciaAlutel`; los IDs 1/2/3 solo se utilizarán para inicializar la migración, no durante la operación normal.
-- [ ] `F7-02` Tomar la fecha desde `RegistroCapacitacion.FechaVencimiento`, sin recalcularla en el cliente.
-- [ ] `F7-03` Construir un request que omita las otras dos propiedades.
-- [ ] `F7-04` Rechazar curso con `TipoVigenciaAlutel = null`, fecha nula, documento vacío y fecha fuera del formato esperado.
-- [ ] `F7-05` Incorporar la normalización de documento cuando se supere el Gate 1.
+- [x] `F7-01` Mapear el request desde `Curso.TipoVigenciaAlutel`; los IDs 1/2/3 solo se utilizan para inicializar la migración, no durante la operación normal.
+- [x] `F7-02` Tomar la fecha desde `RegistroCapacitacion.FechaVencimiento`, sin recalcularla en el cliente.
+- [x] `F7-03` Construir un request que omita las otras dos propiedades.
+- [x] `F7-04` Rechazar curso con `TipoVigenciaAlutel = null`, fecha nula, documento vacío y fecha fuera del formato esperado.
+- [x] `F7-05` Conservar el documento sin normalizar, según la decisión del Gate 1.
 - [ ] `F7-06` Agregar pruebas que demuestren que cambiar la configuración del curso cambia simultáneamente la elegibilidad y el campo Alutel generado.
 
 #### Criterio de salida
@@ -484,41 +501,44 @@ Cancelado
 
 ### Fase 10 — reglas funcionales y selección
 
-**Requiere superar el Gate 1.**
+**Gate 1 resuelto: puede implementarse.**
 
 #### Tareas
 
-- [ ] `F10-01` Implementar `IAlutelEligibilityPolicy` con las decisiones aprobadas.
-- [ ] `F10-02` Seleccionar determinísticamente el registro cuando existan varios del mismo curso y persona.
-- [ ] `F10-03` Definir no aprobaciones, revocaciones y correcciones.
-- [ ] `F10-04` Definir comportamiento para `FechaVencimiento = null`.
-- [ ] `F10-05` Aplicar la normalización de documento confirmada.
-- [ ] `F10-06` Resolver la edición/borrado de calificaciones históricamente bloqueadas por OVAL.
-- [ ] `F10-07` Resolver eliminación de registros con operaciones Alutel existentes.
+- [x] `F10-01` Implementar `IAlutelEligibilityPolicy`: `Estado == Aprobado`, `Curso.TipoVigenciaAlutel.HasValue`, `FechaVencimiento.HasValue`, `FechaVencimiento > ahora` y documento no vacío.
+- [x] `F10-02` Seleccionar el registro por `FechaVencimiento` descendente, con desempate por `Jornada.Fecha` descendente y `RegistroCapacitacionID` descendente. No reutilizar `UltimoRegistroCapacitacionPorCurso`.
+- [x] `F10-03` No implementar revocación ni corrección automática; documentar el procedimiento manual en LENEL y registrarlo en la auditoría.
+- [x] `F10-04` Rechazar `FechaVencimiento = null` con motivo explícito, sin fecha sustituta.
+- [x] `F10-05` Enviar el documento sin normalizar, admitiendo todos los tipos de documento y sin prefijo.
+- [ ] `F10-06` Ampliar el bloqueo de edición/borrado de calificaciones: `EnvioOVALEstado == Aceptado` histórico **o** operación Alutel `Aceptado`, con motivo visible. *(Depende de la orquestación de Fase 8 y de las views de Fase 11.)*
+- [x] `F10-07` Configurar el borrado en cascada de la auditoría Alutel al eliminar el `RegistroCapacitacion`, sin bloquear la eliminación.
+- [x] `F10-08` Exponer un mensaje de no elegibilidad equivalente a `MensajeNoListoParaEnviarOVAL` para usarlo como tooltip.
 
 #### Criterio de salida
 
 - Cada regla tiene ejemplos aprobados y pruebas automatizadas.
 - Un operador puede saber por qué un registro es o no elegible.
+- Un registro vencido, no aprobado o de curso no configurado nunca genera una operación.
 
 ---
 
 ### Fase 11 — interfaz operativa Alutel
 
-**Requiere superar el Gate 1.**
+**Gate 1 resuelto: puede implementarse.**
 
 #### Tareas
 
-- [ ] `F11-01` Confirmar ubicación y alcance: individual, jornada, pendientes u otra selección.
+- [ ] `F11-01` Implementar el botón por registro y la acción “enviar toda la jornada” en el detalle de jornada, más un panel Alutel propio con pendientes, rechazados e indeterminados.
 - [ ] `F11-02` Implementar acciones mutantes exclusivamente como `POST`.
-- [ ] `F11-03` Agregar antiforgery y rol específico para enviar.
+- [ ] `F11-03` Agregar antiforgery y `[Authorize(Roles = ...)]` explícito por acción: enviar `Administrador,AdministradorExterno,InstructorExterno`; panel, reintento y reconciliación `Administrador`.
 - [ ] `F11-04` Mostrar resultados aceptados, rechazados, transitorios e indeterminados sin exponer información sensible.
-- [ ] `F11-05` Permitir consulta y, si se autoriza, reintento/reconciliación según rol.
+- [ ] `F11-05` Permitir reintento y reconciliación desde el panel, solo para `Administrador`.
 - [ ] `F11-06` Evitar que la nueva interfaz reutilice nombres o estados OVAL.
 - [ ] `F11-07` Construir una propiedad de view model/política de presentación para “Mostrar envío LENEL”; no comparar `CursoID` ni consultar `PermiteEnviosOVAL` directamente en Razor.
 - [ ] `F11-08` Mostrar la opción solo si `AlutelHabilitado`, `Curso.TipoVigenciaAlutel.HasValue` y el usuario tiene rol; para acciones por registro exigir además `EsElegibleParaAlutel` y ausencia de una operación incompatible en curso.
 - [ ] `F11-09` Repetir en el controlador/servicio las validaciones de feature flag, rol, tipo de vigencia y elegibilidad antes de crear la operación.
 - [ ] `F11-10` Incorporar en las pantallas administrativas de curso un selector opcional `TipoVigenciaAlutel` y mostrar su valor en el detalle; no agregar un nuevo checkbox duplicado en jornada.
+- [ ] `F11-11` Ocultar el botón cuando el registro no es elegible — celda vacía, como en `_ListRegistrosCapacitacionOVALPartial.cshtml` — conservando visible la columna de estado y exponiendo el motivo como tooltip.
 
 #### Criterio de salida
 

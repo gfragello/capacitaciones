@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Cursos.Integraciones.Alutel.Dominio;
+using Cursos.Models.Enums;
 
 namespace Cursos.Models
 {
@@ -108,6 +110,9 @@ namespace Cursos.Models
 
         [Display(Name = "Permite envíos OVAL")]
         public bool PermiteEnviosOVAL { get; set; }
+
+        [Display(Name = "Vigencia LENEL")]
+        public TipoVigenciaAlutel? TipoVigenciaAlutel { get; set; }
 
         [Display(Name = "Punto de servicio")]
         public int? PuntoServicioId { get; set; }

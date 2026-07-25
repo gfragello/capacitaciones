@@ -343,6 +343,19 @@
     <Compile Include="Helpers\ConfiguracionHelper.cs" />
     <Compile Include="Helpers\CSSHelper.cs" />
     <Compile Include="Helpers\DateTimeHelper.cs" />
+    <Compile Include="Integraciones\Alutel\Aplicacion\AlutelEligibilityPolicy.cs" />
+    <Compile Include="Integraciones\Alutel\Aplicacion\IClock.cs" />
+    <Compile Include="Integraciones\Alutel\Dominio\EstadoIntegracionAlutel.cs" />
+    <Compile Include="Integraciones\Alutel\Dominio\IntentoIntegracionAlutel.cs" />
+    <Compile Include="Integraciones\Alutel\Dominio\OperacionIntegracionAlutel.cs" />
+    <Compile Include="Integraciones\Alutel\Dominio\ResultadoTecnicoAlutel.cs" />
+    <Compile Include="Integraciones\Alutel\Dominio\TipoVigenciaAlutel.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\AlutelConfiguration.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\AlutelContracts.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\AlutelInfrastructure.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\AlutelMappingService.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\AlutelSafetyCardsClient.cs" />
+    <Compile Include="Integraciones\Alutel\Infraestructura\AlutelTokenProvider.cs" />
     <Compile Include="Helpers\EnvioOVAL\DatosTokenSeguridadOVAL.cs" />
     <Compile Include="Helpers\EnvioOVAL\EnvioOVALHelper.cs" />
     <Compile Include="Helpers\ExportarExcelHelper.cs" />
@@ -647,6 +660,10 @@
     <Compile Include="Migrations\202605030058421_Curso_Caracteristicas.Designer.cs">
       <DependentUpon>202605030058421_Curso_Caracteristicas.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202607171115000_IntegracionAlutelInicial.cs" />
+    <Compile Include="Migrations\202607171115000_IntegracionAlutelInicial.Designer.cs">
+      <DependentUpon>202607171115000_IntegracionAlutelInicial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ArchivoLog.cs" />
@@ -891,6 +908,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202605030058421_Curso_Caracteristicas.resx">
       <DependentUpon>202605030058421_Curso_Caracteristicas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202607171115000_IntegracionAlutelInicial.resx">
+      <DependentUpon>202607171115000_IntegracionAlutelInicial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

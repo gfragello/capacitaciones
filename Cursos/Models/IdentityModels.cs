@@ -5,6 +5,7 @@ using System.Data.Entity.Infrastructure.Annotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Cursos.Integraciones.Alutel.Dominio;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -94,6 +95,18 @@ namespace Cursos.Models
                 .HasForeignKey(nv => nv.RegistroCapacitacionID)
                 .WillCascadeOnDelete(true);
 
+            modelBuilder.Entity<OperacionIntegracionAlutel>()
+                .HasOptional(o => o.RegistroCapacitacion)
+                .WithMany()
+                .HasForeignKey(o => o.RegistroCapacitacionID)
+                .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<IntentoIntegracionAlutel>()
+                .HasRequired(i => i.Operacion)
+                .WithMany(o => o.Intentos)
+                .HasForeignKey(i => i.OperacionIntegracionAlutelID)
+                .WillCascadeOnDelete(true);
+
             // Índice NO único para Documento en Capacitado
             modelBuilder.Entity<Capacitado>()
                 .Property(c => c.Documento)
@@ -132,5 +145,8 @@ namespace Cursos.Models
         public DbSet<RegimenPago> RegimenesPago { get; set; }
 
         public DbSet<DocumentoInteres> DocumentosInteres { get; set; }
+
+        public DbSet<OperacionIntegracionAlutel> OperacionesIntegracionAlutel { get; set; }
+        public DbSet<IntentoIntegracionAlutel> IntentosIntegracionAlutel { get; set; }
     }
 }

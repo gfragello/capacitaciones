@@ -3,7 +3,7 @@
 > Documento de análisis técnico interno. Describe cómo sustituir la integración operativa OVAL por Alutel a partir del contrato enviado por el proveedor (`PUT Cardholder Safety Card.md`) y del código actual de `Capacitaciones CSL`.
 >
 > Análisis inicial: 2026-07-06.  
-> Última actualización: 2026-07-17.
+> Última actualización: 2026-07-25 (cierre del Gate 1).
 
 ---
 
@@ -11,7 +11,7 @@
 
 Definir un diseño accionable para la nueva integración con Alutel: alcance funcional, impacto en el código, tratamiento de datos históricos, reglas de estado, seguridad, procesamiento por lotes, migración y preguntas pendientes, clasificadas según la fase en que deban resolverse.
 
-Este documento no es todavía una especificación funcional definitiva. Ya están confirmados el alcance total del reemplazo, el significado de las fechas, el mapeo curso–tarjeta y el comportamiento de las propiedades omitidas. Continúan abiertas las reglas de selección del registro, elegibilidad y operación del proceso.
+Este documento no es todavía una especificación funcional definitiva. Ya están confirmados el alcance total del reemplazo, el significado de las fechas, el mapeo curso–tarjeta y el comportamiento de las propiedades omitidas. El **Gate 1** quedó cerrado el 2026-07-25: elegibilidad, selección, pantalla de operación, roles, normalización de documento y convivencia con el bloqueo histórico OVAL están decididos. Continúan abiertos los gates de lotes/reintentos (Gate 2) y de Producción (Gate 3).
 
 La ejecución se detalla en [`PLAN_DESARROLLO_INTEGRACION_ALUTEL.md`](./PLAN_DESARROLLO_INTEGRACION_ALUTEL.md). Las decisiones pendientes no impiden construir la base técnica ni ejecutar un spike controlado en Staging; actúan como gates para completar la orquestación, los lotes, los reintentos y la habilitación en Producción.
 
@@ -30,7 +30,8 @@ La ejecución se detalla en [`PLAN_DESARROLLO_INTEGRACION_ALUTEL.md`](./PLAN_DES
 - **Habilitación por curso:** se agregará `Curso.TipoVigenciaAlutel?`. `null` significa que el curso no genera envíos; un valor Verde, Azul o Refresh habilita la integración y determina el campo del request. `PermiteEnviosOVAL` no se reutilizará.
 - **Visibilidad LENEL:** las views mostrarán la opción de envío únicamente para cursos configurados para Alutel, cuando la integración global esté habilitada y el usuario tenga el rol requerido. La misma regla se validará nuevamente en el servidor.
 - **Actualización parcial confirmada:** cada envío incluirá únicamente la vigencia que se desea actualizar. Las propiedades de las otras tarjetas se omitirán y Alutel conservará sus valores existentes.
-- Los bloqueadores funcionales restantes son determinar qué registros son elegibles y cómo elegir entre varias capacitaciones del mismo curso.
+- **Elegibilidad confirmada (Gate 1):** solo registros `Aprobado`, con curso configurado, `FechaVencimiento` con valor y todavía vigente. Ante varias capacitaciones del mismo curso y persona gana la de mayor `FechaVencimiento`.
+- Los bloqueadores restantes son contractuales y operativos: semántica de los contadores y lotes (Gate 2), credenciales, corte y carga histórica (Gate 3).
 
 ---
 
@@ -188,7 +189,7 @@ El mayor riesgo no es técnico sino funcional: actualizar una vigencia incorrect
 
 | Campo Alutel | Origen confirmado | Curso |
 | --- | --- | --- |
-| `documentNumber` | `Capacitado.Documento` | No aplica; falta confirmar normalización y tipos admitidos. |
+| `documentNumber` | `Capacitado.Documento` | Se envía **tal cual está almacenado**, sin transformaciones ni prefijo de tipo de documento. Todos los tipos de documento son admitidos. |
 | `vtoTarjetaVerde` | `RegistroCapacitacion.FechaVencimiento` | `TV - Tarjeta Verde`, `CursoID = 1`. |
 | `vtoTarjetaAzul` | `RegistroCapacitacion.FechaVencimiento` | `TA - Tarjeta Azul`, `CursoID = 3`. |
 | `vtoActualizacionSeguridad` | `RegistroCapacitacion.FechaVencimiento` | `RF - Refresh`, `CursoID = 2`. |
@@ -253,18 +254,34 @@ La implementación exigirá al menos una fecha por elemento, aunque el contrato 
 
 La omisión de una propiedad conserva su valor en Alutel. Continúa siendo conveniente consultar qué hacen `null` y cadena vacía como parte de las pruebas de contrato, aunque la aplicación no enviará esos valores. También falta confirmar si se permite retroceder una vigencia ya almacenada.
 
-### 7.4 Elegibilidad
+### 7.4 Elegibilidad — confirmada (Gate 1)
 
-`ListoParaEnviarOVAL` no puede reutilizarse: considera calificados tanto los registros `Aprobado` como `NoAprobado` y depende de estados OVAL.
+`ListoParaEnviarOVAL` no puede reutilizarse: considera calificados tanto los registros `Aprobado` como `NoAprobado` y depende de estados OVAL. Alutel no transporta un resultado `APR/REC`, por lo que enviar un `NoAprobado` escribiría una vigencia válida en la tarjeta.
 
-La regla Alutel debe definir, como mínimo:
+La regla `EsElegibleParaAlutel` exige **todas** estas condiciones:
 
-- Estado de capacitación permitido.
-- `Curso.TipoVigenciaAlutel` con valor; `null` excluye el registro.
-- Existencia y validez de la fecha a enviar.
-- Tipo de documento admitido.
-- Fecha de corte de la integración.
-- Tratamiento de correcciones, revocaciones y registros históricos.
+1. `Curso.TipoVigenciaAlutel.HasValue`; `null` excluye el registro.
+2. `RegistroCapacitacion.Estado == EstadosRegistroCapacitacion.Aprobado`. Los estados `Inscripto` y `NoAprobado` nunca generan envíos.
+3. `FechaVencimiento.HasValue`. Un curso sin vigencia no puede enviarse y la operación se rechaza localmente con motivo explícito.
+4. `FechaVencimiento > DateTime.Now`. **Un registro ya vencido no puede enviarse.**
+5. `Capacitado.Documento` no vacío. Todos los tipos de documento son admitidos; no se reutiliza `TipoDocumento.PermiteEnviosOVAL` ni `TipoDocumentoOVAL`.
+6. Fecha de corte de la integración (Gate 3): no se reprocesan registros anteriores al corte salvo carga histórica autorizada.
+
+#### Selección cuando existen varias capacitaciones del mismo curso
+
+Gana el registro con **`FechaVencimiento` mayor**, no el de la jornada más reciente. Esto evita que una jornada posterior con vigencia menor retroceda una fecha ya informada.
+
+Desempate determinista, en orden:
+
+1. `FechaVencimiento` descendente.
+2. `Jornada.Fecha` descendente.
+3. `RegistroCapacitacionID` descendente.
+
+No se reutiliza `Capacitado.UltimoRegistroCapacitacionPorCurso()`, que ordena solo por `Jornada.Fecha`.
+
+#### Correcciones, no aprobaciones y revocaciones
+
+En el alcance inicial **no existe revocación ni corrección automática**. Si después de un envío aceptado el registro se corrige, se anula o se elimina, la aplicación no envía una vigencia menor ni una fecha pasada: deja constancia en la auditoría Alutel y la corrección en LENEL se resuelve manualmente por el operador del sistema de control de acceso. Si el proveedor confirma que puede retrocederse una vigencia (Gate 3, interrogante 16), podrá evaluarse un flujo de revocación en un incremento posterior.
 
 ### 7.5 Visibilidad de la opción LENEL
 
@@ -276,7 +293,20 @@ La opción general “Envío LENEL” se mostrará únicamente cuando:
 - `Curso.TipoVigenciaAlutel.HasValue`.
 - El usuario tenga el rol autorizado.
 
-Los botones por registro exigirán además que el registro cumpla `EsElegibleParaAlutel` y no tenga una operación incompatible en curso. Si una condición no se cumple, la opción debe ocultarse o mostrarse deshabilitada con un motivo definido por UX.
+Los botones por registro exigirán además que el registro cumpla `EsElegibleParaAlutel` y no tenga una operación incompatible en curso. **Comportamiento confirmado (Gate 1), replicando el de OVAL:** cuando el registro no es elegible el botón simplemente no se dibuja — la celda queda vacía — y la columna de estado sigue visible; el motivo se expone como `title`/tooltip a través de una propiedad equivalente a `MensajeNoListoParaEnviarOVAL`. Si ningún registro de la jornada es elegible, el menú de envío de la jornada se muestra igual, tal como hoy ocurre con `Jornada.PermiteEnviosOVAL`.
+
+#### Roles confirmados (Gate 1)
+
+Se replica el esquema OVAL sin crear roles nuevos:
+
+| Acción | Roles | Referencia OVAL |
+| --- | --- | --- |
+| Enviar por registro y por jornada desde el detalle de jornada | `Administrador`, `AdministradorExterno`, `InstructorExterno` | El bloque de acciones de `Views/Jornadas/Details.cshtml` se oculta para `InscripcionesExternas`. |
+| Panel Alutel: consultar, reintentar y reconciliar | `Administrador` | El enlace al panel OVAL en `_Layout.cshtml` solo se muestra dentro de `User.IsInRole("Administrador")`. |
+
+`InscripcionesExternas` no puede iniciar, reintentar ni consultar envíos. `ConsultaEmpresa` y `ConsultaGeneral` tampoco acceden a la funcionalidad.
+
+A diferencia de OVAL, cuyas acciones de envío quedaban cubiertas únicamente por el `[Authorize]` de clase del controlador — que incluye `InscripcionesExternas` —, las acciones Alutel llevarán un `[Authorize(Roles = ...)]` explícito por acción.
 
 Estas condiciones son solo de presentación. El controlador o servicio debe repetir autorización, habilitación, tipo de vigencia y elegibilidad antes de crear una operación; ocultar un botón no constituye un control de seguridad.
 
@@ -391,14 +421,11 @@ Estados sugeridos:
 Pendiente
 EnProceso
 Aceptado
-RechazadoFuncional
-ErrorTransitorio
-ErrorPermanente
+Fallido
 Indeterminado
-Cancelado
 ```
 
-Esto permite diferenciar un rechazo de datos, una indisponibilidad temporal y un resultado que requiere reconciliación.
+El estado representa la acción pendiente sobre la operación. El último intento conserva por separado si el fallo fue funcional, reintentable o definitivo; un resultado indeterminado requiere reconciliación antes de reenviar.
 
 ---
 
@@ -641,22 +668,24 @@ Estas respuestas no impiden desarrollar el cliente ni realizar pruebas unitarias
 
 ---
 
-## 18. Decisiones internas de negocio pendientes
+## 18. Decisiones internas de negocio
 
-Estas definiciones no deben delegarse exclusivamente al proveedor:
+Estas definiciones no deben delegarse al proveedor. Las marcadas como resueltas se cerraron el 2026-07-25 junto con el Gate 1.
 
-1. Si solo se envían registros aprobados.
-2. Qué hacer ante registros no aprobados, revocaciones o correcciones.
-3. Qué capacitación gana cuando hay varias del mismo curso para la misma persona.
-4. Qué hacer cuando el curso está configurado sin vigencia y `FechaVencimiento` es `null`.
-5. Si existe carga inicial, qué registros incluye y cuál es su fecha mínima.
-6. Qué tratamiento tendrán los registros OVAL `PendienteEnvio` y `Rechazado` existentes.
-7. Desde qué pantalla y sobre qué conjunto de registros actuará el operador, dado que la interfaz OVAL desaparecerá.
-8. Quién puede iniciar, reintentar, cancelar o reconciliar envíos Alutel.
-9. Si el envío permanecerá completamente manual o si los reintentos/transitorios serán ejecutados por un job.
-10. Qué volumen normal y máximo debe soportar el proceso.
-11. Qué evidencia necesita soporte para auditar el legado OVAL sin volver a exponer su operación.
-12. Si los registros históricos OVAL `Aceptado` deben continuar impidiendo editar o borrar calificaciones; actualmente esa restricción existe en la interfaz y quedaría invisible al retirar sus indicadores.
+| # | Decisión | Estado | Resolución |
+| --- | --- | --- | --- |
+| 1 | Si solo se envían registros aprobados. | Resuelta | Solo `Aprobado`; además el registro no puede estar vencido. |
+| 2 | Qué hacer ante registros no aprobados, revocaciones o correcciones. | Resuelta | Sin revocación ni corrección automática; se deja constancia en la auditoría y se corrige manualmente en LENEL. |
+| 3 | Qué capacitación gana cuando hay varias del mismo curso. | Resuelta | Mayor `FechaVencimiento`; desempate por `Jornada.Fecha` y luego por `RegistroCapacitacionID`. |
+| 4 | Qué hacer cuando el curso no tiene vigencia y `FechaVencimiento` es `null`. | Resuelta | Se rechaza la operación con motivo explícito; no se envía una fecha convencional. |
+| 5 | Alcance y fecha mínima de una eventual carga inicial. | Abierta | Gate 4. |
+| 6 | Tratamiento de los OVAL `PendienteEnvio` y `Rechazado` existentes. | Abierta | Gate 3. |
+| 7 | Desde qué pantalla y sobre qué registros actúa el operador. | Resuelta | Botón por registro y envío por jornada en el detalle de jornada, más un panel Alutel propio con pendientes, rechazados e indeterminados. |
+| 8 | Quién puede iniciar, reintentar, cancelar o reconciliar. | Resuelta | Ver la tabla de roles de 7.5. |
+| 9 | Si el envío permanece manual o hay job de reintentos. | Abierta | Gate 2. Inicialmente manual. |
+| 10 | Volumen normal y máximo. | Abierta | Gate 2. |
+| 11 | Evidencia que necesita soporte para auditar el legado OVAL. | Abierta | Fase 0 / Fase 15. |
+| 12 | Si los OVAL `Aceptado` históricos siguen impidiendo editar o borrar calificaciones. | Resuelta | Sí. Bloquean tanto el histórico OVAL `Aceptado` como una operación Alutel `Aceptado`, mostrando el motivo sin reexponer la operación OVAL. |
 
 ---
 
@@ -664,16 +693,20 @@ Estas definiciones no deben delegarse exclusivamente al proveedor:
 
 Ninguna de estas preguntas impide elaborar el plan ni comenzar la base técnica. Se agrupan por el momento en que su respuesta pasa a ser obligatoria.
 
-### Gate A — antes de conectar el cliente al flujo real del operador
+### Gate A — RESUELTO el 2026-07-25
 
-1. ¿Solo se envían capacitaciones aprobadas?
-2. ¿Qué debe ocurrir ante no aprobaciones, revocaciones o correcciones?
-3. ¿Qué registro se utiliza cuando existen varias capacitaciones del mismo curso para una persona?
-4. ¿Qué se hace con cursos sin vigencia?
-5. ¿Desde qué pantalla y sobre qué registros realizará el operador el envío Alutel?
-6. ¿Qué roles podrán enviar y consultar resultados?
-7. ¿Cómo debe normalizarse `documentNumber`?
-8. ¿Los registros históricos OVAL `Aceptado` continuarán bloqueando la edición o eliminación de calificaciones, o esa regla debe reemplazarse por otra condición de cierre?
+Habilita conectar el cliente al flujo real del operador (Fases 8, 10 y 11 del plan).
+
+1. **¿Solo se envían capacitaciones aprobadas?** Sí. Únicamente `Estado == Aprobado`. Además, un registro con `FechaVencimiento` ya pasada no puede enviarse.
+2. **¿Qué debe ocurrir ante no aprobaciones, revocaciones o correcciones?** Nada automático. No se envían vigencias menores ni fechas pasadas; la corrección se realiza manualmente en LENEL y queda registrada en la auditoría Alutel.
+3. **¿Qué registro se utiliza cuando existen varias capacitaciones del mismo curso?** El de mayor `FechaVencimiento`; si hay empate, el de `Jornada.Fecha` más reciente y, si persiste, el de `RegistroCapacitacionID` mayor.
+4. **¿Qué se hace con cursos sin vigencia?** Se rechaza la operación localmente con motivo explícito. No se envía ninguna fecha sustituta.
+5. **¿Desde qué pantalla y sobre qué registros actúa el operador?** Botón por registro y acción “enviar toda la jornada” en el detalle de jornada, más un panel Alutel propio para pendientes, rechazados e indeterminados. Cuando un registro no es elegible el botón se oculta y el motivo se expone como tooltip, igual que hacía OVAL.
+6. **¿Qué roles podrán enviar y consultar resultados?** Enviar: `Administrador`, `AdministradorExterno`, `InstructorExterno`. Panel, reintento y reconciliación: `Administrador`. `InscripcionesExternas` queda excluido. No se crean roles nuevos.
+7. **¿Cómo debe normalizarse `documentNumber`?** No se normaliza. Se envía el valor tal como está almacenado en `Capacitado.Documento`, para todos los tipos de documento y sin prefijo de tipo.
+8. **¿Los registros históricos OVAL `Aceptado` continuarán bloqueando la edición o eliminación de calificaciones?** Sí. La regla se amplía: bloquea un `EnvioOVALEstado == Aceptado` histórico **o** una operación Alutel en estado `Aceptado`, con un motivo visible que no reexpone la operación OVAL.
+
+**Decisión asociada (F3-01):** eliminar un `RegistroCapacitacion` sigue siendo posible siempre; su auditoría Alutel (`OperacionesIntegracionAlutel` y sus `IntentosIntegracionAlutel`) se borra en cascada. La restricción del punto 8 aplica a la edición y el borrado de la **calificación**, no a la eliminación del registro completo.
 
 ### Gate B — antes de habilitar lotes y reintentos automáticos
 
