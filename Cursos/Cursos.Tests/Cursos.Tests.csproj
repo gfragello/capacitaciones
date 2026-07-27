@@ -16,6 +16,22 @@
       <HintPath>..\bin\Cursos.dll</HintPath>
       <Private>true</Private>
     </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\bin\EntityFramework.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\bin\EntityFramework.SqlServer.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\bin\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\bin\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\bin\Newtonsoft.Json.dll</HintPath>
       <Private>true</Private>

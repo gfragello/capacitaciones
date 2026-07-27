@@ -17,7 +17,7 @@ La implementación disponible incluye:
 - servicio de orquestación con reclamo transaccional, auditoría previa y recuperación de operaciones interrumpidas;
 - pruebas MSTest sin IIS, credenciales ni acceso de red.
 
-Continúan pendientes la interfaz operativa, el retiro de OVAL, la prueba transaccional del almacén EF6 contra SQL Server y la validación del contrato en Staging. El ciclo de la migración ya fue validado en la BD de desarrollo.
+Continúan pendientes la interfaz operativa, el retiro de OVAL y la validación del contrato en Staging. El ciclo de la migración y la semántica transaccional del almacén EF6 ya fueron validados contra la BD diaria de desarrollo.
 
 ## Organización del módulo
 
@@ -116,7 +116,7 @@ En este repositorio, la CLI de EF6 interpreta esta migración aditiva como una m
 
 ### Validación realizada en desarrollo
 
-El 2026-07-25 se aplicó, revirtió y reaplicó correctamente la migración en la BD de desarrollo. La base permanece actualmente actualizada con `IntegracionAlutelInicial`.
+El 2026-07-25 se aplicó, revirtió y reaplicó correctamente la migración en la BD diaria de desarrollo. La base permanece actualmente actualizada con `IntegracionAlutelInicial`.
 
 Se confirmó:
 
@@ -126,7 +126,15 @@ Se confirmó:
 - que ningún otro curso quedó habilitado accidentalmente;
 - que las columnas y los valores `EnvioOVAL*` permanecieron intactos después del ciclo aplicar–revertir–reaplicar.
 
-Permanece pendiente la prueba de `EfAlutelOperationStore` contra SQL Server real: reclamo, finalización, concurrencia mediante contextos independientes y recuperación de operaciones `EnProceso`. Hasta completar esa prueba, `F3-06` continúa abierta.
+El 2026-07-27 se ejecutaron pruebas opt-in de `EfAlutelOperationStore` contra esa misma base. Se validaron:
+
+- reclamo y finalización con persistencia de la operación, intento y `RowVersion`;
+- dos reclamos concurrentes mediante almacenes y contextos independientes, con un único ganador;
+- dos finalizaciones concurrentes, con una única finalización persistida;
+- recuperación de una operación `EnProceso` antigua como `Indeterminado`;
+- eliminación de todos los registros temporales identificados con el prefijo exclusivo `F306-`.
+
+La primera ejecución concurrente detectó que dos inserciones iniciales podían entrar en interbloqueo bajo `Serializable` y que un `Rollback()` explícito podía ocultar la excepción original si SQL Server ya había revertido la transacción. El reclamo ahora obtiene primero un bloqueo transaccional exclusivo mediante `sp_getapplock`, usando como recurso el documento y el tipo de vigencia. Las transacciones no confirmadas se revierten al desecharse, sin ejecutar un segundo rollback. Después de la corrección pasaron las cuatro pruebas SQL y `F3-06` quedó completada.
 
 ## Orquestación y recuperación
 
@@ -138,11 +146,11 @@ Permanece pendiente la prueba de `EfAlutelOperationStore` contra SQL Server real
 4. invoca al proveedor mediante `IAlutelVigenciaGateway`;
 5. completa el intento y actualiza la operación a `Aceptado`, `Fallido` o `Indeterminado`.
 
-El reclamo se serializa por documento y tipo de vigencia. Una fecha igual o menor que otra ya aceptada no se reenvía. Una operación `EnProceso` o `Indeterminado` bloquea nuevos envíos del mismo documento y tipo hasta que se resuelva, evitando reintentos automáticos de resultados inciertos.
+El reclamo se serializa por documento y tipo de vigencia mediante un bloqueo de aplicación perteneciente a la transacción (`sp_getapplock`) y aislamiento `Serializable`. Una fecha igual o menor que otra ya aceptada no se reenvía. Una operación `EnProceso` o `Indeterminado` bloquea nuevos envíos del mismo documento y tipo hasta que se resuelva, evitando reintentos automáticos de resultados inciertos.
 
 Si la aplicación se interrumpe después de persistir el reclamo, `RecuperarEnProcesoAsync` cambia a `Indeterminado` las operaciones anteriores al umbral indicado y cierra sus intentos inconclusos con un mensaje sanitizado. La recuperación no reenvía datos; deja la operación disponible para la futura reconciliación administrativa. El umbral deberá ser mayor que el timeout máximo del cliente cuando se conecte a un proceso periódico o a una acción administrativa.
 
-Las pruebas automatizadas cubren el orden reclamar–enviar–completar, estados técnicos, concurrencia, cancelación, recuperación y el caso en que Alutel responde pero falla el guardado local. La semántica transaccional aún debe probarse contra SQL Server junto con la migración.
+Las pruebas automatizadas con dobles cubren el orden reclamar–enviar–completar, estados técnicos, concurrencia, cancelación, recuperación y el caso en que Alutel responde pero falla el guardado local. Las pruebas opt-in adicionales cubren la semántica transaccional del almacén EF6 contra SQL Server real.
 
 ## Ejecución local
 
@@ -159,6 +167,21 @@ dotnet test .\Cursos.Tests\Cursos.Tests.csproj --no-restore
 ```
 
 Las pruebas usan un transporte HTTP simulado y no necesitan credenciales. La primera ejecución puede requerir omitir `--no-restore` para restaurar MSTest.
+
+### Pruebas SQL Server opt-in
+
+`EfAlutelOperationStoreSqlServerTests` no se ejecuta accidentalmente: exige habilitación, una cadena de conexión y la confirmación exacta de `Initial Catalog`. Las pruebas sólo crean operaciones e intentos Alutel con un prefijo `F306-` único y los eliminan al finalizar; no modifican registros de capacitación ni datos OVAL.
+
+```powershell
+$env:CURSOS_ALUTEL_SQL_TESTS = '1'
+$env:CURSOS_ALUTEL_SQL_CONNECTION = '<cadena de conexión de la BD de prueba>'
+$env:CURSOS_ALUTEL_SQL_DATABASE_CONFIRMATION = '<Initial Catalog exacto>'
+
+dotnet test .\Cursos.Tests\Cursos.Tests.csproj --no-restore `
+  --filter 'TestCategory=SqlServerIntegration'
+```
+
+La prueba de recuperación utiliza deliberadamente un umbral del año 2001 y se marca inconclusa si detecta una operación ajena anterior a ese umbral, para no recuperar operaciones existentes de la base.
 
 ## Activación futura
 

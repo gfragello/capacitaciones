@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,6 +54,13 @@ namespace Cursos.Integraciones.Alutel.Infraestructura
             {
                 try
                 {
+                    await BloquearReclamoAsync(
+                            context,
+                            documento,
+                            tipoVigencia,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+
                     // Serializable mantiene bloqueado el rango del documento hasta crear o reclamar la operación.
                     var operacionesMismaVigencia = context.OperacionesIntegracionAlutel
                         .Where(o => o.DocumentoSnapshot == documento && o.TipoVigencia == tipoVigencia);
@@ -140,17 +148,14 @@ namespace Cursos.Integraciones.Alutel.Infraestructura
                 }
                 catch (OperationCanceledException)
                 {
-                    transaction.Rollback();
                     throw;
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    transaction.Rollback();
                     throw new AlutelPersistenceException("La operación Alutel fue reclamada por otro proceso.", ex);
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
                     throw CrearExcepcionPersistencia("No fue posible reclamar la operación Alutel.", ex);
                 }
             }
@@ -202,17 +207,14 @@ namespace Cursos.Integraciones.Alutel.Infraestructura
                 }
                 catch (OperationCanceledException)
                 {
-                    transaction.Rollback();
                     throw;
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    transaction.Rollback();
                     throw new AlutelPersistenceException("La operación Alutel fue completada por otro proceso.", ex);
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
                     throw CrearExcepcionPersistencia("No fue posible guardar el resultado Alutel.", ex);
                 }
             }
@@ -254,19 +256,45 @@ namespace Cursos.Integraciones.Alutel.Infraestructura
                 }
                 catch (OperationCanceledException)
                 {
-                    transaction.Rollback();
                     throw;
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    transaction.Rollback();
                     throw new AlutelPersistenceException("Una operación Alutel cambió mientras se intentaba recuperarla.", ex);
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
                     throw CrearExcepcionPersistencia("No fue posible recuperar las operaciones Alutel pendientes.", ex);
                 }
+            }
+        }
+
+        private static async Task BloquearReclamoAsync(
+            ApplicationDbContext context,
+            string documento,
+            TipoVigenciaAlutel tipoVigencia,
+            CancellationToken cancellationToken)
+        {
+            var recurso = string.Format(
+                "Cursos:Alutel:Reclamo:{0}:{1}",
+                (int)tipoVigencia,
+                documento);
+            var resultado = await context.Database.SqlQuery<int>(
+                    @"DECLARE @Resultado int;
+                      EXEC @Resultado = sys.sp_getapplock
+                          @Resource = @Recurso,
+                          @LockMode = 'Exclusive',
+                          @LockOwner = 'Transaction',
+                          @LockTimeout = 15000;
+                      SELECT @Resultado;",
+                    new SqlParameter("@Recurso", recurso))
+                .SingleAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            if (resultado < 0)
+            {
+                throw new AlutelPersistenceException(
+                    "No fue posible obtener el bloqueo para reclamar la operación Alutel.");
             }
         }
 

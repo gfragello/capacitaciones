@@ -3,8 +3,8 @@
 > Plan operativo basado en `ANALISIS_REEMPLAZO_OVAL_ALUTEL.md` y en el contrato `PUT Cardholder Safety Card.md`.
 >
 > Versión inicial: 2026-07-17.  
-> Última actualización: 2026-07-25.
-> Estado: componentes base de las Fases 1 y 3–8 implementados; ciclo aplicar–revertir–reaplicar de la migración validado en la BD de desarrollo; validación transaccional del almacén EF6 contra SQL Server pendiente; **Gate 1 resuelto**; habilitadas las Fases 10 y 11.
+> Última actualización: 2026-07-27.
+> Estado: componentes base de las Fases 1 y 3–8 implementados; migración y almacén EF6 validados contra la BD diaria de desarrollo; **F3-06 completada**; **Gate 1 resuelto**; habilitadas las Fases 10 y 11.
 
 ---
 
@@ -291,7 +291,7 @@ Requiere una autorización independiente con:
 
 ### Fase 3 — modelo Alutel y migración aditiva
 
-**Modelo y migración creados; ciclo de migración validado en desarrollo y prueba transaccional del almacén EF6 pendiente.**
+**Modelo, migración y almacén EF6 validados contra SQL Server en desarrollo.**
 
 #### Diseño propuesto
 
@@ -341,9 +341,9 @@ Indeterminado
 - [x] `F3-01` Validar el modelo y la política de eliminación de su registro de origen. **Resuelto:** eliminar un `RegistroCapacitacion` borra en cascada sus operaciones e intentos Alutel.
 - [x] `F3-02` Crear entidades, enums, relaciones y `DbSet`.
 - [x] `F3-03` Agregar índices para registro, documento, estado y lote.
-- [x] `F3-04` Incorporar control de concurrencia para reclamar una operación una sola vez. El almacén usa aislamiento `Serializable` durante el reclamo y `RowVersion` para detectar cambios concurrentes al completar o recuperar.
+- [x] `F3-04` Incorporar control de concurrencia para reclamar una operación una sola vez. El almacén obtiene un bloqueo transaccional por documento y tipo de vigencia mediante `sp_getapplock`, usa aislamiento `Serializable` durante el reclamo y `RowVersion` para detectar cambios concurrentes al completar o recuperar.
 - [x] `F3-05` Crear una migración EF exclusivamente aditiva.
-- [ ] `F3-06` Probar la migración sobre una copia representativa, verificar que no modifica tablas o valores OVAL y validar la semántica transaccional del almacén EF6 contra SQL Server. **Avance 2026-07-25:** la migración fue aplicada, revertida y reaplicada correctamente en la BD de desarrollo. Se confirmaron el esquema resultante, el registro en `__MigrationHistory`, las asignaciones de vigencia, la ausencia de habilitaciones accidentales y la preservación de los datos y columnas `EnvioOVAL*`. Falta probar el almacén EF6 real, en especial reclamo y finalización concurrentes y recuperación de operaciones.
+- [x] `F3-06` Probar la migración sobre una base representativa, verificar que no modifica tablas o valores OVAL y validar la semántica transaccional del almacén EF6 contra SQL Server. **Completada 2026-07-27:** la migración fue aplicada, revertida y reaplicada correctamente en la BD diaria de desarrollo. Se confirmaron el esquema, `__MigrationHistory`, las asignaciones de vigencia, la ausencia de habilitaciones accidentales y la preservación de `EnvioOVAL*`. Las pruebas SQL reales confirmaron reclamo, finalización, auditoría, `RowVersion`, concurrencia con contextos independientes y recuperación de operaciones.
 - [x] `F3-07` Crear el enum `TipoVigenciaAlutel` y la propiedad nullable `Curso.TipoVigenciaAlutel`.
 - [x] `F3-08` Incluir en la migración de datos la asignación inicial: curso 1 = Verde, curso 2 = Refresh, curso 3 = Azul; los demás cursos = `null`.
 
@@ -352,7 +352,7 @@ Indeterminado
 - [x] La migración puede aplicarse y revertirse en un entorno de prueba.
 - [x] Los datos OVAL antes y después son idénticos.
 - [x] Los cursos 1, 2 y 3 quedan configurados con la vigencia esperada y ningún otro curso queda habilitado accidentalmente.
-- [ ] Dos procesos no pueden reclamar silenciosamente la misma operación.
+- [x] Dos procesos no pueden reclamar silenciosamente la misma operación.
 
 ---
 
@@ -450,7 +450,7 @@ Indeterminado
 
 ### Fase 8 — orquestación inicial desacoplada
 
-**Implementada y probada con dobles, sin conexión a la interfaz real. La validación transaccional contra SQL Server se realizará junto con F3-06.**
+**Implementada y probada con dobles, sin conexión a la interfaz real; almacén transaccional validado contra SQL Server como parte de F3-06.**
 
 #### Tareas
 
