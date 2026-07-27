@@ -17,7 +17,7 @@ La implementación disponible incluye:
 - servicio de orquestación con reclamo transaccional, auditoría previa y recuperación de operaciones interrumpidas;
 - pruebas MSTest sin IIS, credenciales ni acceso de red.
 
-Continúan pendientes la interfaz operativa, el retiro de OVAL, la prueba del almacén EF6 y de la migración sobre una copia representativa de la BD, y la validación del contrato en Staging.
+Continúan pendientes la interfaz operativa, el retiro de OVAL, la prueba transaccional del almacén EF6 contra SQL Server y la validación del contrato en Staging. El ciclo de la migración ya fue validado en la BD de desarrollo.
 
 ## Organización del módulo
 
@@ -114,7 +114,19 @@ ef6 migrations add IntegracionAlutelInicial --force
 
 En este repositorio, la CLI de EF6 interpreta esta migración aditiva como una migración inicial y puede reemplazar `Up` por la creación completa de la base. No se debe regenerar automáticamente la migración ni su snapshot. Si EF6 detecta diferencias únicamente por nombres CLR, hay que detenerse y revisar antes de crear otra migración.
 
-La migración todavía no fue aplicada ni revertida sobre una copia representativa. Esa validación debe preservar todos los datos y valores `EnvioOVAL*`.
+### Validación realizada en desarrollo
+
+El 2026-07-25 se aplicó, revirtió y reaplicó correctamente la migración en la BD de desarrollo. La base permanece actualmente actualizada con `IntegracionAlutelInicial`.
+
+Se confirmó:
+
+- la creación de `Cursos.TipoVigenciaAlutel`, `OperacionesIntegracionAlutel` e `IntentosIntegracionAlutel`, junto con sus claves e índices;
+- el registro correcto de la migración en `__MigrationHistory`;
+- la asignación inicial de curso 1 = Verde, curso 2 = Refresh y curso 3 = Azul;
+- que ningún otro curso quedó habilitado accidentalmente;
+- que las columnas y los valores `EnvioOVAL*` permanecieron intactos después del ciclo aplicar–revertir–reaplicar.
+
+Permanece pendiente la prueba de `EfAlutelOperationStore` contra SQL Server real: reclamo, finalización, concurrencia mediante contextos independientes y recuperación de operaciones `EnProceso`. Hasta completar esa prueba, `F3-06` continúa abierta.
 
 ## Orquestación y recuperación
 
