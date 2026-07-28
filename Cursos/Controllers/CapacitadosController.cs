@@ -12,6 +12,7 @@ using OfficeOpenXml;
 using System.IO;
 using System.Drawing;
 using Cursos.Helpers;
+using Cursos.Helpers.Storage;
 using Cursos.Models.Enums;
 using PdfSharp.Pdf;
 using Azure.Storage.Blobs;
@@ -262,13 +263,10 @@ namespace Cursos.Controllers
 
                             string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
 
-                            string pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
                             capacitado.PathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
-                                                                                                        carpetaArchivo,
-                                                                                                        pathDirectorio,
-                                                                                                        upload,
-                                                                                                        TiposArchivo.FotoCapacitado);
+                                                                                                         carpetaArchivo,
+                                                                                                         upload,
+                                                                                                         TiposArchivo.FotoCapacitado);
 
                             db.Entry(capacitado).State = EntityState.Modified;
                             db.SaveChanges();
@@ -459,13 +457,10 @@ namespace Cursos.Controllers
                         
                     string carpetaArchivo = PathArchivoHelper.GetInstance().ObtenerCarpetaFotoCapacitado(capacitado.CapacitadoID);
 
-                    string pathDirectorio = Path.Combine(Server.MapPath("~/Images/FotosCapacitados/"), carpetaArchivo);
-
                     pathArchivo = PathArchivoHelper.GetInstance().ObtenerPathArchivo(nombreArchivo,
-                                                                                     carpetaArchivo,
-                                                                                     pathDirectorio,
-                                                                                     upload,
-                                                                                     TiposArchivo.FotoCapacitado);
+                                                                                      carpetaArchivo,
+                                                                                      upload,
+                                                                                      TiposArchivo.FotoCapacitado);
 
                     db.Entry(pathArchivo).State = EntityState.Added;
 
@@ -633,10 +628,9 @@ namespace Cursos.Controllers
             var pathFotoCapacitado = capacitado.PathArchivo;
             capacitado.PathArchivo = null;
 
-            string pathCompleto = Request.MapPath("~/Images/FotosCapacitados/" + pathFotoCapacitado.SubDirectorio + "/" + pathFotoCapacitado.NombreArchivo);
-            if (System.IO.File.Exists(pathCompleto))
+            if (FileSystemStorageService.GetInstance().Exists(pathFotoCapacitado.SubDirectorio, pathFotoCapacitado.NombreArchivo))
             {
-                System.IO.File.Delete(pathCompleto);
+                FileSystemStorageService.GetInstance().Delete(pathFotoCapacitado.SubDirectorio, pathFotoCapacitado.NombreArchivo);
             }
 
             db.PathArchivos.Remove(pathFotoCapacitado);
